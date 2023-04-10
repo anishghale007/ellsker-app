@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internship_practice/colors_utils.dart';
 import 'package:internship_practice/common/widgets/card_widget.dart';
-import 'package:internship_practice/register/data/models/card_model.dart';
+import 'package:internship_practice/features/auth/data/models/card_model.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);

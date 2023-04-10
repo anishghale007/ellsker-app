@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internship_practice/common/widgets/chat_tile_widget.dart';
-import 'package:internship_practice/register/data/models/chat_model.dart';
+import 'package:internship_practice/features/auth/data/models/chat_model.dart';
 import 'package:internship_practice/ui_pages.dart';
 
 class ChatScreen extends StatelessWidget {

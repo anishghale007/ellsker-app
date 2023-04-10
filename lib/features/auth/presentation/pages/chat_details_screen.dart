@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internship_practice/colors_utils.dart';
 import 'package:internship_practice/common/widgets/chat_box_widget.dart';
-import 'package:internship_practice/register/data/models/message_model.dart';
+import 'package:internship_practice/features/auth/data/models/message_model.dart';
 
 class ChatDetailsScreen extends StatelessWidget {
   const ChatDetailsScreen({Key? key}) : super(key: key);

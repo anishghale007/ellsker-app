@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:internship_practice/colors_utils.dart';
-import 'package:internship_practice/register/presentation/pages/chat_screen.dart';
-import 'package:internship_practice/register/presentation/pages/home_screen.dart';
-import 'package:internship_practice/register/presentation/pages/profile_screen.dart';
+import 'package:internship_practice/features/auth/presentation/pages/chat_screen.dart';
+import 'package:internship_practice/features/auth/presentation/pages/home_screen.dart';
+import 'package:internship_practice/features/auth/presentation/pages/profile_screen.dart';
 
 class BottomNavBarScreen extends StatefulWidget {
   const BottomNavBarScreen({Key? key}) : super(key: key);

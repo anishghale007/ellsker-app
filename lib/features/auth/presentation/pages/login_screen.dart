@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:internship_practice/common/widgets/login_button_widget.dart';
-import 'package:internship_practice/register/presentation/pages/bottom_nav_bar_screen.dart';
+import 'package:internship_practice/features/auth/presentation/pages/bottom_nav_bar_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({Key? key}) : super(key: key);
