@@ -1,0 +1,162 @@
+{
+  "project_info": {
+    "project_number": "510004784938",
+    "project_id": "bloc-practice-c9106",
+    "storage_bucket": "bloc-practice-c9106.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:510004784938:android:71fd51d3c75b374a687853",
+        "android_client_info": {
+          "package_name": "com.example.auth_test"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "510004784938-t0l47jnipn73ban8ug8hhunr3m9qsnej.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.auth_test",
+            "certificate_hash": "1a36172b0b9d57435396145b262ecd1b7beb6830"
+          }
+        },
+        {
+          "client_id": "510004784938-lr45mt4hmju4c09vm1fqs9n73lflhgq6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8vzPJBMalQPYOGgU48CElPKjgZsk-sGA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "510004784938-lr45mt4hmju4c09vm1fqs9n73lflhgq6.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "510004784938-flnrjnqll17qhakgjmdfh2t0o7f0cbge.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.blocTodo"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:510004784938:android:a4d3afc839ae3659687853",
+        "android_client_info": {
+          "package_name": "com.example.bloc_practive"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "510004784938-lr45mt4hmju4c09vm1fqs9n73lflhgq6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8vzPJBMalQPYOGgU48CElPKjgZsk-sGA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "510004784938-lr45mt4hmju4c09vm1fqs9n73lflhgq6.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "510004784938-flnrjnqll17qhakgjmdfh2t0o7f0cbge.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.blocTodo"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:510004784938:android:e2fab3463f89e2f5687853",
+        "android_client_info": {
+          "package_name": "com.example.bloc_todo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "510004784938-lr45mt4hmju4c09vm1fqs9n73lflhgq6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8vzPJBMalQPYOGgU48CElPKjgZsk-sGA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "510004784938-lr45mt4hmju4c09vm1fqs9n73lflhgq6.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "510004784938-flnrjnqll17qhakgjmdfh2t0o7f0cbge.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.blocTodo"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:510004784938:android:6c3acaeccdc7cd0f687853",
+        "android_client_info": {
+          "package_name": "com.example.internship_practice"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "510004784938-lr45mt4hmju4c09vm1fqs9n73lflhgq6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8vzPJBMalQPYOGgU48CElPKjgZsk-sGA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "510004784938-lr45mt4hmju4c09vm1fqs9n73lflhgq6.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "510004784938-flnrjnqll17qhakgjmdfh2t0o7f0cbge.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.blocTodo"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
