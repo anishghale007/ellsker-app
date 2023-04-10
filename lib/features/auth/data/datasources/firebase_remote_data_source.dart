@@ -1,13 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:internship_practice/features/auth/data/models/google_user_model.dart';
 
 abstract class FirebaseRemoteDataSource {
-  Future<void> googleSignIn();
+  Future<GoogleUserModel> googleSignIn();
 }
 
 class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
   @override
-  Future<UserCredential> googleSignIn() async {
+  Future<GoogleUserModel> googleSignIn() async {
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
     final GoogleSignInAuthentication googleAuth =
@@ -20,6 +21,6 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
 
     final UserCredential userCredential =
         await FirebaseAuth.instance.signInWithCredential(credential);
-    return userCredential;
+    return GoogleUserModel(userCredential: userCredential);
   }
 }

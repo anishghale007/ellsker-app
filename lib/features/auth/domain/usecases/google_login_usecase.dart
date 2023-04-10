@@ -1,3 +1,6 @@
+import 'package:dartz/dartz.dart';
+import 'package:internship_practice/core/error/failure.dart';
+import 'package:internship_practice/features/auth/domain/entities/google_user_entity.dart';
 import 'package:internship_practice/features/auth/domain/repositories/firebase_repository.dart';
 
 class GooogleLoginUseCase {
@@ -5,7 +8,7 @@ class GooogleLoginUseCase {
 
   GooogleLoginUseCase({required this.repository});
 
-  Future<void> call() async {
+  Future<Either<Failure, GoogleUserEntity>> call() async {
     return await repository.googleSignIn();
   }
 }
