@@ -56,8 +56,8 @@ class LoginScreen extends StatelessWidget {
                   height: 200,
                 ),
                 LoginButtonWidget(
-                  buttonText: "Continue with Instagram",
-                  buttonIcon: FontAwesomeIcons.instagram,
+                  buttonText: "Continue with Google",
+                  buttonIcon: FontAwesomeIcons.google,
                   onPress: () {
                     Navigator.of(context).pushReplacement(
                       MaterialPageRoute(
