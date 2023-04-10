@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internship_practice/colors_utils.dart';
@@ -62,7 +63,7 @@ class ProfileScreen extends StatelessWidget {
               ),
               Center(
                 child: Text(
-                  "Arthur Magalhães, 26",
+                  "${FirebaseAuth.instance.currentUser!.displayName!} , 26",
                   style: GoogleFonts.sourceSansPro(
                     fontWeight: FontWeight.w400,
                     fontSize: 32,
@@ -101,7 +102,7 @@ class ProfileScreen extends StatelessWidget {
                     width: 45,
                   ),
                   Text(
-                    "@arthumarsqs",
+                    "@${FirebaseAuth.instance.currentUser!.email}",
                     style: GoogleFonts.sourceSansPro(
                       fontWeight: FontWeight.w400,
                       fontSize: 14,

@@ -18,7 +18,7 @@ class ProfileHeader extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          "Perfil",
+          "Profile",
           style: GoogleFonts.sourceSansPro(
             fontSize: 32,
             color: Colors.white,

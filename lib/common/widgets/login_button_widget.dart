@@ -50,10 +50,11 @@ class LoginButtonWidget extends StatelessWidget {
               FaIcon(
                 buttonIcon,
                 color: ColorUtil.kTertiaryColor,
-                size: 22.0,
+                size: 20.0,
               ),
               Text(
                 buttonText,
+                textAlign: TextAlign.center,
                 style: GoogleFonts.sourceSansPro(
                   color: Colors.white,
                   fontWeight: FontWeight.w400,

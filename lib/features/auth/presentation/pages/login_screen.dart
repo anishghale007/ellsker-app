@@ -1,10 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:internship_practice/common/widgets/login_button_widget.dart';
+import 'package:internship_practice/features/auth/presentation/bloc/google_sign_in_bloc.dart';
 import 'package:internship_practice/features/auth/presentation/pages/bottom_nav_bar_screen.dart';
 
-class LoginScreen extends StatelessWidget {
+import '../../../../injection_container.dart';
+
+class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  late GoogleSignInBloc _bloc;
+
+  @override
+  void initState() {
+    _bloc = sl<GoogleSignInBloc>();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _bloc.close();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,63 +42,81 @@ class LoginScreen extends StatelessWidget {
           fit: BoxFit.cover,
         ),
       ),
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: SafeArea(
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                      top: 100,
-                      bottom: 20,
-                    ),
-                    child: Container(
-                      height: 230,
-                      width: 230,
-                      decoration: const BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage("assets/images/logo.png"),
-                          fit: BoxFit.cover,
+      child: BlocProvider(
+        create: (context) => _bloc,
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          body: SafeArea(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        top: 100,
+                        bottom: 20,
+                      ),
+                      child: Container(
+                        height: 230,
+                        width: 230,
+                        decoration: const BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage("assets/images/logo.png"),
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                Container(
-                  height: 30,
-                  width: 100,
-                  decoration: const BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage("assets/images/ellsker.png"),
+                  Container(
+                    height: 30,
+                    width: 100,
+                    decoration: const BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage("assets/images/ellsker.png"),
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(
-                  height: 200,
-                ),
-                LoginButtonWidget(
-                  buttonText: "Continue with Google",
-                  buttonIcon: FontAwesomeIcons.google,
-                  onPress: () {
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(
-                          builder: (context) => const BottomNavBarScreen()),
-                    );
-                  },
-                ),
-                LoginButtonWidget(
-                  buttonText: "Continue with Facebook",
-                  buttonIcon: FontAwesomeIcons.facebook,
-                  onPress: () {
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(
-                          builder: (context) => const BottomNavBarScreen()),
-                    );
-                  },
-                ),
-              ],
+                  const SizedBox(
+                    height: 200,
+                  ),
+                  BlocConsumer<GoogleSignInBloc, GoogleSignInState>(
+                    listener: (context, state) {
+                      if (state is GoogleSignInSuccess) {
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                              builder: (context) => const BottomNavBarScreen()),
+                        );
+                      } else if (state is GoogleSignInFailure) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text(state.errorMessage.toString()),
+                        ));
+                      }
+                    },
+                    builder: (context, state) {
+                      return LoginButtonWidget(
+                        buttonText: "Continue with Google",
+                        buttonIcon: FontAwesomeIcons.google,
+                        onPress: () {
+                          context
+                              .read<GoogleSignInBloc>()
+                              .add(GoogleUserEvent());
+                        },
+                      );
+                    },
+                  ),
+                  LoginButtonWidget(
+                    buttonText: "Continue with Facebook",
+                    buttonIcon: FontAwesomeIcons.facebook,
+                    onPress: () {
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                            builder: (context) => const BottomNavBarScreen()),
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         ),
