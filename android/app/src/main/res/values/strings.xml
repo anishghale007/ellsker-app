@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Ellsker App</string>
+    <string name="facebook_app_id">552450010212150</string>
+    <string name="fb_login_protocol_scheme">fb552450010212150</string>
+    <string name="facebook_client_token">39d5734dc55763f38fd289c0bfec37f7</string>
+</resources>

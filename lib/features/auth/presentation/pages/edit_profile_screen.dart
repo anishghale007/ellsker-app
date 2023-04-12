@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:internship_practice/colors_utils.dart';
-import 'package:internship_practice/common/widgets/custom_textField_widget.dart';
-import 'package:internship_practice/common/widgets/profile_header_widget.dart';
+import 'package:internship_practice/common/widgets/widgets.dart';
 
 class EditProfileScreen extends StatelessWidget {
   const EditProfileScreen({Key? key}) : super(key: key);

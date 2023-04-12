@@ -16,7 +16,7 @@ class GoogleSignInBloc extends Bloc<GoogleSignInEvent, GoogleSignInState> {
   }
 
   Future<void> _googleSignIn(
-      GoogleSignInEvent event, Emitter<GoogleSignInState> emit) async {
+      GoogleUserEvent event, Emitter<GoogleSignInState> emit) async {
     emit(GoogleSignInLoading());
     try {
       final googleUser = await gooogleLoginUseCase.call();

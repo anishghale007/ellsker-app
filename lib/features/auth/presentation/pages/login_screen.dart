@@ -6,6 +6,7 @@ import 'package:internship_practice/features/auth/presentation/bloc/google_sign_
 import 'package:internship_practice/features/auth/presentation/pages/bottom_nav_bar_screen.dart';
 
 import '../../../../injection_container.dart';
+import '../bloc/facebook_sign_in_bloc.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -15,19 +16,19 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  late GoogleSignInBloc _bloc;
+  // late GoogleSignInBloc _bloc;
 
-  @override
-  void initState() {
-    _bloc = sl<GoogleSignInBloc>();
-    super.initState();
-  }
+  // @override
+  // void initState() {
+  //   _bloc = sl<GoogleSignInBloc>();
+  //   super.initState();
+  // }
 
-  @override
-  void dispose() {
-    _bloc.close();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   _bloc.close();
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -42,8 +43,15 @@ class _LoginScreenState extends State<LoginScreen> {
           fit: BoxFit.cover,
         ),
       ),
-      child: BlocProvider(
-        create: (context) => _bloc,
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider<GoogleSignInBloc>(
+            create: (context) => sl<GoogleSignInBloc>(),
+          ),
+          BlocProvider<FacebookSignInBloc>(
+            create: (context) => sl<FacebookSignInBloc>(),
+          ),
+        ],
         child: Scaffold(
           backgroundColor: Colors.transparent,
           body: SafeArea(
@@ -105,13 +113,28 @@ class _LoginScreenState extends State<LoginScreen> {
                       );
                     },
                   ),
-                  LoginButtonWidget(
-                    buttonText: "Continue with Facebook",
-                    buttonIcon: FontAwesomeIcons.facebook,
-                    onPress: () {
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
-                            builder: (context) => const BottomNavBarScreen()),
+                  BlocConsumer<FacebookSignInBloc, FacebookSignInState>(
+                    listener: (context, state) {
+                      if (state is FacebookSignInSuccess) {
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                              builder: (context) => const BottomNavBarScreen()),
+                        );
+                      } else if (state is FacebookSignInFailure) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text(state.errorMessage.toString()),
+                        ));
+                      }
+                    },
+                    builder: (context, state) {
+                      return LoginButtonWidget(
+                        buttonText: "Continue with Facebook",
+                        buttonIcon: FontAwesomeIcons.facebook,
+                        onPress: () {
+                          context
+                              .read<FacebookSignInBloc>()
+                              .add(FacebookUserEvent());
+                        },
                       );
                     },
                   ),

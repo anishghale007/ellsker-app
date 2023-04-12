@@ -2,7 +2,9 @@ import 'package:get_it/get_it.dart';
 import 'package:internship_practice/features/auth/data/datasources/firebase_remote_data_source.dart';
 import 'package:internship_practice/features/auth/data/repositories/firebase_repository_impl.dart';
 import 'package:internship_practice/features/auth/domain/repositories/firebase_repository.dart';
+import 'package:internship_practice/features/auth/domain/usecases/facebook_login_usecase.dart';
 import 'package:internship_practice/features/auth/domain/usecases/google_login_usecase.dart';
+import 'package:internship_practice/features/auth/presentation/bloc/facebook_sign_in_bloc.dart';
 import 'package:internship_practice/features/auth/presentation/bloc/google_sign_in_bloc.dart';
 
 final sl = GetIt.instance;
@@ -15,9 +17,17 @@ Future<void> init() async {
     () => GoogleSignInBloc(gooogleLoginUseCase: sl()),
   );
 
+  sl.registerFactory<FacebookSignInBloc>(
+    () => FacebookSignInBloc(facebookLoginUseCase: sl()),
+  );
+
   /// Usecase
   sl.registerLazySingleton<GooogleLoginUseCase>(
     () => GooogleLoginUseCase(repository: sl()),
+  );
+
+  sl.registerLazySingleton<FacebookLoginUseCase>(
+    () => FacebookLoginUseCase(repository: sl()),
   );
 
   /// Repository
