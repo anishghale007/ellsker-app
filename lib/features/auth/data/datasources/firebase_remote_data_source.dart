@@ -68,12 +68,17 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
       final userInfo = (await FirebaseAuth.instance
               .signInWithCredential(facebookAuthCredential))
           .user;
-      await dbUser.add({
-        'userId': userInfo!.uid,
-        'userName': userInfo.displayName,
-        'email': userInfo.email,
-        'photoUrl': userInfo.photoURL,
-      });
+      var id = userInfo!.uid;
+      if (await isExistentUser(id)) {
+        log("User already exists");
+      } else {
+        await dbUser.add({
+          'userId': userInfo.uid,
+          'userName': userInfo.displayName,
+          'email': userInfo.email,
+          'photoUrl': userInfo.photoURL,
+        });
+      }
       return FacebookUserModel(userCredential: userCredential);
     } on FirebaseAuthException catch (e) {
       log(e.toString());
