@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:internship_practice/colors_utils.dart';
 import 'package:internship_practice/common/widgets/widgets.dart';
 import 'package:internship_practice/features/auth/data/models/chat_model.dart';
 import 'package:internship_practice/ui_pages.dart';
@@ -70,6 +71,11 @@ class ChatScreen extends StatelessWidget {
               ],
             ),
           ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: ColorUtil.kMessageAlertColor,
+          onPressed: () {},
+          child: const Icon(Icons.message),
         ),
       ),
     );
