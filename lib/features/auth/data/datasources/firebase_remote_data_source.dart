@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
@@ -8,6 +10,8 @@ import 'package:internship_practice/features/auth/data/models/google_user_model.
 abstract class FirebaseRemoteDataSource {
   Future<GoogleUserModel> googleSignIn();
   Future<FacebookUserModel> facebookSignIn();
+  Future<void> signOut();
+  Future<bool> isExistentUser(String userId);
 }
 
 class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
@@ -15,41 +19,79 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
 
   @override
   Future<GoogleUserModel> googleSignIn() async {
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
-    final GoogleSignInAuthentication googleAuth =
-        await googleUser!.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser!.authentication;
 
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
 
-    final UserCredential userCredential =
-        await FirebaseAuth.instance.signInWithCredential(credential);
-    final userInfo =
-        (await FirebaseAuth.instance.signInWithCredential(credential)).user;
-    await dbUser.add({
-      'userId': userInfo!.uid,
-      'userName': userInfo.displayName,
-      'email': userInfo.email,
-      'photoUrl': userInfo.photoURL,
-    });
-    return GoogleUserModel(userCredential: userCredential);
+      final UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+      final userInfo =
+          (await FirebaseAuth.instance.signInWithCredential(credential)).user;
+      var id = userInfo!.uid;
+      if (await isExistentUser(id)) {
+        log("User already exists");
+      } else {
+        await dbUser.add({
+          'userId': userInfo.uid,
+          'userName': userInfo.displayName,
+          'email': userInfo.email,
+          'photoUrl': userInfo.photoURL,
+        });
+      }
+      return GoogleUserModel(userCredential: userCredential);
+    } on FirebaseAuthException catch (e) {
+      log(e.toString());
+      throw Exception(e.toString());
+    }
   }
 
   @override
   Future<FacebookUserModel> facebookSignIn() async {
-    // Trigger the sign-in flow
-    final LoginResult loginResult = await FacebookAuth.instance.login();
+    try {
+      // Trigger the sign-in flow
+      final LoginResult loginResult = await FacebookAuth.instance.login();
 
-    // Create a credential from the access token
-    final OAuthCredential facebookAuthCredential =
-        FacebookAuthProvider.credential(loginResult.accessToken!.token);
+      // Create a credential from the access token
+      final OAuthCredential facebookAuthCredential =
+          FacebookAuthProvider.credential(loginResult.accessToken!.token);
 
-    // Once signed in, return the UserCredential
-    final UserCredential userCredential = await FirebaseAuth.instance
-        .signInWithCredential(facebookAuthCredential);
-    return FacebookUserModel(userCredential: userCredential);
+      // Once signed in, return the UserCredential
+      final UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithCredential(facebookAuthCredential);
+      final userInfo = (await FirebaseAuth.instance
+              .signInWithCredential(facebookAuthCredential))
+          .user;
+      await dbUser.add({
+        'userId': userInfo!.uid,
+        'userName': userInfo.displayName,
+        'email': userInfo.email,
+        'photoUrl': userInfo.photoURL,
+      });
+      return FacebookUserModel(userCredential: userCredential);
+    } on FirebaseAuthException catch (e) {
+      log(e.toString());
+      throw Exception(e.toString());
+    }
+  }
+
+  @override
+  Future<void> signOut() async {
+    await FirebaseAuth.instance.signOut();
+  }
+
+  @override
+  Future<bool> isExistentUser(String userId) async {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .where('userId', isEqualTo: userId)
+        .get();
+    return querySnapshot.docs.isNotEmpty;
   }
 }
