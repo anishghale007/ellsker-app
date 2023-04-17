@@ -14,6 +14,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final LoadingOverlay _loadingOverlay = LoadingOverlay();
   // late GoogleSignInBloc _bloc;
 
   // @override
@@ -80,14 +81,18 @@ class _LoginScreenState extends State<LoginScreen> {
                 BlocConsumer<GoogleSignInBloc, GoogleSignInState>(
                   listener: (context, state) {
                     if (state is GoogleSignInSuccess) {
+                      _loadingOverlay.hide();
                       Navigator.of(context).pushReplacement(
                         MaterialPageRoute(
                             builder: (context) => const BottomNavBarScreen()),
                       );
                     } else if (state is GoogleSignInFailure) {
+                      _loadingOverlay.hide();
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                         content: Text(state.errorMessage.toString()),
                       ));
+                    } else if (state is GoogleSignInLoading) {
+                      _loadingOverlay.show(context);
                     }
                   },
                   builder: (context, state) {
@@ -103,14 +108,19 @@ class _LoginScreenState extends State<LoginScreen> {
                 BlocConsumer<FacebookSignInBloc, FacebookSignInState>(
                   listener: (context, state) {
                     if (state is FacebookSignInSuccess) {
+                      _loadingOverlay.hide();
+
                       Navigator.of(context).pushReplacement(
                         MaterialPageRoute(
                             builder: (context) => const BottomNavBarScreen()),
                       );
                     } else if (state is FacebookSignInFailure) {
+                      _loadingOverlay.hide();
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                         content: Text(state.errorMessage.toString()),
                       ));
+                    } else if (state is FacebookSignInLoading) {
+                      _loadingOverlay.show(context);
                     }
                   },
                   builder: (context, state) {
@@ -131,5 +141,35 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+}
+
+class LoadingOverlay {
+  OverlayEntry? _overlay;
+
+  LoadingOverlay();
+
+  void show(BuildContext context) {
+    if (_overlay == null) {
+      _overlay = OverlayEntry(
+        // replace with your own layout
+        builder: (context) => const ColoredBox(
+          color: Color(0x80000000),
+          child: Center(
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation(Colors.white),
+            ),
+          ),
+        ),
+      );
+      Overlay.of(context)?.insert(_overlay!);
+    }
+  }
+
+  void hide() {
+    if (_overlay != null) {
+      _overlay!.remove();
+      _overlay = null;
+    }
   }
 }

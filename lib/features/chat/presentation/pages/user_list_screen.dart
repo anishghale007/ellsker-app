@@ -1,14 +1,18 @@
 import 'dart:developer';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/user_list_cubit.dart';
+import 'package:internship_practice/ui_pages.dart';
 
 class UserListScreen extends StatelessWidget {
   const UserListScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final currentUser = FirebaseAuth.instance.currentUser!.uid;
+
     return Container(
       width: double.infinity,
       decoration: const BoxDecoration(
@@ -61,20 +65,27 @@ class UserListScreen extends StatelessWidget {
                         separatorBuilder: (context, index) => const Divider(),
                         shrinkWrap: true,
                         scrollDirection: Axis.vertical,
-                        // physics: const NeverScrollableScrollPhysics(),
                         itemCount: state.users.length,
                         itemBuilder: (context, index) {
                           final data = state.users[index];
-                          return ListTile(
-                            leading: CircleAvatar(
-                              backgroundImage: NetworkImage(data.photoUrl),
-                              radius: 25,
-                            ),
-                            title: Text(
-                              data.userName,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
+                          return InkWell(
+                            onTap: () {
+                              Navigator.of(context).pushNamed(kChatScreenPath);
+                            },
+                            child: SizedBox(
+                              height: data.userId == currentUser ? 0 : 70,
+                              child: ListTile(
+                                leading: CircleAvatar(
+                                  backgroundImage: NetworkImage(data.photoUrl),
+                                  radius: 25,
+                                ),
+                                title: Text(
+                                  data.userName,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                  ),
+                                ),
                               ),
                             ),
                           );

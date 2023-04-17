@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:internship_practice/colors_utils.dart';
 import 'package:internship_practice/features/auth/data/datasources/auth_remote_data_source.dart';
-import 'package:internship_practice/features/chat/presentation/pages/chat_screen.dart';
+import 'package:internship_practice/features/chat/presentation/pages/chat_list_screen.dart';
 import 'package:internship_practice/features/auth/presentation/pages/home_screen.dart';
 import 'package:internship_practice/features/auth/presentation/pages/profile_screen.dart';
 import 'package:internship_practice/ui_pages.dart';
@@ -18,7 +18,7 @@ class _BottomNavBarScreenState extends State<BottomNavBarScreen> {
 
   List<Widget> pages = [
     const HomeScreen(),
-    const ChatScreen(),
+    const ChatListScreen(),
     const ProfileScreen(),
   ];
 

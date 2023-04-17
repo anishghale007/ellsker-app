@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internship_practice/colors_utils.dart';
 import 'package:internship_practice/common/widgets/widgets.dart';
-import 'package:internship_practice/features/auth/data/models/chat_model.dart';
-import 'package:internship_practice/ui_pages.dart';
+import 'package:internship_practice/features/auth/data/models/message_model.dart';
 
 class ChatScreen extends StatelessWidget {
   const ChatScreen({Key? key}) : super(key: key);
@@ -23,61 +22,137 @@ class ChatScreen extends StatelessWidget {
         ),
       ),
       child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          centerTitle: true,
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(4.0),
+            child: Container(
+              height: 0.2,
+              color: Colors.grey,
+            ),
+          ),
+          title: Text(
+            "Rolê Leblon",
+            style: GoogleFonts.sourceSansPro(
+              fontWeight: FontWeight.w400,
+              fontSize: 20,
+            ),
+          ),
+          iconTheme: const IconThemeData(
+            color: Colors.white,
+          ),
+        ),
         backgroundColor: Colors.transparent,
-        body: SafeArea(
-          child: SingleChildScrollView(
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 15,
+            ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(
                   height: 20,
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                  ),
+                Center(
                   child: Text(
-                    "Conversations",
+                    "Hoje, 23:45",
                     style: GoogleFonts.sourceSansPro(
-                      fontSize: 32,
-                      fontWeight: FontWeight.w400,
                       color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
                 const SizedBox(
-                  height: 20,
+                  height: 30,
                 ),
-                ListView.builder(
-                  itemCount: chatList.length,
+                ListView.separated(
+                  separatorBuilder: (context, index) => const Divider(
+                    height: 30,
+                  ),
+                  itemCount: messageList.length,
+                  physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
-                  physics: const ClampingScrollPhysics(),
                   scrollDirection: Axis.vertical,
                   itemBuilder: (context, index) {
-                    final data = chatList[index];
-                    return ChatTile(
-                      onPress: () {
-                        Navigator.of(context).pushNamed(kChatDetailsScreenPath);
-                      },
+                    final data = messageList[index];
+                    return ChatBoxWidget(
                       imagePath: data.imagePath,
                       userName: data.userName,
                       message: data.message,
-                      messageTime: data.messageTime,
-                      hasUnreadMessage: data.hasUnreadMessage,
-                      numberOfMessage: data.numberOfMessage,
+                      fromMe: data.fromMe,
                     );
                   },
+                ),
+                const SizedBox(
+                  height: 80,
                 ),
               ],
             ),
           ),
         ),
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: ColorUtil.kMessageAlertColor,
-          onPressed: () {
-            Navigator.pushNamed(context, kUserListScreenPath);
-          },
-          child: const Icon(Icons.message),
+        bottomSheet: Container(
+          height: 55,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: ColorUtil.kSecondaryColor,
+            border: Border.all(
+              width: 0,
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Container(
+                height: 36,
+                width: MediaQuery.of(context).size.width * 0.8,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: TextField(
+                  keyboardAppearance: Brightness.dark,
+                  style: GoogleFonts.sourceSansPro(
+                    color: Colors.white,
+                    fontSize: 16,
+                  ),
+                  decoration: InputDecoration(
+                    fillColor: Colors.grey[800],
+                    filled: true,
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: 5,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                    prefixIcon: Icon(
+                      Icons.image_outlined,
+                      color: ColorUtil.kIconColor,
+                    ),
+                  ),
+                ),
+              ),
+              Container(
+                height: 40,
+                width: 40,
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [
+                      Color(0xffE45699),
+                      Color(0xff733DD6),
+                      Color(0xff3D88E4),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                child: const Icon(
+                  Icons.send_outlined,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

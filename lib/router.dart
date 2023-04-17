@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:internship_practice/features/chat/presentation/pages/chat_details_screen.dart';
-import 'package:internship_practice/features/chat/presentation/pages/chat_screen.dart';
+import 'package:internship_practice/features/chat/presentation/pages/chat_list_screen.dart';
 import 'package:internship_practice/features/auth/presentation/pages/edit_profile_screen.dart';
 import 'package:internship_practice/features/auth/presentation/pages/home_screen.dart';
 import 'package:internship_practice/features/auth/presentation/pages/login_screen.dart';
 import 'package:internship_practice/features/auth/presentation/pages/profile_screen.dart';
+import 'package:internship_practice/features/chat/presentation/pages/chat_screen.dart';
 import 'package:internship_practice/features/chat/presentation/pages/user_list_screen.dart';
 import 'package:internship_practice/ui_pages.dart';
 
@@ -15,8 +16,8 @@ class Routers {
         return MaterialPageRoute(builder: (_) => const LoginScreen());
       case kHomeScreenPath:
         return MaterialPageRoute(builder: (_) => const HomeScreen());
-      case kChatScreenPath:
-        return MaterialPageRoute(builder: (_) => const ChatScreen());
+      case kChatListScreenPath:
+        return MaterialPageRoute(builder: (_) => const ChatListScreen());
       case kProfileScreenPath:
         return MaterialPageRoute(builder: (_) => const ProfileScreen());
       case kChatDetailsScreenPath:
@@ -25,6 +26,8 @@ class Routers {
         return MaterialPageRoute(builder: (_) => const EditProfileScreen());
       case kUserListScreenPath:
         return MaterialPageRoute(builder: (_) => const UserListScreen());
+      case kChatScreenPath:
+        return MaterialPageRoute(builder: (_) => const ChatScreen());
       default:
         return MaterialPageRoute(builder: (_) => Container());
     }
