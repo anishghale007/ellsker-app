@@ -1,3 +1,4 @@
+
 part of 'facebook_sign_in_bloc.dart';
 
 abstract class FacebookSignInState extends Equatable {

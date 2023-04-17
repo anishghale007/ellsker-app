@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:internship_practice/features/auth/presentation/pages/chat_details_screen.dart';
-import 'package:internship_practice/features/auth/presentation/pages/chat_screen.dart';
+import 'package:internship_practice/features/chat/presentation/pages/chat_details_screen.dart';
+import 'package:internship_practice/features/chat/presentation/pages/chat_screen.dart';
 import 'package:internship_practice/features/auth/presentation/pages/edit_profile_screen.dart';
 import 'package:internship_practice/features/auth/presentation/pages/home_screen.dart';
 import 'package:internship_practice/features/auth/presentation/pages/login_screen.dart';
 import 'package:internship_practice/features/auth/presentation/pages/profile_screen.dart';
+import 'package:internship_practice/features/chat/presentation/pages/user_list_screen.dart';
 import 'package:internship_practice/ui_pages.dart';
 
 class Routers {
@@ -22,6 +23,8 @@ class Routers {
         return MaterialPageRoute(builder: (_) => const ChatDetailsScreen());
       case kEditProfileScreenPath:
         return MaterialPageRoute(builder: (_) => const EditProfileScreen());
+      case kUserListScreenPath:
+        return MaterialPageRoute(builder: (_) => const UserListScreen());
       default:
         return MaterialPageRoute(builder: (_) => Container());
     }

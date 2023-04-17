@@ -3,7 +3,7 @@ import 'package:internship_practice/constants.dart';
 import 'package:internship_practice/features/auth/domain/entities/facebook_user_entity.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../domain/usecases/facebook_login_usecase.dart';
+import '../../../domain/usecases/facebook_login_usecase.dart';
 part 'facebook_sign_in_event.dart';
 part 'facebook_sign_in_state.dart';
 

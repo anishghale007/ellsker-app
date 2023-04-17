@@ -7,14 +7,14 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:internship_practice/features/auth/data/models/facebook_user_model.dart';
 import 'package:internship_practice/features/auth/data/models/google_user_model.dart';
 
-abstract class FirebaseRemoteDataSource {
+abstract class AuthRemoteDataSource {
   Future<GoogleUserModel> googleSignIn();
   Future<FacebookUserModel> facebookSignIn();
   Future<void> signOut();
   Future<bool> isExistentUser(String userId);
 }
 
-class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
+class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   CollectionReference dbUser = FirebaseFirestore.instance.collection("users");
 
   @override

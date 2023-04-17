@@ -1,3 +1,4 @@
+
 part of 'google_sign_in_bloc.dart';
 
 abstract class GoogleSignInState extends Equatable {

@@ -74,7 +74,9 @@ class ChatScreen extends StatelessWidget {
         ),
         floatingActionButton: FloatingActionButton(
           backgroundColor: ColorUtil.kMessageAlertColor,
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pushNamed(context, kUserListScreenPath);
+          },
           child: const Icon(Icons.message),
         ),
       ),

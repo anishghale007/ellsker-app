@@ -1,20 +1,20 @@
 import 'package:dartz/dartz.dart';
 import 'package:internship_practice/core/error/exceptions.dart';
 import 'package:internship_practice/core/error/failure.dart';
-import 'package:internship_practice/features/auth/data/datasources/firebase_remote_data_source.dart';
+import 'package:internship_practice/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:internship_practice/features/auth/domain/entities/facebook_user_entity.dart';
 import 'package:internship_practice/features/auth/domain/entities/google_user_entity.dart';
-import 'package:internship_practice/features/auth/domain/repositories/firebase_repository.dart';
+import 'package:internship_practice/features/auth/domain/repositories/auth_repository.dart';
 
-class FirebaseRepositoryImpl implements FirebaseRepository {
-  final FirebaseRemoteDataSource firebaseRemoteDataSource;
+class AuthRepositoryImpl implements AuthRepository {
+  final AuthRemoteDataSource authRemoteDataSource;
 
-  FirebaseRepositoryImpl({required this.firebaseRemoteDataSource});
+  AuthRepositoryImpl({required this.authRemoteDataSource});
 
   @override
   Future<Either<Failure, GoogleUserEntity>> googleSignIn() async {
     try {
-      final userCredential = await firebaseRemoteDataSource.googleSignIn();
+      final userCredential = await authRemoteDataSource.googleSignIn();
       return Right(userCredential);
     } on ServerException {
       return Left(ServerFailure());
@@ -24,7 +24,7 @@ class FirebaseRepositoryImpl implements FirebaseRepository {
   @override
   Future<Either<Failure, FacebookUserEntity>> facebookSignIn() async {
     try {
-      final userCredential = await firebaseRemoteDataSource.facebookSignIn();
+      final userCredential = await authRemoteDataSource.facebookSignIn();
       return Right(userCredential);
     } on ServerException {
       return Left(ServerFailure());

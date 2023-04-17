@@ -1,11 +1,3 @@
-enum Pages {
-  loginScreen,
-  homeScreen,
-  messageScreen,
-  chatScreen,
-  profileScreen,
-}
-
 const String kLoginScreenPath = "/";
 const String kHomeScreenPath = "/homeScreen";
 const String kChatScreenPath = "/chatScreen";
