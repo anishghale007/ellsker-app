@@ -1,5 +1,6 @@
 import 'package:internship_practice/features/chat/data/datasources/firebase_remote_data_source.dart';
 import 'package:internship_practice/features/chat/domain/entities/conversation_entity.dart';
+import 'package:internship_practice/features/chat/domain/entities/message_entity.dart';
 import 'package:internship_practice/features/chat/domain/entities/user_entity.dart';
 import 'package:internship_practice/features/chat/domain/repositories/firebase_repository.dart';
 
@@ -17,5 +18,10 @@ class FirebaseRepositoryImpl implements FirebaseRepository {
       ConversationEntity conversationEntity) async {
     return await firebaseRemoteDataSource
         .createConversation(conversationEntity);
+  }
+
+  @override
+  Future<String> sendMessage(MessageEntity messageEntity) async {
+    return await firebaseRemoteDataSource.sendMessage(messageEntity);
   }
 }

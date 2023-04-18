@@ -3,13 +3,16 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:internship_practice/features/chat/data/models/conversation_model.dart';
+import 'package:internship_practice/features/chat/data/models/message_model.dart';
 import 'package:internship_practice/features/chat/data/models/user_model.dart';
 import 'package:internship_practice/features/chat/domain/entities/conversation_entity.dart';
+import 'package:internship_practice/features/chat/domain/entities/message_entity.dart';
 import 'package:internship_practice/features/chat/domain/entities/user_entity.dart';
 
 abstract class FirebaseRemoteDataSource {
   Stream<List<UserEntity>> getAllUsers();
   Future<String> createConversation(ConversationEntity conversationEntity);
+  Future<String> sendMessage(MessageEntity messageEntity);
   Future<bool> isExistentDocument();
 }
 
@@ -60,7 +63,41 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
       }
       return Future.value("Success");
     } on FirebaseException catch (e) {
-      throw (Exception(e.toString()));
+      throw Exception(e.toString());
+    }
+  }
+
+  @override
+  Future<String> sendMessage(MessageEntity messageEntity) async {
+    try {
+      // sender data
+      final senderData = MessageModel(
+        messageContent: messageEntity.messageContent,
+        messageTime: messageEntity.messageTime,
+        senderId: messageEntity.senderId,
+        senderName: messageEntity.senderName,
+        senderPhotoUrl: messageEntity.senderPhotoUrl,
+        receiverId: messageEntity.receiverId,
+        receiverName: messageEntity.receiverName,
+        receiverPhotoUrl: messageEntity.receiverPhotoUrl,
+      ).toJson();
+      dbUser
+          .doc(messageEntity.senderId)
+          .collection("conversation")
+          .doc(messageEntity.receiverId)
+          .collection("message")
+          .doc()
+          .set(senderData);
+      dbUser
+          .doc(messageEntity.receiverId)
+          .collection("conversation")
+          .doc(messageEntity.senderId)
+          .collection("message")
+          .doc()
+          .set(senderData);
+      return Future.value("Success");
+    } on FirebaseException catch (e) {
+      throw Exception(e.toString());
     }
   }
 

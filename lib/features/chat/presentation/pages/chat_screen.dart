@@ -6,9 +6,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internship_practice/colors_utils.dart';
 import 'package:internship_practice/features/chat/domain/entities/conversation_entity.dart';
-import 'package:internship_practice/features/chat/presentation/cubit/conversation/cubit/conversation_cubit.dart';
+import 'package:internship_practice/features/chat/domain/entities/message_entity.dart';
+import 'package:internship_practice/features/chat/presentation/cubit/conversation/conversation_cubit.dart';
+import 'package:internship_practice/features/chat/presentation/cubit/message/cubit/message_cubit.dart';
 
-class ChatScreen extends StatelessWidget {
+class ChatScreen extends StatefulWidget {
   final String username;
   final String userId;
   final String photoUrl;
@@ -19,6 +21,26 @@ class ChatScreen extends StatelessWidget {
     required this.photoUrl,
     Key? key,
   }) : super(key: key);
+
+  @override
+  State<ChatScreen> createState() => _ChatScreenState();
+}
+
+class _ChatScreenState extends State<ChatScreen> {
+  late TextEditingController _messageController;
+  final _form = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    _messageController = TextEditingController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _messageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,167 +56,211 @@ class ChatScreen extends StatelessWidget {
           ],
         ),
       ),
-      child: Scaffold(
-        appBar: AppBar(
+      child: Form(
+        key: _form,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        child: Scaffold(
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            centerTitle: true,
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(4.0),
+              child: Container(
+                height: 0.2,
+                color: Colors.grey,
+              ),
+            ),
+            title: Text(
+              widget.username,
+              style: GoogleFonts.sourceSansPro(
+                fontWeight: FontWeight.w400,
+                fontSize: 20,
+              ),
+            ),
+            iconTheme: const IconThemeData(
+              color: Colors.white,
+            ),
+          ),
           backgroundColor: Colors.transparent,
-          elevation: 0,
-          centerTitle: true,
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(4.0),
-            child: Container(
-              height: 0.2,
-              color: Colors.grey,
+          body: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 15,
+              ),
+              child: Column(
+                children: [
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Center(
+                    child: Text(
+                      "Hoje, 23:45",
+                      style: GoogleFonts.sourceSansPro(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  // ListView.separated(
+                  //   separatorBuilder: (context, index) => const Divider(
+                  //     height: 30,
+                  //   ),
+                  //   itemCount: messageList.length,
+                  //   physics: const NeverScrollableScrollPhysics(),
+                  //   shrinkWrap: true,
+                  //   scrollDirection: Axis.vertical,
+                  //   itemBuilder: (context, index) {
+                  //     final data = messageList[index];
+                  //     return ChatBoxWidget(
+                  //       imagePath: data.imagePath,
+                  //       userName: data.userName,
+                  //       message: data.message,
+                  //       fromMe: data.fromMe,
+                  //     );
+                  //   },
+                  // ),
+                  const SizedBox(
+                    height: 80,
+                  ),
+                ],
+              ),
             ),
           ),
-          title: Text(
-            username,
-            style: GoogleFonts.sourceSansPro(
-              fontWeight: FontWeight.w400,
-              fontSize: 20,
+          bottomSheet: Container(
+            height: 55,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: ColorUtil.kSecondaryColor,
+              border: Border.all(
+                width: 0,
+              ),
             ),
-          ),
-          iconTheme: const IconThemeData(
-            color: Colors.white,
-          ),
-        ),
-        backgroundColor: Colors.transparent,
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 15,
-            ),
-            child: Column(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                const SizedBox(
-                  height: 20,
-                ),
-                Center(
-                  child: Text(
-                    "Hoje, 23:45",
+                Container(
+                  height: 36,
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: TextFormField(
+                    controller: _messageController,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "";
+                      }
+                      return null;
+                    },
+                    keyboardAppearance: Brightness.dark,
                     style: GoogleFonts.sourceSansPro(
                       color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                    ),
+                    decoration: InputDecoration(
+                      errorStyle: const TextStyle(fontSize: 0.01),
+                      fillColor: Colors.grey[800],
+                      filled: true,
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 5,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                      prefixIcon: Icon(
+                        Icons.image_outlined,
+                        color: ColorUtil.kIconColor,
+                      ),
                     ),
                   ),
                 ),
-                const SizedBox(
-                  height: 30,
-                ),
-                // ListView.separated(
-                //   separatorBuilder: (context, index) => const Divider(
-                //     height: 30,
-                //   ),
-                //   itemCount: messageList.length,
-                //   physics: const NeverScrollableScrollPhysics(),
-                //   shrinkWrap: true,
-                //   scrollDirection: Axis.vertical,
-                //   itemBuilder: (context, index) {
-                //     final data = messageList[index];
-                //     return ChatBoxWidget(
-                //       imagePath: data.imagePath,
-                //       userName: data.userName,
-                //       message: data.message,
-                //       fromMe: data.fromMe,
-                //     );
-                //   },
-                // ),
-                const SizedBox(
-                  height: 80,
+                MultiBlocListener(
+                  listeners: [
+                    BlocListener<ConversationCubit, ConversationState>(
+                      listener: (context, state) {
+                        if (state is ConversationSuccess) {
+                          log("Success");
+                        } else if (state is ConversationError) {
+                          log(state.errorMessage);
+                        }
+                      },
+                    ),
+                    BlocListener<MessageCubit, MessageState>(
+                      listener: (context, state) {
+                        if (state is MessageSuccess) {
+                          log("Message sent successfully");
+                          _messageController.clear();
+                        } else if (state is MessageError) {
+                          log(state.errorMessage);
+                        }
+                      },
+                    ),
+                  ],
+                  child: Container(
+                    height: 40,
+                    width: 40,
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [
+                          Color(0xffE45699),
+                          Color(0xff733DD6),
+                          Color(0xff3D88E4),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        _form.currentState!.save();
+                        FocusScope.of(context).unfocus();
+                        if (_form.currentState!.validate()) {
+                          final currentUser =
+                              FirebaseAuth.instance.currentUser!;
+                          context.read<ConversationCubit>().createConversation(
+                                conversationEntity: ConversationEntity(
+                                  receiverId: widget.userId,
+                                  receiverName: widget.username,
+                                  receiverPhotoUrl: widget.photoUrl,
+                                  senderId: currentUser.uid,
+                                  senderName: currentUser.displayName!,
+                                  senderPhotoUrl: currentUser.photoURL!,
+                                ),
+                              );
+                          context.read<MessageCubit>().sendMessage(
+                                messageEntity: MessageEntity(
+                                  messageContent:
+                                      _messageController.text.trim(),
+                                  messageTime: DateTime.now().toString(),
+                                  senderId: currentUser.uid,
+                                  senderName: currentUser.displayName!,
+                                  senderPhotoUrl: currentUser.photoURL!,
+                                  receiverId: widget.userId,
+                                  receiverName: widget.username,
+                                  receiverPhotoUrl: widget.photoUrl,
+                                ),
+                              );
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        shape: const CircleBorder(),
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        padding: const EdgeInsets.only(left: 5),
+                      ),
+                      child: const Icon(
+                        Icons.send_outlined,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
-          ),
-        ),
-        bottomSheet: Container(
-          height: 55,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: ColorUtil.kSecondaryColor,
-            border: Border.all(
-              width: 0,
-            ),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Container(
-                height: 36,
-                width: MediaQuery.of(context).size.width * 0.8,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: TextField(
-                  keyboardAppearance: Brightness.dark,
-                  style: GoogleFonts.sourceSansPro(
-                    color: Colors.white,
-                    fontSize: 16,
-                  ),
-                  decoration: InputDecoration(
-                    fillColor: Colors.grey[800],
-                    filled: true,
-                    contentPadding: const EdgeInsets.symmetric(
-                      vertical: 5,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(100),
-                    ),
-                    prefixIcon: Icon(
-                      Icons.image_outlined,
-                      color: ColorUtil.kIconColor,
-                    ),
-                  ),
-                ),
-              ),
-              BlocListener<ConversationCubit, ConversationState>(
-                listener: (context, state) {
-                  if (state is ConversationSuccess) {
-                    log("Success");
-                  } else if (state is ConversationError) {
-                    log(state.errorMessage);
-                  }
-                },
-                child: Container(
-                  height: 40,
-                  width: 40,
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [
-                        Color(0xffE45699),
-                        Color(0xff733DD6),
-                        Color(0xff3D88E4),
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(100),
-                  ),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      final currentUser = FirebaseAuth.instance.currentUser!;
-                      context.read<ConversationCubit>().createConversation(
-                            conversationEntity: ConversationEntity(
-                              receiverId: userId,
-                              receiverName: username,
-                              receiverPhotoUrl: photoUrl,
-                              senderId: currentUser.uid,
-                              senderName: currentUser.displayName!,
-                              senderPhotoUrl: currentUser.photoURL!,
-                            ),
-                          );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      shape: const CircleBorder(),
-                      backgroundColor: Colors.transparent,
-                      shadowColor: Colors.transparent,
-                      padding: const EdgeInsets.only(left: 5),
-                    ),
-                    child: const Icon(
-                      Icons.send_outlined,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            ],
           ),
         ),
       ),

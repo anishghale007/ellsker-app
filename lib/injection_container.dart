@@ -11,9 +11,11 @@ import 'package:internship_practice/features/auth/presentation/cubit/sign_out_cu
 import 'package:internship_practice/features/chat/data/datasources/firebase_remote_data_source.dart';
 import 'package:internship_practice/features/chat/data/repositories/firebase_repository_impl.dart';
 import 'package:internship_practice/features/chat/domain/repositories/firebase_repository.dart';
-import 'package:internship_practice/features/chat/domain/usecases/create_conversation.dart';
+import 'package:internship_practice/features/chat/domain/usecases/create_conversation_usecase.dart';
 import 'package:internship_practice/features/chat/domain/usecases/get_all_users_usecase.dart';
-import 'package:internship_practice/features/chat/presentation/cubit/conversation/cubit/conversation_cubit.dart';
+import 'package:internship_practice/features/chat/domain/usecases/send_message_usecase.dart';
+import 'package:internship_practice/features/chat/presentation/cubit/conversation/conversation_cubit.dart';
+import 'package:internship_practice/features/chat/presentation/cubit/message/cubit/message_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/user_list/user_list_cubit.dart';
 
 final sl = GetIt.instance;
@@ -44,6 +46,10 @@ Future<void> init() async {
     () => ConversationCubit(createConversationUseCase: sl()),
   );
 
+  sl.registerFactory(
+    () => MessageCubit(sendMessageUseCase: sl()),
+  );
+
   /// Usecase
   sl.registerLazySingleton<GooogleLoginUseCase>(
     () => GooogleLoginUseCase(repository: sl()),
@@ -63,6 +69,10 @@ Future<void> init() async {
 
   sl.registerLazySingleton<CreateConversationUseCase>(
     () => CreateConversationUseCase(firebaseRepository: sl()),
+  );
+
+  sl.registerLazySingleton<SendMessageUseCase>(
+    () => SendMessageUseCase(firebaseRepository: sl()),
   );
 
   /// Repository

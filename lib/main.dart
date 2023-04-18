@@ -3,7 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internship_practice/colors_utils.dart';
 import 'package:internship_practice/features/auth/presentation/cubit/sign_out_cubit.dart';
-import 'package:internship_practice/features/chat/presentation/cubit/conversation/cubit/conversation_cubit.dart';
+import 'package:internship_practice/features/chat/presentation/cubit/conversation/conversation_cubit.dart';
+import 'package:internship_practice/features/chat/presentation/cubit/message/cubit/message_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/user_list/user_list_cubit.dart';
 import 'package:internship_practice/injection_container.dart' as di;
 import 'package:internship_practice/router.dart';
@@ -43,6 +44,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider<ConversationCubit>(
           create: (context) => di.sl<ConversationCubit>(),
+        ),
+        BlocProvider<MessageCubit>(
+          create: (context) => di.sl<MessageCubit>(),
         ),
       ],
       child: MaterialApp(

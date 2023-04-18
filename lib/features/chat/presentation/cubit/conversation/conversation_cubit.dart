@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:internship_practice/features/chat/domain/entities/conversation_entity.dart';
-import 'package:internship_practice/features/chat/domain/usecases/create_conversation.dart';
+import 'package:internship_practice/features/chat/domain/usecases/create_conversation_usecase.dart';
 
 part 'conversation_state.dart';
 
