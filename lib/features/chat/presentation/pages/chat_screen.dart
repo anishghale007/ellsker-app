@@ -1,12 +1,22 @@
+import 'dart:developer';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internship_practice/colors_utils.dart';
+import 'package:internship_practice/features/chat/domain/entities/conversation_entity.dart';
+import 'package:internship_practice/features/chat/presentation/cubit/conversation/cubit/conversation_cubit.dart';
 
 class ChatScreen extends StatelessWidget {
   final String username;
+  final String userId;
+  final String photoUrl;
 
   const ChatScreen({
     required this.username,
+    required this.userId,
+    required this.photoUrl,
     Key? key,
   }) : super(key: key);
 
@@ -136,22 +146,52 @@ class ChatScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              Container(
-                height: 40,
-                width: 40,
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [
-                      Color(0xffE45699),
-                      Color(0xff733DD6),
-                      Color(0xff3D88E4),
-                    ],
+              BlocListener<ConversationCubit, ConversationState>(
+                listener: (context, state) {
+                  if (state is ConversationSuccess) {
+                    log("Success");
+                  } else if (state is ConversationError) {
+                    log(state.errorMessage);
+                  }
+                },
+                child: Container(
+                  height: 40,
+                  width: 40,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [
+                        Color(0xffE45699),
+                        Color(0xff733DD6),
+                        Color(0xff3D88E4),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(100),
                   ),
-                  borderRadius: BorderRadius.circular(100),
-                ),
-                child: const Icon(
-                  Icons.send_outlined,
-                  color: Colors.white,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      final currentUser = FirebaseAuth.instance.currentUser!;
+                      context.read<ConversationCubit>().createConversation(
+                            conversationEntity: ConversationEntity(
+                              receiverId: userId,
+                              receiverName: username,
+                              receiverPhotoUrl: photoUrl,
+                              senderId: currentUser.uid,
+                              senderName: currentUser.displayName!,
+                              senderPhotoUrl: currentUser.photoURL!,
+                            ),
+                          );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      shape: const CircleBorder(),
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      padding: const EdgeInsets.only(left: 5),
+                    ),
+                    child: const Icon(
+                      Icons.send_outlined,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ),
             ],

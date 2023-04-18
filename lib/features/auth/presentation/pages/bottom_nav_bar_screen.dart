@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:internship_practice/colors_utils.dart';
-import 'package:internship_practice/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:internship_practice/features/auth/presentation/cubit/sign_out_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/pages/chat_list_screen.dart';
 import 'package:internship_practice/features/auth/presentation/pages/home_screen.dart';
@@ -52,7 +51,7 @@ class _BottomNavBarScreenState extends State<BottomNavBarScreen> {
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(true);
+                // Navigator.of(context).pop(true);
                 context.read<SignOutCubit>().signOut();
               },
               child: const Text('Yes'),

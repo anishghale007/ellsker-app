@@ -53,7 +53,7 @@ class ProfileScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-                child: Image.network(
+                child: Image.asset(
                   // FirebaseAuth.instance.currentUser!.photoURL!,
                   "assets/images/profile_picture.png",
                   fit: BoxFit.cover,

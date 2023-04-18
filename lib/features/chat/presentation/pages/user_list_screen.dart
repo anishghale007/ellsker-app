@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:internship_practice/features/chat/presentation/cubit/user_list_cubit.dart';
+import 'package:internship_practice/features/chat/presentation/cubit/user_list/user_list_cubit.dart';
 import 'package:internship_practice/ui_pages.dart';
 
 class UserListScreen extends StatelessWidget {
@@ -73,6 +73,8 @@ class UserListScreen extends StatelessWidget {
                               Navigator.of(context)
                                   .pushNamed(kChatScreenPath, arguments: {
                                 "username": data.userName,
+                                "userId": data.userId,
+                                "photoUrl": data.photoUrl,
                               });
                             },
                             child: SizedBox(

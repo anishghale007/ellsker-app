@@ -4,14 +4,17 @@ import 'package:internship_practice/features/auth/data/repositories/auth_reposit
 import 'package:internship_practice/features/auth/domain/repositories/auth_repository.dart';
 import 'package:internship_practice/features/auth/domain/usecases/facebook_login_usecase.dart';
 import 'package:internship_practice/features/auth/domain/usecases/google_login_usecase.dart';
+import 'package:internship_practice/features/auth/domain/usecases/sign_out_usecase.dart';
 import 'package:internship_practice/features/auth/presentation/bloc/facebook_sign_in/facebook_sign_in_bloc.dart';
 import 'package:internship_practice/features/auth/presentation/bloc/google_sign_in/google_sign_in_bloc.dart';
 import 'package:internship_practice/features/auth/presentation/cubit/sign_out_cubit.dart';
 import 'package:internship_practice/features/chat/data/datasources/firebase_remote_data_source.dart';
 import 'package:internship_practice/features/chat/data/repositories/firebase_repository_impl.dart';
 import 'package:internship_practice/features/chat/domain/repositories/firebase_repository.dart';
+import 'package:internship_practice/features/chat/domain/usecases/create_conversation.dart';
 import 'package:internship_practice/features/chat/domain/usecases/get_all_users_usecase.dart';
-import 'package:internship_practice/features/chat/presentation/cubit/user_list_cubit.dart';
+import 'package:internship_practice/features/chat/presentation/cubit/conversation/cubit/conversation_cubit.dart';
+import 'package:internship_practice/features/chat/presentation/cubit/user_list/user_list_cubit.dart';
 
 final sl = GetIt.instance;
 
@@ -36,6 +39,11 @@ Future<void> init() async {
     () => UserListCubit(getAllUsersUsecase: sl.call()),
   );
 
+  // chat bloc
+  sl.registerFactory<ConversationCubit>(
+    () => ConversationCubit(createConversationUseCase: sl()),
+  );
+
   /// Usecase
   sl.registerLazySingleton<GooogleLoginUseCase>(
     () => GooogleLoginUseCase(repository: sl()),
@@ -45,8 +53,16 @@ Future<void> init() async {
     () => FacebookLoginUseCase(repository: sl()),
   );
 
+  sl.registerLazySingleton<SignOutUseCase>(
+    () => SignOutUseCase(authRepository: sl()),
+  );
+
   sl.registerLazySingleton<GetAllUsersUsecase>(
     () => GetAllUsersUsecase(firebaseRepository: sl()),
+  );
+
+  sl.registerLazySingleton<CreateConversationUseCase>(
+    () => CreateConversationUseCase(firebaseRepository: sl()),
   );
 
   /// Repository

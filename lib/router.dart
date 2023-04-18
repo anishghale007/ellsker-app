@@ -32,6 +32,8 @@ class Routers {
               routeSettings.arguments as Map<String, dynamic>;
           return ChatScreen(
             username: arguments["username"],
+            userId: arguments["userId"],
+            photoUrl: arguments["photoUrl"],
           );
         });
       default:

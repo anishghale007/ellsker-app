@@ -1,11 +1,11 @@
 import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:internship_practice/features/auth/data/models/facebook_user_model.dart';
 import 'package:internship_practice/features/auth/data/models/google_user_model.dart';
+import 'package:internship_practice/features/auth/data/models/user_model.dart';
 
 abstract class AuthRemoteDataSource {
   Future<GoogleUserModel> googleSignIn();
@@ -21,15 +21,12 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   Future<GoogleUserModel> googleSignIn() async {
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-
       final GoogleSignInAuthentication googleAuth =
           await googleUser!.authentication;
-
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
-
       final UserCredential userCredential =
           await FirebaseAuth.instance.signInWithCredential(credential);
       final userInfo =
@@ -38,12 +35,13 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       if (await isExistentUser(id)) {
         log("User already exists");
       } else {
-        await dbUser.add({
-          'userId': userInfo.uid,
-          'userName': userInfo.displayName,
-          'email': userInfo.email,
-          'photoUrl': userInfo.photoURL,
-        });
+        final userData = UserModel(
+          userId: userInfo.uid,
+          email: userInfo.email!,
+          photoUrl: userInfo.photoURL!,
+          userName: userInfo.displayName!,
+        ).toJson();
+        dbUser.doc(userInfo.uid).set(userData);
       }
       return GoogleUserModel(userCredential: userCredential);
     } on FirebaseAuthException catch (e) {
@@ -72,12 +70,13 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       if (await isExistentUser(id)) {
         log("User already exists");
       } else {
-        await dbUser.add({
-          'userId': userInfo.uid,
-          'userName': userInfo.displayName,
-          'email': userInfo.email,
-          'photoUrl': userInfo.photoURL,
-        });
+        final userData = UserModel(
+          userId: userInfo.uid,
+          email: userInfo.email!,
+          photoUrl: userInfo.photoURL!,
+          userName: userInfo.displayName!,
+        ).toJson();
+        dbUser.doc(userInfo.uid).set(userData);
       }
       return FacebookUserModel(userCredential: userCredential);
     } on FirebaseAuthException catch (e) {
