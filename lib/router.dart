@@ -27,7 +27,13 @@ class Routers {
       case kUserListScreenPath:
         return MaterialPageRoute(builder: (_) => const UserListScreen());
       case kChatScreenPath:
-        return MaterialPageRoute(builder: (_) => const ChatScreen());
+        return MaterialPageRoute(builder: (_) {
+          Map<String, dynamic> arguments =
+              routeSettings.arguments as Map<String, dynamic>;
+          return ChatScreen(
+            username: arguments["username"],
+          );
+        });
       default:
         return MaterialPageRoute(builder: (_) => Container());
     }

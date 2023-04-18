@@ -70,7 +70,10 @@ class UserListScreen extends StatelessWidget {
                           final data = state.users[index];
                           return InkWell(
                             onTap: () {
-                              Navigator.of(context).pushNamed(kChatScreenPath);
+                              Navigator.of(context)
+                                  .pushNamed(kChatScreenPath, arguments: {
+                                "username": data.userName,
+                              });
                             },
                             child: SizedBox(
                               height: data.userId == currentUser ? 0 : 70,

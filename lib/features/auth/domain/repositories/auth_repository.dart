@@ -6,4 +6,5 @@ import 'package:internship_practice/features/auth/domain/entities/google_user_en
 abstract class AuthRepository {
   Future<Either<Failure, GoogleUserEntity>> googleSignIn();
   Future<Either<Failure, FacebookUserEntity>> facebookSignIn();
+  Future<void> signOut();
 }

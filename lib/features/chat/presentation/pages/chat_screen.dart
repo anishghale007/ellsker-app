@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internship_practice/colors_utils.dart';
-import 'package:internship_practice/common/widgets/widgets.dart';
-import 'package:internship_practice/features/auth/data/models/message_model.dart';
 
 class ChatScreen extends StatelessWidget {
-  const ChatScreen({Key? key}) : super(key: key);
+  final String username;
+
+  const ChatScreen({
+    required this.username,
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +37,7 @@ class ChatScreen extends StatelessWidget {
             ),
           ),
           title: Text(
-            "Rolê Leblon",
+            username,
             style: GoogleFonts.sourceSansPro(
               fontWeight: FontWeight.w400,
               fontSize: 20,
@@ -68,24 +71,24 @@ class ChatScreen extends StatelessWidget {
                 const SizedBox(
                   height: 30,
                 ),
-                ListView.separated(
-                  separatorBuilder: (context, index) => const Divider(
-                    height: 30,
-                  ),
-                  itemCount: messageList.length,
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  scrollDirection: Axis.vertical,
-                  itemBuilder: (context, index) {
-                    final data = messageList[index];
-                    return ChatBoxWidget(
-                      imagePath: data.imagePath,
-                      userName: data.userName,
-                      message: data.message,
-                      fromMe: data.fromMe,
-                    );
-                  },
-                ),
+                // ListView.separated(
+                //   separatorBuilder: (context, index) => const Divider(
+                //     height: 30,
+                //   ),
+                //   itemCount: messageList.length,
+                //   physics: const NeverScrollableScrollPhysics(),
+                //   shrinkWrap: true,
+                //   scrollDirection: Axis.vertical,
+                //   itemBuilder: (context, index) {
+                //     final data = messageList[index];
+                //     return ChatBoxWidget(
+                //       imagePath: data.imagePath,
+                //       userName: data.userName,
+                //       message: data.message,
+                //       fromMe: data.fromMe,
+                //     );
+                //   },
+                // ),
                 const SizedBox(
                   height: 80,
                 ),

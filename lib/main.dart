@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internship_practice/colors_utils.dart';
+import 'package:internship_practice/features/auth/presentation/cubit/sign_out_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/user_list_cubit.dart';
 import 'package:internship_practice/injection_container.dart' as di;
 import 'package:internship_practice/router.dart';
@@ -34,7 +35,10 @@ class MyApp extends StatelessWidget {
           create: (context) => di.sl<FacebookSignInBloc>(),
         ),
         BlocProvider<UserListCubit>(
-          create: (_) => di.sl<UserListCubit>()..getAllUsers(),
+          create: (context) => di.sl<UserListCubit>()..getAllUsers(),
+        ),
+        BlocProvider<SignOutCubit>(
+          create: (context) => di.sl<SignOutCubit>(),
         ),
       ],
       child: MaterialApp(

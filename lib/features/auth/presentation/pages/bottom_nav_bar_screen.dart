@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:internship_practice/colors_utils.dart';
 import 'package:internship_practice/features/auth/data/datasources/auth_remote_data_source.dart';
+import 'package:internship_practice/features/auth/presentation/cubit/sign_out_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/pages/chat_list_screen.dart';
 import 'package:internship_practice/features/auth/presentation/pages/home_screen.dart';
 import 'package:internship_practice/features/auth/presentation/pages/profile_screen.dart';
@@ -25,25 +27,38 @@ class _BottomNavBarScreenState extends State<BottomNavBarScreen> {
   Future<bool> _showExitPopup() async {
     return await showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Logout from APP'),
-        content: const Text('Are you sure you want to logout?'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(false);
-            },
-            child: const Text('No'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(true);
-              AuthRemoteDataSourceImpl().signOut();
-              Navigator.pushReplacementNamed(context, kLoginScreenPath);
-            },
-            child: const Text('Yes'),
-          ),
-        ],
+      builder: (context) => BlocListener<SignOutCubit, SignOutState>(
+        listener: (context, state) {
+          if (state is SignOutSuccess) {
+            Navigator.pushReplacementNamed(context, kLoginScreenPath);
+          } else if (state is SignOutFailure) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.errorMessage),
+                duration: const Duration(seconds: 5),
+              ),
+            );
+          }
+        },
+        child: AlertDialog(
+          title: const Text('Logout from APP'),
+          content: const Text('Are you sure you want to logout?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child: const Text('No'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true);
+                context.read<SignOutCubit>().signOut();
+              },
+              child: const Text('Yes'),
+            ),
+          ],
+        ),
       ),
     );
   }
