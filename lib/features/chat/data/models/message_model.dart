@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:internship_practice/features/chat/domain/entities/message_entity.dart';
 
 class MessageModel extends MessageEntity {
@@ -11,6 +12,19 @@ class MessageModel extends MessageEntity {
     required super.receiverName,
     required super.receiverPhotoUrl,
   });
+
+  factory MessageModel.fromSnapshot(DocumentSnapshot snapshot) {
+    return MessageModel(
+      messageContent: snapshot['messageContent'],
+      messageTime: snapshot['messageTime'],
+      senderId: snapshot['senderId'],
+      senderName: snapshot['senderName'],
+      senderPhotoUrl: snapshot['senderPhotoUrl'],
+      receiverId: snapshot['receiverId'],
+      receiverName: snapshot['receiverName'],
+      receiverPhotoUrl: snapshot['receiverPhotoUrl'],
+    );
+  }
 
   Map<String, dynamic> toJson() {
     return {

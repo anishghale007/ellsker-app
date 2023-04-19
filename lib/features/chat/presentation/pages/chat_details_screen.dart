@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internship_practice/colors_utils.dart';
-import 'package:internship_practice/common/widgets/widgets.dart';
-import 'package:internship_practice/features/auth/data/models/message_model.dart';
 
 class ChatDetailsScreen extends StatelessWidget {
   const ChatDetailsScreen({Key? key}) : super(key: key);
@@ -68,24 +66,24 @@ class ChatDetailsScreen extends StatelessWidget {
                 const SizedBox(
                   height: 30,
                 ),
-                ListView.separated(
-                  separatorBuilder: (context, index) => const Divider(
-                    height: 30,
-                  ),
-                  itemCount: messageList.length,
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  scrollDirection: Axis.vertical,
-                  itemBuilder: (context, index) {
-                    final data = messageList[index];
-                    return ChatBoxWidget(
-                      imagePath: data.imagePath,
-                      userName: data.userName,
-                      message: data.message,
-                      fromMe: data.fromMe,
-                    );
-                  },
-                ),
+                // ListView.separated(
+                //   separatorBuilder: (context, index) => const Divider(
+                //     height: 30,
+                //   ),
+                //   itemCount: messageList.length,
+                //   physics: const NeverScrollableScrollPhysics(),
+                //   shrinkWrap: true,
+                //   scrollDirection: Axis.vertical,
+                //   itemBuilder: (context, index) {
+                //     final data = messageList[index];
+                //     return ChatBoxWidget(
+                //       imagePath: data.imagePath,
+                //       userName: data.userName,
+                //       message: data.message,
+                //       fromMe: data.fromMe,
+                //     );
+                //   },
+                // ),
                 const SizedBox(
                   height: 80,
                 ),

@@ -5,10 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internship_practice/colors_utils.dart';
+import 'package:internship_practice/common/widgets/chat_box_widget.dart';
 import 'package:internship_practice/features/chat/domain/entities/conversation_entity.dart';
 import 'package:internship_practice/features/chat/domain/entities/message_entity.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/conversation/conversation_cubit.dart';
-import 'package:internship_practice/features/chat/presentation/cubit/message/cubit/message_cubit.dart';
+import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
+import 'package:internship_practice/injection_container.dart';
 
 class ChatScreen extends StatefulWidget {
   final String username;
@@ -32,8 +34,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   void initState() {
-    _messageController = TextEditingController();
     super.initState();
+    _messageController = TextEditingController();
   }
 
   @override
@@ -84,6 +86,7 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           backgroundColor: Colors.transparent,
           body: SingleChildScrollView(
+            reverse: true,
             child: Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: 15,
@@ -91,39 +94,55 @@ class _ChatScreenState extends State<ChatScreen> {
               child: Column(
                 children: [
                   const SizedBox(
-                    height: 20,
+                    height: 50,
                   ),
-                  Center(
-                    child: Text(
-                      "Hoje, 23:45",
-                      style: GoogleFonts.sourceSansPro(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
+                  BlocProvider<MessageCubit>(
+                    create: (context) => sl<MessageCubit>()
+                      ..getAllMessages(conversationId: widget.userId),
+                    child: BlocBuilder<MessageCubit, MessageState>(
+                      builder: (context, state) {
+                        if (state is MessageLoaded) {
+                          log("Message Loaded");
+                          return ListView.separated(
+                            separatorBuilder: (context, index) => const Divider(
+                              height: 30,
+                            ),
+                            itemCount: state.messageList.length,
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            scrollDirection: Axis.vertical,
+                            itemBuilder: (context, index) {
+                              final data = state.messageList[index];
+                              return ChatBoxWidget(
+                                messageContent: data.messageContent,
+                                messageTime: data.messageTime,
+                                receiverId: data.receiverId,
+                                receiverName: data.receiverName,
+                                receiverPhotoUrl: data.receiverPhotoUrl,
+                                senderId: data.senderId,
+                                senderName: data.senderName,
+                                senderPhotoUrl: data.senderPhotoUrl,
+                              );
+                            },
+                          );
+                        } else if (state is MessageLoading) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        } else if (state is MessageError) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(state.errorMessage.toString()),
+                              duration: const Duration(seconds: 5),
+                            ),
+                          );
+                        } else {
+                          log("Message Not Loaded");
+                        }
+                        return Container();
+                      },
                     ),
                   ),
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  // ListView.separated(
-                  //   separatorBuilder: (context, index) => const Divider(
-                  //     height: 30,
-                  //   ),
-                  //   itemCount: messageList.length,
-                  //   physics: const NeverScrollableScrollPhysics(),
-                  //   shrinkWrap: true,
-                  //   scrollDirection: Axis.vertical,
-                  //   itemBuilder: (context, index) {
-                  //     final data = messageList[index];
-                  //     return ChatBoxWidget(
-                  //       imagePath: data.imagePath,
-                  //       userName: data.userName,
-                  //       message: data.message,
-                  //       fromMe: data.fromMe,
-                  //     );
-                  //   },
-                  // ),
                   const SizedBox(
                     height: 80,
                   ),
@@ -151,6 +170,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                   child: TextFormField(
                     controller: _messageController,
+                    textCapitalization: TextCapitalization.sentences,
                     validator: (value) {
                       if (value!.isEmpty) {
                         return "";
@@ -195,6 +215,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         if (state is MessageSuccess) {
                           log("Message sent successfully");
                           _messageController.clear();
+                          FocusScope.of(context).unfocus();
                         } else if (state is MessageError) {
                           log(state.errorMessage);
                         }
@@ -229,6 +250,10 @@ class _ChatScreenState extends State<ChatScreen> {
                                   senderId: currentUser.uid,
                                   senderName: currentUser.displayName!,
                                   senderPhotoUrl: currentUser.photoURL!,
+                                  lastMessage: _messageController.text.trim(),
+                                  lastMessageTime: DateTime.now().toString(),
+                                  lastMessageSenderName:
+                                      currentUser.displayName!,
                                 ),
                               );
                           context.read<MessageCubit>().sendMessage(
@@ -244,6 +269,9 @@ class _ChatScreenState extends State<ChatScreen> {
                                   receiverPhotoUrl: widget.photoUrl,
                                 ),
                               );
+                          context
+                              .read<MessageCubit>()
+                              .getAllMessages(conversationId: widget.userId);
                         }
                       },
                       style: ElevatedButton.styleFrom(

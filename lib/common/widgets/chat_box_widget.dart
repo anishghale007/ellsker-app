@@ -1,24 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internship_practice/colors_utils.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ChatBoxWidget extends StatelessWidget {
-  final String imagePath;
-  final String userName;
-  final String message;
-  final bool fromMe;
+  final String messageContent;
+  final String messageTime;
+  final String senderId;
+  final String senderName;
+  final String senderPhotoUrl;
+  final String receiverId;
+  final String receiverName;
+  final String receiverPhotoUrl;
 
   const ChatBoxWidget({
     Key? key,
-    required this.imagePath,
-    required this.userName,
-    required this.message,
-    required this.fromMe,
+    required this.messageContent,
+    required this.messageTime,
+    required this.senderId,
+    required this.senderName,
+    required this.senderPhotoUrl,
+    required this.receiverId,
+    required this.receiverName,
+    required this.receiverPhotoUrl,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return fromMe == true
+    return FirebaseAuth.instance.currentUser!.uid == senderId
         ? Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
@@ -47,7 +56,7 @@ class ChatBoxWidget extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    message,
+                    messageContent,
                     style: GoogleFonts.sourceSansPro(
                       fontSize: 18,
                       fontWeight: FontWeight.w400,
@@ -63,8 +72,8 @@ class ChatBoxWidget extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 15,
-                backgroundImage: AssetImage(
-                  imagePath,
+                backgroundImage: NetworkImage(
+                  senderPhotoUrl,
                 ),
               ),
               const SizedBox(
@@ -75,7 +84,7 @@ class ChatBoxWidget extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      userName,
+                      senderName,
                       style: GoogleFonts.sourceSansPro(
                         color: ColorUtil.kTertiaryColor,
                         fontSize: 12,
@@ -104,7 +113,7 @@ class ChatBoxWidget extends StatelessWidget {
                       child: Column(
                         children: [
                           Text(
-                            message,
+                            messageContent,
                             style: GoogleFonts.sourceSansPro(
                               fontSize: 18,
                               fontWeight: FontWeight.w400,

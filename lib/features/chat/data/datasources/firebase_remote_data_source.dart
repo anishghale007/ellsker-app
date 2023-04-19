@@ -12,7 +12,9 @@ import 'package:internship_practice/features/chat/domain/entities/user_entity.da
 abstract class FirebaseRemoteDataSource {
   Stream<List<UserEntity>> getAllUsers();
   Future<String> createConversation(ConversationEntity conversationEntity);
+  Stream<List<ConversationEntity>> getAllConversations();
   Future<String> sendMessage(MessageEntity messageEntity);
+  Stream<List<MessageEntity>> getAllMessages(String conversationId);
   Future<bool> isExistentDocument();
 }
 
@@ -40,6 +42,9 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
           senderId: conversationEntity.senderId,
           senderName: conversationEntity.senderName,
           senderPhotoUrl: conversationEntity.senderPhotoUrl,
+          lastMessage: conversationEntity.lastMessage,
+          lastMessageSenderName: conversationEntity.lastMessageSenderName,
+          lastMessageTime: conversationEntity.lastMessageTime,
         ).toJson();
         dbUser
             .doc(conversationEntity.senderId)
@@ -54,6 +59,9 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
           senderId: conversationEntity.receiverId,
           senderName: conversationEntity.receiverName,
           senderPhotoUrl: conversationEntity.receiverPhotoUrl,
+          lastMessage: conversationEntity.lastMessage,
+          lastMessageSenderName: conversationEntity.lastMessageSenderName,
+          lastMessageTime: conversationEntity.lastMessageTime,
         ).toJson();
         dbUser
             .doc(conversationEntity.receiverId)
@@ -65,6 +73,14 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
     } on FirebaseException catch (e) {
       throw Exception(e.toString());
     }
+  }
+
+  @override
+  Stream<List<ConversationEntity>> getAllConversations() {
+    final currentUser = FirebaseAuth.instance.currentUser!.uid;
+    return dbUser.doc(currentUser).collection("conversation").snapshots().map(
+        (event) =>
+            event.docs.map((e) => ConversationModel.fromSnapshot(e)).toList());
   }
 
   @override
@@ -81,6 +97,18 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
         receiverName: messageEntity.receiverName,
         receiverPhotoUrl: messageEntity.receiverPhotoUrl,
       ).toJson();
+      Map<String, dynamic> updateConversationData = {
+        "lastMessage": messageEntity.messageContent,
+        "lastMessageSenderName": messageEntity.senderName,
+        "lastMessageTime": messageEntity.messageTime,
+        // "isSeen": false,
+        // "unSeenMessages": FieldValue.increment(1),
+      };
+      dbUser
+          .doc(messageEntity.senderId)
+          .collection("conversation")
+          .doc(messageEntity.receiverId)
+          .update(updateConversationData);
       dbUser
           .doc(messageEntity.senderId)
           .collection("conversation")
@@ -88,6 +116,12 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
           .collection("message")
           .doc()
           .set(senderData);
+      // receiver data
+      dbUser
+          .doc(messageEntity.receiverId)
+          .collection("conversation")
+          .doc(messageEntity.senderId)
+          .update(updateConversationData);
       dbUser
           .doc(messageEntity.receiverId)
           .collection("conversation")
@@ -99,6 +133,20 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
     } on FirebaseException catch (e) {
       throw Exception(e.toString());
     }
+  }
+
+  @override
+  Stream<List<MessageEntity>> getAllMessages(String conversationId) {
+    final currentUser = FirebaseAuth.instance.currentUser!.uid;
+    return dbUser
+        .doc(currentUser)
+        .collection("conversation")
+        .doc(conversationId)
+        .collection("message")
+        .orderBy("messageTime")
+        .snapshots()
+        .map((event) =>
+            event.docs.map((e) => MessageModel.fromSnapshot(e)).toList());
   }
 
   @override

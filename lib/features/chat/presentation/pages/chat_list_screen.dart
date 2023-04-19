@@ -1,8 +1,12 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internship_practice/colors_utils.dart';
 import 'package:internship_practice/common/widgets/widgets.dart';
-import 'package:internship_practice/features/auth/data/models/chat_model.dart';
+import 'package:internship_practice/features/chat/presentation/cubit/conversation/conversation_cubit.dart';
+import 'package:internship_practice/injection_container.dart';
 import 'package:internship_practice/ui_pages.dart';
 
 class ChatListScreen extends StatelessWidget {
@@ -26,49 +30,78 @@ class ChatListScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         body: SafeArea(
           child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(
-                  height: 20,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
+            child: BlocProvider<ConversationCubit>(
+              create: (context) =>
+                  sl<ConversationCubit>()..getAllConversations(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(
+                    height: 20,
                   ),
-                  child: Text(
-                    "Conversations",
-                    style: GoogleFonts.sourceSansPro(
-                      fontSize: 32,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.white,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                    ),
+                    child: Text(
+                      "Conversations",
+                      style: GoogleFonts.sourceSansPro(
+                        fontSize: 32,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                ListView.builder(
-                  itemCount: chatList.length,
-                  shrinkWrap: true,
-                  physics: const ClampingScrollPhysics(),
-                  scrollDirection: Axis.vertical,
-                  itemBuilder: (context, index) {
-                    final data = chatList[index];
-                    return ChatTile(
-                      onPress: () {
-                        Navigator.of(context).pushNamed(kChatDetailsScreenPath);
-                      },
-                      imagePath: data.imagePath,
-                      userName: data.userName,
-                      message: data.message,
-                      messageTime: data.messageTime,
-                      hasUnreadMessage: data.hasUnreadMessage,
-                      numberOfMessage: data.numberOfMessage,
-                    );
-                  },
-                ),
-              ],
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  BlocBuilder<ConversationCubit, ConversationState>(
+                    builder: (context, state) {
+                      if (state is ConversationLoaded) {
+                        return ListView.builder(
+                          itemCount: state.conversationList.length,
+                          shrinkWrap: true,
+                          physics: const ClampingScrollPhysics(),
+                          scrollDirection: Axis.vertical,
+                          itemBuilder: (context, index) {
+                            final data = state.conversationList[index];
+                            return ConversationTile(
+                              onPress: () {
+                                Navigator.of(context).pushNamed(
+                                  kChatScreenPath,
+                                  arguments: {
+                                    "username": data.receiverName,
+                                    "userId": data.receiverId,
+                                    "photoUrl": data.receiverPhotoUrl,
+                                  },
+                                );
+                              },
+                              receiverId: data.receiverId,
+                              receiverName: data.receiverName,
+                              receiverPhotoUrl: data.receiverPhotoUrl,
+                              lastMessage: data.lastMessage,
+                              lastMessageSenderName: data.lastMessageSenderName,
+                              lastMessageTime: data.lastMessageTime,
+                            );
+                          },
+                        );
+                      } else if (state is ConversationLoading) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      } else if (state is ConversationError) {
+                        return Text(state.errorMessage.toString());
+                      } else if (state is ConversationEmpty) {
+                        return const Text(
+                            "No conversation. Start a conversation with a user.");
+                      } else {
+                        log("Conversation List not loaded");
+                      }
+                      return Container();
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         ),

@@ -7,6 +7,9 @@ class ConversationEntity extends Equatable {
   final String senderId;
   final String senderName;
   final String senderPhotoUrl;
+  final String lastMessage;
+  final String lastMessageSenderName;
+  final String lastMessageTime;
 
   const ConversationEntity({
     required this.receiverId,
@@ -15,6 +18,9 @@ class ConversationEntity extends Equatable {
     required this.senderId,
     required this.senderName,
     required this.senderPhotoUrl,
+    required this.lastMessage,
+    required this.lastMessageSenderName,
+    required this.lastMessageTime,
   });
 
   @override
@@ -25,5 +31,8 @@ class ConversationEntity extends Equatable {
         senderName,
         senderPhotoUrl,
         receiverPhotoUrl,
+        lastMessage,
+        lastMessageSenderName,
+        lastMessageTime,
       ];
 }

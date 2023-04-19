@@ -24,4 +24,12 @@ class FirebaseRepositoryImpl implements FirebaseRepository {
   Future<String> sendMessage(MessageEntity messageEntity) async {
     return await firebaseRemoteDataSource.sendMessage(messageEntity);
   }
+
+  @override
+  Stream<List<MessageEntity>> getAllMessages(String conversationId) =>
+      firebaseRemoteDataSource.getAllMessages(conversationId);
+
+  @override
+  Stream<List<ConversationEntity>> getAllConversations() =>
+      firebaseRemoteDataSource.getAllConversations();
 }

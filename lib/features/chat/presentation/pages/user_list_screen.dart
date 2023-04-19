@@ -27,6 +27,28 @@ class UserListScreen extends StatelessWidget {
       ),
       child: Scaffold(
         backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          centerTitle: true,
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(4.0),
+            child: Container(
+              height: 0.2,
+              color: Colors.grey,
+            ),
+          ),
+          title: Text(
+            "Users List",
+            style: GoogleFonts.sourceSansPro(
+              fontWeight: FontWeight.w400,
+              fontSize: 20,
+            ),
+          ),
+          iconTheme: const IconThemeData(
+            color: Colors.white,
+          ),
+        ),
         body: SafeArea(
           child: SingleChildScrollView(
             child: Column(
@@ -40,16 +62,16 @@ class UserListScreen extends StatelessWidget {
                     horizontal: 20,
                   ),
                   child: Text(
-                    "Users List",
+                    "Start a conversation with a user",
                     style: GoogleFonts.sourceSansPro(
-                      fontSize: 32,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey,
                     ),
                   ),
                 ),
                 const SizedBox(
-                  height: 20,
+                  height: 30,
                 ),
                 BlocBuilder<UserListCubit, UserState>(
                   builder: (context, state) {
@@ -70,12 +92,14 @@ class UserListScreen extends StatelessWidget {
                           final data = state.users[index];
                           return InkWell(
                             onTap: () {
-                              Navigator.of(context)
-                                  .pushNamed(kChatScreenPath, arguments: {
-                                "username": data.userName,
-                                "userId": data.userId,
-                                "photoUrl": data.photoUrl,
-                              });
+                              Navigator.of(context).pushNamed(
+                                kChatScreenPath,
+                                arguments: {
+                                  "username": data.userName,
+                                  "userId": data.userId,
+                                  "photoUrl": data.photoUrl,
+                                },
+                              );
                             },
                             child: SizedBox(
                               height: data.userId == currentUser ? 0 : 70,

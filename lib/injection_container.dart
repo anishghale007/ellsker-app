@@ -12,10 +12,12 @@ import 'package:internship_practice/features/chat/data/datasources/firebase_remo
 import 'package:internship_practice/features/chat/data/repositories/firebase_repository_impl.dart';
 import 'package:internship_practice/features/chat/domain/repositories/firebase_repository.dart';
 import 'package:internship_practice/features/chat/domain/usecases/create_conversation_usecase.dart';
+import 'package:internship_practice/features/chat/domain/usecases/get_all_conversation_usecase.dart';
+import 'package:internship_practice/features/chat/domain/usecases/get_all_messages_usecase.dart';
 import 'package:internship_practice/features/chat/domain/usecases/get_all_users_usecase.dart';
 import 'package:internship_practice/features/chat/domain/usecases/send_message_usecase.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/conversation/conversation_cubit.dart';
-import 'package:internship_practice/features/chat/presentation/cubit/message/cubit/message_cubit.dart';
+import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/user_list/user_list_cubit.dart';
 
 final sl = GetIt.instance;
@@ -43,11 +45,17 @@ Future<void> init() async {
 
   // chat bloc
   sl.registerFactory<ConversationCubit>(
-    () => ConversationCubit(createConversationUseCase: sl()),
+    () => ConversationCubit(
+      createConversationUseCase: sl(),
+      getAllConversationUsecase: sl(),
+    ),
   );
 
   sl.registerFactory(
-    () => MessageCubit(sendMessageUseCase: sl()),
+    () => MessageCubit(
+      sendMessageUseCase: sl(),
+      getAllMessagesUsecase: sl(),
+    ),
   );
 
   /// Usecase
@@ -74,6 +82,13 @@ Future<void> init() async {
   sl.registerLazySingleton<SendMessageUseCase>(
     () => SendMessageUseCase(firebaseRepository: sl()),
   );
+
+  sl.registerLazySingleton<GetAllMessagesUsecase>(
+    () => GetAllMessagesUsecase(firebaseRepository: sl()),
+  );
+
+  sl.registerLazySingleton<GetAllConversationUsecase>(
+      () => GetAllConversationUsecase(firebaseRepository: sl()));
 
   /// Repository
   sl.registerLazySingleton<AuthRepository>(
