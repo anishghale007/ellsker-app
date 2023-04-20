@@ -10,6 +10,8 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final currentUser = FirebaseAuth.instance.currentUser;
+
     return Scaffold(
       backgroundColor: ColorUtil.kPrimaryColor,
       body: SafeArea(
@@ -64,7 +66,7 @@ class ProfileScreen extends StatelessWidget {
               ),
               Center(
                 child: Text(
-                  "${FirebaseAuth.instance.currentUser!.displayName!} , 26",
+                  "${currentUser!.displayName} , 26",
                   style: GoogleFonts.sourceSansPro(
                     fontWeight: FontWeight.w400,
                     fontSize: 32,
@@ -103,7 +105,7 @@ class ProfileScreen extends StatelessWidget {
                     width: 45,
                   ),
                   Text(
-                    "@${FirebaseAuth.instance.currentUser!.email}",
+                    "@${currentUser.email}",
                     style: GoogleFonts.sourceSansPro(
                       fontWeight: FontWeight.w400,
                       fontSize: 14,

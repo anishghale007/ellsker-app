@@ -8,4 +8,5 @@ abstract class FirebaseRepository {
   Stream<List<ConversationEntity>> getAllConversations();
   Future<String> sendMessage(MessageEntity messageEntity);
   Stream<List<MessageEntity>> getAllMessages(String conversationId);
+  Future<void> seenMessage(String conversationId);
 }

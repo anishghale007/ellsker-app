@@ -67,6 +67,8 @@ class ChatListScreen extends StatelessWidget {
                             final data = state.conversationList[index];
                             return ConversationTile(
                               onPress: () {
+                                context.read<ConversationCubit>().seenMessage(
+                                    conversationId: data.receiverId);
                                 Navigator.of(context).pushNamed(
                                   kChatScreenPath,
                                   arguments: {
@@ -82,6 +84,8 @@ class ChatListScreen extends StatelessWidget {
                               lastMessage: data.lastMessage,
                               lastMessageSenderName: data.lastMessageSenderName,
                               lastMessageTime: data.lastMessageTime,
+                              isSeen: data.isSeen,
+                              unSeenMessages: data.unSeenMessages.toString(),
                             );
                           },
                         );

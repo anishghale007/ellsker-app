@@ -12,12 +12,8 @@ class ConversationTile extends StatelessWidget {
   final String lastMessage;
   final String lastMessageSenderName;
   final String lastMessageTime;
-  // final String imagePath;
-  // final String userName;
-  // final String message;
-  // final String messageTime;
-  // final bool hasUnreadMessage;
-  // final String? numberOfMessage;
+  final bool isSeen;
+  final String unSeenMessages;
   final VoidCallback onPress;
 
   const ConversationTile({
@@ -28,13 +24,9 @@ class ConversationTile extends StatelessWidget {
     required this.lastMessage,
     required this.lastMessageSenderName,
     required this.lastMessageTime,
-    // required this.imagePath,
-    // required this.userName,
-    // required this.message,
-    // required this.messageTime,
-    // required this.hasUnreadMessage,
+    required this.isSeen,
+    required this.unSeenMessages,
     required this.onPress,
-    // this.numberOfMessage,
   }) : super(key: key);
 
   @override
@@ -78,7 +70,7 @@ class ConversationTile extends StatelessWidget {
             receiverName,
             style: GoogleFonts.sourceSansPro(
               fontSize: 18,
-              fontWeight: FontWeight.w400,
+              fontWeight: isSeen == true ? FontWeight.w400 : FontWeight.w700,
               color: Colors.white,
             ),
           ),
@@ -98,8 +90,11 @@ class ConversationTile extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.sourceSansPro(
-                    color: ColorUtil.kTertiaryColor,
-                    fontWeight: FontWeight.w400,
+                    color: isSeen == true
+                        ? ColorUtil.kTertiaryColor
+                        : Colors.white70,
+                    fontWeight:
+                        isSeen == true ? FontWeight.w400 : FontWeight.w700,
                     fontSize: 14,
                   ),
                 ),
@@ -152,7 +147,7 @@ class ConversationTile extends StatelessWidget {
                   ],
                 )
               : Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Text(
                       DateFormat()
@@ -164,6 +159,43 @@ class ConversationTile extends StatelessWidget {
                         fontSize: 14,
                       ),
                     ),
+                    unSeenMessages == "0"
+                        ? Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 1,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(50),
+                              color: Colors.transparent,
+                            ),
+                            child: Text(
+                              unSeenMessages,
+                              style: GoogleFonts.sourceSansPro(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                                color: Colors.transparent,
+                              ),
+                            ),
+                          )
+                        : Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 1,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(50),
+                              color: ColorUtil.kMessageAlertColor,
+                            ),
+                            child: Text(
+                              unSeenMessages,
+                              style: GoogleFonts.sourceSansPro(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
                   ],
                 ),
         ),

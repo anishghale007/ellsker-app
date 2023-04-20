@@ -15,6 +15,7 @@ import 'package:internship_practice/features/chat/domain/usecases/create_convers
 import 'package:internship_practice/features/chat/domain/usecases/get_all_conversation_usecase.dart';
 import 'package:internship_practice/features/chat/domain/usecases/get_all_messages_usecase.dart';
 import 'package:internship_practice/features/chat/domain/usecases/get_all_users_usecase.dart';
+import 'package:internship_practice/features/chat/domain/usecases/seen_message_usecase.dart';
 import 'package:internship_practice/features/chat/domain/usecases/send_message_usecase.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/conversation/conversation_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
@@ -48,6 +49,7 @@ Future<void> init() async {
     () => ConversationCubit(
       createConversationUseCase: sl(),
       getAllConversationUsecase: sl(),
+      seenMessageUsecase: sl(),
     ),
   );
 
@@ -89,6 +91,10 @@ Future<void> init() async {
 
   sl.registerLazySingleton<GetAllConversationUsecase>(
       () => GetAllConversationUsecase(firebaseRepository: sl()));
+
+  sl.registerLazySingleton<SeenMessageUsecase>(
+    () => SeenMessageUsecase(firebaseRepository: sl()),
+  );
 
   /// Repository
   sl.registerLazySingleton<AuthRepository>(

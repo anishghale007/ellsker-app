@@ -254,6 +254,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                   lastMessageTime: DateTime.now().toString(),
                                   lastMessageSenderName:
                                       currentUser.displayName!,
+                                  isSeen: false,
+                                  unSeenMessages: 0,
                                 ),
                               );
                           context.read<MessageCubit>().sendMessage(
