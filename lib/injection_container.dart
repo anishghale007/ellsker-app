@@ -17,6 +17,7 @@ import 'package:internship_practice/features/chat/domain/usecases/get_all_messag
 import 'package:internship_practice/features/chat/domain/usecases/get_all_users_usecase.dart';
 import 'package:internship_practice/features/chat/domain/usecases/seen_message_usecase.dart';
 import 'package:internship_practice/features/chat/domain/usecases/send_message_usecase.dart';
+import 'package:internship_practice/features/chat/presentation/bloc/conversation/conversation_bloc.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/conversation/conversation_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/user_list/user_list_cubit.dart';
@@ -43,7 +44,6 @@ Future<void> init() async {
   sl.registerFactory<UserListCubit>(
     () => UserListCubit(getAllUsersUsecase: sl.call()),
   );
-
   // chat bloc
   sl.registerFactory<ConversationCubit>(
     () => ConversationCubit(
@@ -51,6 +51,10 @@ Future<void> init() async {
       getAllConversationUsecase: sl(),
       seenMessageUsecase: sl(),
     ),
+  );
+
+  sl.registerFactory<ConversationBloc>(
+    () => ConversationBloc(createConversationUseCase: sl()),
   );
 
   sl.registerFactory(

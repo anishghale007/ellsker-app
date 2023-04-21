@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,7 +7,7 @@ import 'package:internship_practice/colors_utils.dart';
 import 'package:internship_practice/common/widgets/chat_box_widget.dart';
 import 'package:internship_practice/features/chat/domain/entities/conversation_entity.dart';
 import 'package:internship_practice/features/chat/domain/entities/message_entity.dart';
-import 'package:internship_practice/features/chat/presentation/cubit/conversation/conversation_cubit.dart';
+import 'package:internship_practice/features/chat/presentation/bloc/conversation/conversation_bloc.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
 import 'package:internship_practice/injection_container.dart';
 
@@ -201,10 +200,10 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 MultiBlocListener(
                   listeners: [
-                    BlocListener<ConversationCubit, ConversationState>(
+                    BlocListener<ConversationBloc, ConversationState>(
                       listener: (context, state) {
-                        if (state is ConversationSuccess) {
-                          log("Success");
+                        if (state is ConversationCreated) {
+                          log("Conversation created successfully.");
                         } else if (state is ConversationError) {
                           log(state.errorMessage);
                         }
@@ -242,22 +241,40 @@ class _ChatScreenState extends State<ChatScreen> {
                         if (_form.currentState!.validate()) {
                           final currentUser =
                               FirebaseAuth.instance.currentUser!;
-                          context.read<ConversationCubit>().createConversation(
-                                conversationEntity: ConversationEntity(
-                                  receiverId: widget.userId,
-                                  receiverName: widget.username,
-                                  receiverPhotoUrl: widget.photoUrl,
-                                  senderId: currentUser.uid,
-                                  senderName: currentUser.displayName!,
-                                  senderPhotoUrl: currentUser.photoURL!,
-                                  lastMessage: _messageController.text.trim(),
-                                  lastMessageTime: DateTime.now().toString(),
-                                  lastMessageSenderName:
-                                      currentUser.displayName!,
-                                  isSeen: false,
-                                  unSeenMessages: 0,
+                          context.read<ConversationBloc>().add(
+                                CreateConversationEvent(
+                                  conversationEntity: ConversationEntity(
+                                    receiverId: widget.userId,
+                                    receiverName: widget.username,
+                                    receiverPhotoUrl: widget.photoUrl,
+                                    senderId: currentUser.uid,
+                                    senderName: currentUser.displayName!,
+                                    senderPhotoUrl: currentUser.photoURL!,
+                                    lastMessage: _messageController.text.trim(),
+                                    lastMessageTime: DateTime.now().toString(),
+                                    lastMessageSenderName:
+                                        currentUser.displayName!,
+                                    isSeen: false,
+                                    unSeenMessages: 0,
+                                  ),
                                 ),
                               );
+                          // context.read<ConversationCubit>().createConversation(
+                          //       conversationEntity: ConversationEntity(
+                          //         receiverId: widget.userId,
+                          //         receiverName: widget.username,
+                          //         receiverPhotoUrl: widget.photoUrl,
+                          //         senderId: currentUser.uid,
+                          //         senderName: currentUser.displayName!,
+                          //         senderPhotoUrl: currentUser.photoURL!,
+                          //         lastMessage: _messageController.text.trim(),
+                          //         lastMessageTime: DateTime.now().toString(),
+                          //         lastMessageSenderName:
+                          //             currentUser.displayName!,
+                          //         isSeen: false,
+                          //         unSeenMessages: 0,
+                          //       ),
+                          //     );
                           context.read<MessageCubit>().sendMessage(
                                 messageEntity: MessageEntity(
                                   messageContent:

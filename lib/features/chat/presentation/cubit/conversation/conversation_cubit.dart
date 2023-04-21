@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:internship_practice/core/usecases/usecase.dart';
 import 'package:internship_practice/features/chat/domain/entities/conversation_entity.dart';
 import 'package:internship_practice/features/chat/domain/usecases/create_conversation_usecase.dart';
 import 'package:internship_practice/features/chat/domain/usecases/get_all_conversation_usecase.dart';
@@ -21,8 +22,12 @@ class ConversationCubit extends Cubit<ConversationState> {
   Future<void> createConversation(
       {required ConversationEntity conversationEntity}) async {
     try {
-      await createConversationUseCase.call(conversationEntity);
-      emit(ConversationSuccess());
+      final response = await createConversationUseCase
+          .call(Params(conversationEntity: conversationEntity));
+      response.fold(
+          (failure) =>
+              emit(ConversationError(errorMessage: failure.toString())),
+          (success) => emit(ConversationSuccess()));
     } catch (e) {
       emit(ConversationError(errorMessage: e.toString()));
     }
@@ -30,10 +35,15 @@ class ConversationCubit extends Cubit<ConversationState> {
 
   Future<void> getAllConversations() async {
     emit(ConversationLoading());
-    final response = getAllConversationUsecase.call();
-    response.listen((conversations) {
-      emit(ConversationLoaded(conversationList: conversations));
-    });
+    final response = await getAllConversationUsecase.call(NoParams());
+    response.fold(
+      (failure) => emit(ConversationError(errorMessage: failure.toString())),
+      (conversationList) => conversationList.listen(
+        (conversation) {
+          emit(ConversationLoaded(conversationList: conversation));
+        },
+      ),
+    );
   }
 
   Future<void> seenMessage({required String conversationId}) async {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:internship_practice/features/auth/presentation/pages/bottom_nav_bar_screen.dart';
 import 'package:internship_practice/features/chat/presentation/pages/chat_details_screen.dart';
 import 'package:internship_practice/features/chat/presentation/pages/chat_list_screen.dart';
 import 'package:internship_practice/features/auth/presentation/pages/edit_profile_screen.dart';
@@ -14,6 +15,8 @@ class Routers {
     switch (routeSettings.name) {
       case kLoginScreenPath:
         return MaterialPageRoute(builder: (_) => const LoginScreen());
+      case kBottomNavBarPath:
+        return MaterialPageRoute(builder: (_) => const BottomNavBarScreen());
       case kHomeScreenPath:
         return MaterialPageRoute(builder: (_) => const HomeScreen());
       case kChatListScreenPath:

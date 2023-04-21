@@ -37,18 +37,18 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
       } else {
         // sender data
         final senderData = ConversationModel(
-                receiverId: conversationEntity.receiverId,
-                receiverName: conversationEntity.receiverName,
-                receiverPhotoUrl: conversationEntity.receiverPhotoUrl,
-                senderId: conversationEntity.senderId,
-                senderName: conversationEntity.senderName,
-                senderPhotoUrl: conversationEntity.senderPhotoUrl,
-                lastMessage: conversationEntity.lastMessage,
-                lastMessageSenderName: conversationEntity.lastMessageSenderName,
-                lastMessageTime: conversationEntity.lastMessageTime,
-                isSeen: conversationEntity.isSeen,
-                unSeenMessages: conversationEntity.unSeenMessages)
-            .toJson();
+          receiverId: conversationEntity.receiverId,
+          receiverName: conversationEntity.receiverName,
+          receiverPhotoUrl: conversationEntity.receiverPhotoUrl,
+          senderId: conversationEntity.senderId,
+          senderName: conversationEntity.senderName,
+          senderPhotoUrl: conversationEntity.senderPhotoUrl,
+          lastMessage: conversationEntity.lastMessage,
+          lastMessageSenderName: conversationEntity.lastMessageSenderName,
+          lastMessageTime: conversationEntity.lastMessageTime,
+          isSeen: conversationEntity.isSeen,
+          unSeenMessages: conversationEntity.unSeenMessages,
+        ).toJson();
         dbUser
             .doc(conversationEntity.senderId)
             .collection("conversation")

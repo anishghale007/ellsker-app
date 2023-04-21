@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:internship_practice/constants.dart';
+import 'package:internship_practice/core/usecases/usecase.dart';
 import 'package:internship_practice/features/auth/domain/entities/facebook_user_entity.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -21,7 +22,7 @@ class FacebookSignInBloc
       FacebookUserEvent event, Emitter<FacebookSignInState> emit) async {
     emit(FacebookSignInLoading());
     try {
-      final facebookUser = await facebookLoginUseCase.call();
+      final facebookUser = await facebookLoginUseCase.call(NoParams());
       facebookUser.fold(
           (failure) => emit(
               const FacebookSignInFailure(errorMessage: serverFailureMessage)),

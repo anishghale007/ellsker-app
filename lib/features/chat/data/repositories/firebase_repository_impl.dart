@@ -1,3 +1,6 @@
+import 'package:dartz/dartz.dart';
+import 'package:internship_practice/core/error/exceptions.dart';
+import 'package:internship_practice/core/error/failure.dart';
 import 'package:internship_practice/features/chat/data/datasources/firebase_remote_data_source.dart';
 import 'package:internship_practice/features/chat/domain/entities/conversation_entity.dart';
 import 'package:internship_practice/features/chat/domain/entities/message_entity.dart';
@@ -10,14 +13,25 @@ class FirebaseRepositoryImpl implements FirebaseRepository {
   const FirebaseRepositoryImpl({required this.firebaseRemoteDataSource});
 
   @override
-  Stream<List<UserEntity>> getAllUsers() =>
-      firebaseRemoteDataSource.getAllUsers();
+  Future<Either<Failure, Stream<List<UserEntity>>>> getAllUsers() async {
+    try {
+      final usersData = firebaseRemoteDataSource.getAllUsers();
+      return Right(usersData);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
 
   @override
-  Future<String> createConversation(
+  Future<Either<Failure, String>> createConversation(
       ConversationEntity conversationEntity) async {
-    return await firebaseRemoteDataSource
-        .createConversation(conversationEntity);
+    try {
+      final response =
+          await firebaseRemoteDataSource.createConversation(conversationEntity);
+      return Right(response);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
   }
 
   @override
@@ -35,6 +49,13 @@ class FirebaseRepositoryImpl implements FirebaseRepository {
       firebaseRemoteDataSource.getAllMessages(conversationId);
 
   @override
-  Stream<List<ConversationEntity>> getAllConversations() =>
-      firebaseRemoteDataSource.getAllConversations();
+  Future<Either<Failure, Stream<List<ConversationEntity>>>>
+      getAllConversations() async {
+    try {
+      final response = firebaseRemoteDataSource.getAllConversations();
+      return right(response);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
 }

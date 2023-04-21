@@ -1,11 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internship_practice/colors_utils.dart';
-import 'package:internship_practice/features/auth/presentation/cubit/sign_out_cubit.dart';
+import 'package:internship_practice/features/chat/presentation/bloc/conversation/conversation_bloc.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/conversation/conversation_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
-import 'package:internship_practice/features/chat/presentation/cubit/user_list/user_list_cubit.dart';
 import 'package:internship_practice/injection_container.dart' as di;
 import 'package:internship_practice/router.dart';
 import 'package:internship_practice/ui_pages.dart';
@@ -36,37 +36,41 @@ class MyApp extends StatelessWidget {
         BlocProvider<FacebookSignInBloc>(
           create: (context) => di.sl<FacebookSignInBloc>(),
         ),
-        BlocProvider<UserListCubit>(
-          create: (context) => di.sl<UserListCubit>()..getAllUsers(),
-        ),
-        // BlocProvider<SignOutCubit>(
-        //   create: (context) => di.sl<SignOutCubit>(),
-        // ),
         BlocProvider<ConversationCubit>(
           create: (context) =>
               di.sl<ConversationCubit>()..getAllConversations(),
+        ),
+        BlocProvider<ConversationBloc>(
+          create: (context) => di.sl<ConversationBloc>(),
         ),
         BlocProvider<MessageCubit>(
           create: (context) => di.sl<MessageCubit>(),
         ),
       ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        onGenerateRoute: Routers.generateRoute,
-        initialRoute: kLoginScreenPath,
-        theme: ThemeData(
-          inputDecorationTheme: InputDecorationTheme(
-            border: InputBorder.none,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 15,
+      child: StreamBuilder<User?>(
+        stream: FirebaseAuth.instance.userChanges(),
+        initialData: FirebaseAuth.instance.currentUser,
+        builder: (context, snapshot) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            onGenerateRoute: Routers.generateRoute,
+            initialRoute:
+                snapshot.data == null ? kLoginScreenPath : kBottomNavBarPath,
+            theme: ThemeData(
+              inputDecorationTheme: InputDecorationTheme(
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 15,
+                ),
+                hintStyle: GoogleFonts.sourceSansPro(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w400,
+                  color: ColorUtil.kTextFieldColor,
+                ),
+              ),
             ),
-            hintStyle: GoogleFonts.sourceSansPro(
-              fontSize: 18,
-              fontWeight: FontWeight.w400,
-              color: ColorUtil.kTextFieldColor,
-            ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }

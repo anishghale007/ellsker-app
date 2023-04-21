@@ -1,28 +1,32 @@
 part of 'user_list_cubit.dart';
 
-abstract class UserState extends Equatable {
-  const UserState();
+abstract class UserListState extends Equatable {
+  const UserListState();
 }
 
-class UserInitial extends UserState {
+class UserListInitial extends UserListState {
   @override
   List<Object> get props => [];
 }
 
-class UserLoaded extends UserState {
+class UserListLoaded extends UserListState {
   final List<UserEntity> users;
 
-  const UserLoaded({required this.users});
+  const UserListLoaded({required this.users});
   @override
   List<Object> get props => [users];
 }
 
-class UserFailure extends UserState {
+class UserListFailure extends UserListState {
+  final String errorMessage;
+
+  const UserListFailure({required this.errorMessage});
+
   @override
-  List<Object> get props => [];
+  List<Object> get props => [errorMessage];
 }
 
-class UserLoading extends UserState {
+class UserListLoading extends UserListState {
   @override
   List<Object> get props => [];
 }

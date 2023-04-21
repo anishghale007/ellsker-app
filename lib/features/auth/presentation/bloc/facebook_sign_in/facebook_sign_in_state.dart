@@ -1,4 +1,3 @@
-
 part of 'facebook_sign_in_bloc.dart';
 
 abstract class FacebookSignInState extends Equatable {
@@ -20,6 +19,8 @@ class FacebookSignInSuccess extends FacebookSignInState {
   @override
   List<Object> get props => [facebookUserEntity];
 }
+
+class FacebookUserSignedIn extends FacebookSignInState {}
 
 class FacebookSignInFailure extends FacebookSignInState {
   final String errorMessage;

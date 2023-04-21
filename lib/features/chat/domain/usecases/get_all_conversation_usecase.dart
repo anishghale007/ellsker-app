@@ -1,12 +1,18 @@
+import 'package:dartz/dartz.dart';
+import 'package:internship_practice/core/error/failure.dart';
+import 'package:internship_practice/core/usecases/usecase.dart';
 import 'package:internship_practice/features/chat/domain/entities/conversation_entity.dart';
 import 'package:internship_practice/features/chat/domain/repositories/firebase_repository.dart';
 
-class GetAllConversationUsecase {
+class GetAllConversationUsecase
+    implements UseCase<Stream<List<ConversationEntity>>, NoParams> {
   final FirebaseRepository firebaseRepository;
 
   const GetAllConversationUsecase({required this.firebaseRepository});
 
-  Stream<List<ConversationEntity>> call() {
+  @override
+  Future<Either<Failure, Stream<List<ConversationEntity>>>> call(
+      NoParams noParams) {
     return firebaseRepository.getAllConversations();
   }
 }
