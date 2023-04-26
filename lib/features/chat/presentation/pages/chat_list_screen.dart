@@ -9,6 +9,8 @@ import 'package:internship_practice/features/chat/presentation/cubit/conversatio
 import 'package:internship_practice/injection_container.dart';
 import 'package:internship_practice/ui_pages.dart';
 
+import '../bloc/conversation/conversation_bloc.dart';
+
 class ChatListScreen extends StatelessWidget {
   const ChatListScreen({Key? key}) : super(key: key);
 
@@ -67,8 +69,11 @@ class ChatListScreen extends StatelessWidget {
                             final data = state.conversationList[index];
                             return ConversationTile(
                               onPress: () {
-                                context.read<ConversationCubit>().seenMessage(
-                                    conversationId: data.receiverId);
+                                // context.read<ConversationCubit>().seenMessage(
+                                //     conversationId: data.receiverId);
+                                context.read<ConversationBloc>().add(
+                                    SeenConversationEvent(
+                                        conversationId: data.receiverId));
                                 Navigator.of(context).pushNamed(
                                   kChatScreenPath,
                                   arguments: {

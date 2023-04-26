@@ -54,10 +54,13 @@ Future<void> init() async {
   );
 
   sl.registerFactory<ConversationBloc>(
-    () => ConversationBloc(createConversationUseCase: sl()),
+    () => ConversationBloc(
+      createConversationUseCase: sl(),
+      seenMessageUsecase: sl(),
+    ),
   );
 
-  sl.registerFactory(
+  sl.registerFactory<MessageCubit>(
     () => MessageCubit(
       sendMessageUseCase: sl(),
       getAllMessagesUsecase: sl(),

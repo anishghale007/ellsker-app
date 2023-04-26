@@ -15,3 +15,12 @@ class CreateConversationEvent extends ConversationEvent {
   @override
   List<Object> get props => [conversationEntity];
 }
+
+class SeenConversationEvent extends ConversationEvent {
+  final String conversationId;
+
+  const SeenConversationEvent({required this.conversationId});
+
+  @override
+  List<Object> get props => [conversationId];
+}

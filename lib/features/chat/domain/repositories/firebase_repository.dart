@@ -10,7 +10,8 @@ abstract class FirebaseRepository {
       ConversationEntity conversationEntity);
   Future<Either<Failure, Stream<List<ConversationEntity>>>>
       getAllConversations();
-  Future<String> sendMessage(MessageEntity messageEntity);
-  Stream<List<MessageEntity>> getAllMessages(String conversationId);
-  Future<void> seenMessage(String conversationId);
+  Future<Either<Failure, String>> sendMessage(MessageEntity messageEntity);
+  Future<Either<Failure, Stream<List<MessageEntity>>>> getAllMessages(
+      String conversationId);
+  Future<Either<Failure, void>> seenMessage(String conversationId);
 }

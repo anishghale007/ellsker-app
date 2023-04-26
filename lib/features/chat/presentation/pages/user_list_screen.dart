@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:internship_practice/features/chat/presentation/cubit/conversation/conversation_cubit.dart';
+import 'package:internship_practice/features/chat/presentation/bloc/conversation/conversation_bloc.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/user_list/user_list_cubit.dart';
 import 'package:internship_practice/injection_container.dart';
 import 'package:internship_practice/ui_pages.dart';
@@ -115,9 +115,9 @@ class _UserListScreenState extends State<UserListScreen> {
                             final data = state.users[index];
                             return InkWell(
                               onTap: () {
-                                context
-                                    .read<ConversationCubit>()
-                                    .seenMessage(conversationId: data.userId);
+                                context.read<ConversationBloc>().add(
+                                    SeenConversationEvent(
+                                        conversationId: data.userId));
                                 Navigator.of(context).pushNamed(
                                   kChatScreenPath,
                                   arguments: {

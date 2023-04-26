@@ -1,33 +1,26 @@
 part of 'conversation_bloc.dart';
 
-abstract class ConversationState extends Equatable {
-  const ConversationState();
+abstract class ConversationsState extends Equatable {
+  const ConversationsState();
 
   @override
   List<Object> get props => [];
 }
 
-class ConversationInitial extends ConversationState {}
+class ConversationsInitial extends ConversationsState {}
 
-class ConversationEmpty extends ConversationState {}
+class ConversationsEmpty extends ConversationsState {}
 
-class ConversationLoading extends ConversationState {}
+class ConversationsLoading extends ConversationsState {}
 
-class ConversationLoaded extends ConversationState {
-  final List<ConversationEntity> conversationList;
+class ConversationsCreated extends ConversationsState {}
 
-  const ConversationLoaded({required this.conversationList});
+class ConversationsSeen extends ConversationsState {}
 
-  @override
-  List<Object> get props => [conversationList];
-}
-
-class ConversationCreated extends ConversationState {}
-
-class ConversationError extends ConversationState {
+class ConversationsError extends ConversationsState {
   final String errorMessage;
 
-  const ConversationError({required this.errorMessage});
+  const ConversationsError({required this.errorMessage});
 
   @override
   List<Object> get props => [errorMessage];

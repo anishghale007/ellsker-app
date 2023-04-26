@@ -18,8 +18,11 @@ class MessageCubit extends Cubit<MessageState> {
   Future<void> sendMessage({required MessageEntity messageEntity}) async {
     try {
       emit(MessageLoading());
-      await sendMessageUseCase.call(messageEntity);
-      emit(MessageSuccess());
+      final response =
+          await sendMessageUseCase.call(Params(messageEntity: messageEntity));
+      response.fold(
+          (failure) => emit(MessageError(errorMessage: failure.toString())),
+          (success) => emit(MessageSuccess()));
     } catch (e) {
       emit(MessageError(errorMessage: e.toString()));
     }
@@ -28,10 +31,16 @@ class MessageCubit extends Cubit<MessageState> {
   Future<void> getAllMessages({required String conversationId}) async {
     try {
       emit(MessageLoading());
-      final response = getAllMessagesUsecase.call(conversationId);
-      response.listen((messages) {
-        emit(MessageLoaded(messageList: messages));
-      });
+      final response = await getAllMessagesUsecase
+          .call(Param(conversationId: conversationId));
+      response.fold(
+        (failure) => emit(MessageError(errorMessage: failure.toString())),
+        (messages) => messages.listen(
+          (message) {
+            emit(MessageLoaded(messageList: message));
+          },
+        ),
+      );
     } catch (e) {
       emit(MessageError(errorMessage: e.toString()));
     }

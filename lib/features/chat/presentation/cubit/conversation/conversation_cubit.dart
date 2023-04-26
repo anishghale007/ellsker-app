@@ -38,17 +38,20 @@ class ConversationCubit extends Cubit<ConversationState> {
     final response = await getAllConversationUsecase.call(NoParams());
     response.fold(
       (failure) => emit(ConversationError(errorMessage: failure.toString())),
-      (conversationList) => conversationList.listen(
-        (conversation) {
-          emit(ConversationLoaded(conversationList: conversation));
-        },
-      ),
+      (conversationList) => conversationList.listen((conversation) {
+        emit(ConversationLoaded(conversationList: conversation));
+      }),
     );
   }
 
   Future<void> seenMessage({required String conversationId}) async {
     try {
-      await seenMessageUsecase.call(conversationId);
+      final response =
+          await seenMessageUsecase.call(Param(conversationId: conversationId));
+      response.fold(
+          (failure) =>
+              emit(ConversationError(errorMessage: failure.toString())),
+          (success) => emit(ConversationSuccess()));
     } catch (e) {
       emit(ConversationError(errorMessage: e.toString()));
     }

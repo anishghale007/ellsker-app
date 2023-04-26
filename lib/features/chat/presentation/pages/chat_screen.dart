@@ -187,6 +187,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       filled: true,
                       contentPadding: const EdgeInsets.symmetric(
                         vertical: 5,
+                        horizontal: 5,
                       ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(100),
@@ -200,11 +201,11 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 MultiBlocListener(
                   listeners: [
-                    BlocListener<ConversationBloc, ConversationState>(
+                    BlocListener<ConversationBloc, ConversationsState>(
                       listener: (context, state) {
-                        if (state is ConversationCreated) {
+                        if (state is ConversationsCreated) {
                           log("Conversation created successfully.");
-                        } else if (state is ConversationError) {
+                        } else if (state is ConversationsError) {
                           log(state.errorMessage);
                         }
                       },
@@ -259,22 +260,6 @@ class _ChatScreenState extends State<ChatScreen> {
                                   ),
                                 ),
                               );
-                          // context.read<ConversationCubit>().createConversation(
-                          //       conversationEntity: ConversationEntity(
-                          //         receiverId: widget.userId,
-                          //         receiverName: widget.username,
-                          //         receiverPhotoUrl: widget.photoUrl,
-                          //         senderId: currentUser.uid,
-                          //         senderName: currentUser.displayName!,
-                          //         senderPhotoUrl: currentUser.photoURL!,
-                          //         lastMessage: _messageController.text.trim(),
-                          //         lastMessageTime: DateTime.now().toString(),
-                          //         lastMessageSenderName:
-                          //             currentUser.displayName!,
-                          //         isSeen: false,
-                          //         unSeenMessages: 0,
-                          //       ),
-                          //     );
                           context.read<MessageCubit>().sendMessage(
                                 messageEntity: MessageEntity(
                                   messageContent:

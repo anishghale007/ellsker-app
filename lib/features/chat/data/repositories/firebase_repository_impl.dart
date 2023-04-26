@@ -35,18 +35,38 @@ class FirebaseRepositoryImpl implements FirebaseRepository {
   }
 
   @override
-  Future<String> sendMessage(MessageEntity messageEntity) async {
-    return await firebaseRemoteDataSource.sendMessage(messageEntity);
+  Future<Either<Failure, String>> sendMessage(
+      MessageEntity messageEntity) async {
+    try {
+      final response =
+          await firebaseRemoteDataSource.sendMessage(messageEntity);
+      return Right(response);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
   }
 
   @override
-  Future<void> seenMessage(String conversationId) async {
-    return await firebaseRemoteDataSource.seenMessage(conversationId);
+  Future<Either<Failure, void>> seenMessage(String conversationId) async {
+    try {
+      final response =
+          await firebaseRemoteDataSource.seenMessage(conversationId);
+      return Right(response);
+    } on ServerFailure {
+      return Left(ServerFailure());
+    }
   }
 
   @override
-  Stream<List<MessageEntity>> getAllMessages(String conversationId) =>
-      firebaseRemoteDataSource.getAllMessages(conversationId);
+  Future<Either<Failure, Stream<List<MessageEntity>>>> getAllMessages(
+      String conversationId) async {
+    try {
+      final response = firebaseRemoteDataSource.getAllMessages(conversationId);
+      return Right(response);
+    } on ServerFailure {
+      return Left(ServerFailure());
+    }
+  }
 
   @override
   Future<Either<Failure, Stream<List<ConversationEntity>>>>
