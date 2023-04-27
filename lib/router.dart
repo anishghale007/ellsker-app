@@ -37,6 +37,7 @@ class Routers {
             username: arguments["username"],
             userId: arguments["userId"],
             photoUrl: arguments["photoUrl"],
+            token: arguments['token'],
           );
         });
       default:

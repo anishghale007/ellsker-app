@@ -1,10 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internship_practice/colors_utils.dart';
 import 'package:internship_practice/features/auth/presentation/cubit/sign_out_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/bloc/conversation/conversation_bloc.dart';
+import 'package:internship_practice/features/chat/presentation/bloc/notification/notification_bloc.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/conversation/conversation_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
 import 'package:internship_practice/injection_container.dart' as di;
@@ -21,6 +23,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await FirebaseMessaging.instance.getInitialMessage();
   runApp(const MyApp());
 }
 
@@ -50,6 +53,9 @@ class MyApp extends StatelessWidget {
         BlocProvider<MessageCubit>(
           create: (context) => di.sl<MessageCubit>(),
         ),
+        BlocProvider<NotificationBloc>(
+          create: (context) => di.sl<NotificationBloc>(),
+        )
       ],
       child: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.userChanges(),

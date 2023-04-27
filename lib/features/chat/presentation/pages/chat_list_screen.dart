@@ -80,6 +80,7 @@ class ChatListScreen extends StatelessWidget {
                                     "username": data.receiverName,
                                     "userId": data.receiverId,
                                     "photoUrl": data.receiverPhotoUrl,
+                                    "token": data.receiverToken,
                                   },
                                 );
                               },

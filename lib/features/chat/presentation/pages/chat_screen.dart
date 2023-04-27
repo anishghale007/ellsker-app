@@ -1,13 +1,17 @@
 import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internship_practice/colors_utils.dart';
 import 'package:internship_practice/common/widgets/chat_box_widget.dart';
 import 'package:internship_practice/features/chat/domain/entities/conversation_entity.dart';
 import 'package:internship_practice/features/chat/domain/entities/message_entity.dart';
+import 'package:internship_practice/features/chat/domain/entities/notification_entity.dart';
 import 'package:internship_practice/features/chat/presentation/bloc/conversation/conversation_bloc.dart';
+import 'package:internship_practice/features/chat/presentation/bloc/notification/notification_bloc.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
 import 'package:internship_practice/injection_container.dart';
 
@@ -15,11 +19,13 @@ class ChatScreen extends StatefulWidget {
   final String username;
   final String userId;
   final String photoUrl;
+  final String token;
 
   const ChatScreen({
     required this.username,
     required this.userId,
     required this.photoUrl,
+    required this.token,
     Key? key,
   }) : super(key: key);
 
@@ -28,19 +34,69 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
   late TextEditingController _messageController;
   final _form = GlobalKey<FormState>();
+  String? myToken = "";
 
   @override
   void initState() {
     super.initState();
     _messageController = TextEditingController();
+    getToken();
+    requestPermission();
   }
 
   @override
   void dispose() {
     _messageController.dispose();
     super.dispose();
+  }
+
+  void getToken() async {
+    await FirebaseMessaging.instance.getToken().then(
+      (token) {
+        setState(() {
+          myToken = token;
+          log("MyToken: $myToken");
+        });
+      },
+    );
+  }
+
+  void requestPermission() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      log('User granted permission');
+    } else if (settings.authorizationStatus ==
+        AuthorizationStatus.provisional) {
+      log('User granted provisional permission');
+    } else {
+      log('User declined or has not accepted permission');
+    }
+  }
+
+  initInfo() {
+    var androidInitialize =
+        const AndroidInitializationSettings('@mipmap/ic_launcher');
+    var iosInitialize = const DarwinInitializationSettings();
+    var initializationsSettings =
+        InitializationSettings(android: androidInitialize, iOS: iosInitialize);
+    flutterLocalNotificationsPlugin.initialize(
+      initializationsSettings,
+    );
   }
 
   @override
@@ -257,6 +313,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                         currentUser.displayName!,
                                     isSeen: false,
                                     unSeenMessages: 0,
+                                    receiverToken: widget.token,
+                                    senderToken: myToken!,
                                   ),
                                 ),
                               );
@@ -276,6 +334,15 @@ class _ChatScreenState extends State<ChatScreen> {
                           context
                               .read<MessageCubit>()
                               .getAllMessages(conversationId: widget.userId);
+                          context.read<NotificationBloc>().add(
+                                SendNotificationEvent(
+                                  notificationEntity: NotificationEntity(
+                                    token: widget.token,
+                                    title: "New Message",
+                                    body: _messageController.text.trim(),
+                                  ),
+                                ),
+                              );
                         }
                       },
                       style: ElevatedButton.styleFrom(

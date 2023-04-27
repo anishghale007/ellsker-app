@@ -4,6 +4,7 @@ import 'package:internship_practice/core/error/failure.dart';
 import 'package:internship_practice/features/chat/data/datasources/firebase_remote_data_source.dart';
 import 'package:internship_practice/features/chat/domain/entities/conversation_entity.dart';
 import 'package:internship_practice/features/chat/domain/entities/message_entity.dart';
+import 'package:internship_practice/features/chat/domain/entities/notification_entity.dart';
 import 'package:internship_practice/features/chat/domain/entities/user_entity.dart';
 import 'package:internship_practice/features/chat/domain/repositories/firebase_repository.dart';
 
@@ -74,6 +75,18 @@ class FirebaseRepositoryImpl implements FirebaseRepository {
     try {
       final response = firebaseRemoteDataSource.getAllConversations();
       return right(response);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, String>> sendNotification(
+      NotificationEntity notificationEntity) async {
+    try {
+      final response =
+          await firebaseRemoteDataSource.sendNotification(notificationEntity);
+      return Right(response);
     } on ServerException {
       return Left(ServerFailure());
     }

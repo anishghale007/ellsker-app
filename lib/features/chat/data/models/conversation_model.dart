@@ -14,6 +14,8 @@ class ConversationModel extends ConversationEntity {
     required super.lastMessageTime,
     required super.isSeen,
     required super.unSeenMessages,
+    required super.senderToken,
+    required super.receiverToken,
   });
 
   Map<String, dynamic> toJson() {
@@ -29,6 +31,8 @@ class ConversationModel extends ConversationEntity {
       "lastMessageTime": lastMessageTime,
       "isSeen": isSeen,
       "unSeenMessages": unSeenMessages,
+      "senderToken": senderToken,
+      "receiverToken": receiverToken,
     };
   }
 
@@ -45,6 +49,8 @@ class ConversationModel extends ConversationEntity {
       lastMessageTime: snapshot['lastMessageTime'],
       isSeen: snapshot['isSeen'],
       unSeenMessages: snapshot['unSeenMessages'],
+      senderToken: snapshot["senderToken"],
+      receiverToken: snapshot["receiverToken"],
     );
   }
 }

@@ -17,7 +17,9 @@ import 'package:internship_practice/features/chat/domain/usecases/get_all_messag
 import 'package:internship_practice/features/chat/domain/usecases/get_all_users_usecase.dart';
 import 'package:internship_practice/features/chat/domain/usecases/seen_message_usecase.dart';
 import 'package:internship_practice/features/chat/domain/usecases/send_message_usecase.dart';
+import 'package:internship_practice/features/chat/domain/usecases/send_notification_usecase.dart';
 import 'package:internship_practice/features/chat/presentation/bloc/conversation/conversation_bloc.dart';
+import 'package:internship_practice/features/chat/presentation/bloc/notification/notification_bloc.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/conversation/conversation_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/user_list/user_list_cubit.dart';
@@ -67,6 +69,10 @@ Future<void> init() async {
     ),
   );
 
+  sl.registerLazySingleton<NotificationBloc>(
+    () => NotificationBloc(sendNotificationUseCase: sl()),
+  );
+
   /// Usecase
   sl.registerLazySingleton<GooogleLoginUseCase>(
     () => GooogleLoginUseCase(repository: sl()),
@@ -101,6 +107,10 @@ Future<void> init() async {
 
   sl.registerLazySingleton<SeenMessageUsecase>(
     () => SeenMessageUsecase(firebaseRepository: sl()),
+  );
+
+  sl.registerLazySingleton<SendNotificationUseCase>(
+    () => SendNotificationUseCase(firebaseRepository: sl()),
   );
 
   /// Repository
