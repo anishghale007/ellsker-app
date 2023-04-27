@@ -8,12 +8,20 @@ class CustomTextField extends StatelessWidget {
   final String heading;
   final String hintText;
   final TextInputType textInputType;
+  final TextEditingController controller;
+  final TextInputAction textInputAction;
+  final FormFieldValidator<String>? validator;
+  final TextCapitalization textCapitalization;
 
   const CustomTextField({
     Key? key,
     required this.heading,
     required this.hintText,
     required this.textInputType,
+    required this.controller,
+    required this.textInputAction,
+    required this.validator,
+    required this.textCapitalization,
   }) : super(key: key);
 
   @override
@@ -44,8 +52,12 @@ class CustomTextField extends StatelessWidget {
                 color: ColorUtil.kTextFieldColor,
               ),
             ),
-            child: TextField(
+            child: TextFormField(
+              controller: controller,
               keyboardType: textInputType,
+              textInputAction: textInputAction,
+              textCapitalization: textCapitalization,
+              validator: validator,
               style: GoogleFonts.sourceSansPro(
                 fontWeight: FontWeight.w400,
                 fontSize: 18,

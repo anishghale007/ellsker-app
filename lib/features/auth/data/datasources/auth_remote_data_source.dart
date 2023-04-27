@@ -43,6 +43,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           photoUrl: userInfo.photoURL!,
           userName: userInfo.displayName!,
           token: token!,
+          age: 18,
+          instagram: "@instagram",
+          location: "Location",
         ).toJson();
         dbUser.doc(userInfo.uid).set(userData);
       }
@@ -80,6 +83,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           photoUrl: userInfo.photoURL!,
           userName: userInfo.displayName!,
           token: token!,
+          age: 18,
+          instagram: "@instagram",
+          location: "Location",
         ).toJson();
         dbUser.doc(userInfo.uid).set(userData);
       }

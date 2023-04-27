@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:internship_practice/features/auth/presentation/pages/bottom_nav_bar_screen.dart';
 import 'package:internship_practice/features/chat/presentation/pages/chat_details_screen.dart';
 import 'package:internship_practice/features/chat/presentation/pages/chat_list_screen.dart';
-import 'package:internship_practice/features/auth/presentation/pages/edit_profile_screen.dart';
+import 'package:internship_practice/features/profile/presentation/pages/edit_profile_screen.dart';
 import 'package:internship_practice/features/auth/presentation/pages/home_screen.dart';
 import 'package:internship_practice/features/auth/presentation/pages/login_screen.dart';
-import 'package:internship_practice/features/auth/presentation/pages/profile_screen.dart';
+import 'package:internship_practice/features/profile/presentation/pages/profile_screen.dart';
 import 'package:internship_practice/features/chat/presentation/pages/chat_screen.dart';
 import 'package:internship_practice/features/chat/presentation/pages/user_list_screen.dart';
 import 'package:internship_practice/ui_pages.dart';
@@ -26,7 +26,17 @@ class Routers {
       case kChatDetailsScreenPath:
         return MaterialPageRoute(builder: (_) => const ChatDetailsScreen());
       case kEditProfileScreenPath:
-        return MaterialPageRoute(builder: (_) => const EditProfileScreen());
+        return MaterialPageRoute(builder: (_) {
+          Map<String, dynamic> arguments =
+              routeSettings.arguments as Map<String, dynamic>;
+          return EditProfileScreen(
+            photoUrl: arguments['photoUrl'],
+            username: arguments['username'],
+            instagram: arguments['instagram'],
+            location: arguments['location'],
+            age: arguments['age'],
+          );
+        });
       case kUserListScreenPath:
         return MaterialPageRoute(builder: (_) => const UserListScreen());
       case kChatScreenPath:
