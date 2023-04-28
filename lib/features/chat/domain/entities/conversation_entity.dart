@@ -9,6 +9,7 @@ class ConversationEntity extends Equatable {
   final String senderPhotoUrl;
   final String lastMessage;
   final String lastMessageSenderName;
+  final String lastMessageSenderId;
   final String lastMessageTime;
   final String senderToken;
   final String receiverToken;
@@ -24,6 +25,7 @@ class ConversationEntity extends Equatable {
     required this.senderPhotoUrl,
     required this.lastMessage,
     required this.lastMessageSenderName,
+    required this.lastMessageSenderId,
     required this.lastMessageTime,
     required this.isSeen,
     required this.unSeenMessages,
@@ -41,6 +43,7 @@ class ConversationEntity extends Equatable {
         receiverPhotoUrl,
         lastMessage,
         lastMessageSenderName,
+        lastMessageSenderId,
         lastMessageTime,
         isSeen,
         unSeenMessages,

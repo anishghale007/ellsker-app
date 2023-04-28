@@ -15,19 +15,6 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final LoadingOverlay _loadingOverlay = LoadingOverlay();
-  // late GoogleSignInBloc _bloc;
-
-  // @override
-  // void initState() {
-  //   _bloc = sl<GoogleSignInBloc>();
-  //   super.initState();
-  // }
-
-  // @override
-  // void dispose() {
-  //   _bloc.close();
-  //   super.dispose();
-  // }
 
   @override
   Widget build(BuildContext context) {

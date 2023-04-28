@@ -304,13 +304,14 @@ class _ChatScreenState extends State<ChatScreen> {
                                     receiverId: widget.userId,
                                     receiverName: widget.username,
                                     receiverPhotoUrl: widget.photoUrl,
-                                    senderId: currentUser.uid,
+                                    senderId: currentUser.uid, // me
                                     senderName: currentUser.displayName!,
                                     senderPhotoUrl: currentUser.photoURL!,
                                     lastMessage: _messageController.text.trim(),
                                     lastMessageTime: DateTime.now().toString(),
                                     lastMessageSenderName:
                                         currentUser.displayName!,
+                                    lastMessageSenderId: currentUser.uid,
                                     isSeen: false,
                                     unSeenMessages: 0,
                                     receiverToken: widget.token,
