@@ -57,15 +57,27 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
           'location': userProfileEntity.location,
           'photoUrl': newPhotoUrl,
         });
+
         // updating the conversation collection of the current user
-        var conversationCollection =
+        var currentUserConversationCollection =
             await dbUser.doc(currentUser).collection('conversation').get();
-        for (var doc in conversationCollection.docs) {
+        for (var doc in currentUserConversationCollection.docs) {
           await doc.reference.update({
             'senderName': userProfileEntity.username,
             'senderPhotoUrl': newPhotoUrl,
           });
         }
+        // updating the conversation collection of the other user
+        // var otherUserConversationCollection = await FirebaseFirestore.instance
+        //     .collectionGroup('conversation')
+        //     .where('senderId', isNotEqualTo: currentUser)
+        //     .get();
+        // for (var doc in otherUserConversationCollection.docs) {
+        //   await doc.reference.update({
+        //     'receiverName': userProfileEntity.username,
+        //     'receiverPhotoUrl': newPhotoUrl,
+        //   });
+        // }
         // updating the message collection
         var messageCollection = await dbUser
             .doc(currentUser)
@@ -145,6 +157,17 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
         .collection("conversation")
         .doc()
         .collection("message")
+        .where('senderId', isEqualTo: currentUser)
+        .get();
+    return querySnapshot.docs.isNotEmpty;
+  }
+
+  Future<bool> isCurrentSender() async {
+    final currentUser = FirebaseAuth.instance.currentUser!.uid;
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection("users")
+        .doc(currentUser)
+        .collection("conversation")
         .where('senderId', isEqualTo: currentUser)
         .get();
     return querySnapshot.docs.isNotEmpty;
