@@ -49,6 +49,7 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
           senderPhotoUrl: conversationEntity.senderPhotoUrl,
           lastMessage: conversationEntity.lastMessage,
           lastMessageSenderName: conversationEntity.lastMessageSenderName,
+          lastMessageSenderId: conversationEntity.lastMessageSenderId,
           lastMessageTime: conversationEntity.lastMessageTime,
           isSeen: conversationEntity.isSeen,
           unSeenMessages: conversationEntity.unSeenMessages,
@@ -70,6 +71,7 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
           senderPhotoUrl: conversationEntity.receiverPhotoUrl,
           lastMessage: conversationEntity.lastMessage,
           lastMessageSenderName: conversationEntity.lastMessageSenderName,
+          lastMessageSenderId: conversationEntity.lastMessageSenderId,
           lastMessageTime: conversationEntity.lastMessageTime,
           isSeen: conversationEntity.isSeen,
           unSeenMessages: conversationEntity.unSeenMessages,
@@ -113,6 +115,7 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
       Map<String, dynamic> updateSenderConversationData = {
         "lastMessage": messageEntity.messageContent,
         "lastMessageSenderName": messageEntity.senderName,
+        "lastMessageSenderId": messageEntity.senderId,
         "lastMessageTime": messageEntity.messageTime,
         "isSeen": true,
         "unSeenMessages": 0,
@@ -120,6 +123,7 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
       Map<String, dynamic> updateReceiverConversationData = {
         "lastMessage": messageEntity.messageContent,
         "lastMessageSenderName": messageEntity.senderName,
+        "lastMessageSenderId": messageEntity.senderId,
         "lastMessageTime": messageEntity.messageTime,
         "isSeen": false,
         "unSeenMessages": FieldValue.increment(1),

@@ -23,6 +23,12 @@ import 'package:internship_practice/features/chat/presentation/bloc/notification
 import 'package:internship_practice/features/chat/presentation/cubit/conversation/conversation_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/user_list/user_list_cubit.dart';
+import 'package:internship_practice/features/profile/data/datasources/profile_remote_data_source.dart';
+import 'package:internship_practice/features/profile/data/repositories/profile_repository_impl.dart';
+import 'package:internship_practice/features/profile/domain/repositories/profile_repository.dart';
+import 'package:internship_practice/features/profile/domain/usecases/edit_profile_usecase.dart';
+import 'package:internship_practice/features/profile/domain/usecases/get_current_user_usecase.dart';
+import 'package:internship_practice/features/profile/presentation/bloc/profile_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -46,6 +52,7 @@ Future<void> init() async {
   sl.registerFactory<UserListCubit>(
     () => UserListCubit(getAllUsersUsecase: sl.call()),
   );
+
   // chat bloc
   sl.registerFactory<ConversationCubit>(
     () => ConversationCubit(
@@ -69,8 +76,16 @@ Future<void> init() async {
     ),
   );
 
-  sl.registerLazySingleton<NotificationBloc>(
+  sl.registerFactory<NotificationBloc>(
     () => NotificationBloc(sendNotificationUseCase: sl()),
+  );
+
+  // profile bloc
+  sl.registerFactory<ProfileBloc>(
+    () => ProfileBloc(
+      getCurrentUserUseCase: sl(),
+      editProfileUseCase: sl(),
+    ),
   );
 
   /// Usecase
@@ -113,6 +128,14 @@ Future<void> init() async {
     () => SendNotificationUseCase(firebaseRepository: sl()),
   );
 
+  sl.registerLazySingleton<GetCurrentUserUseCase>(
+    () => GetCurrentUserUseCase(profileRepository: sl()),
+  );
+
+  sl.registerLazySingleton<EditProfileUseCase>(
+    () => EditProfileUseCase(profileRepository: sl()),
+  );
+
   /// Repository
   sl.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(authRemoteDataSource: sl()),
@@ -122,10 +145,17 @@ Future<void> init() async {
     () => FirebaseRepositoryImpl(firebaseRemoteDataSource: sl()),
   );
 
+  sl.registerLazySingleton<ProfileRepository>(
+    () => ProfileRepositoryImpl(profileRemoteDataSource: sl()),
+  );
+
   /// Data Sources
   sl.registerLazySingleton<AuthRemoteDataSource>(
       () => AuthRemoteDataSourceImpl());
 
   sl.registerLazySingleton<FirebaseRemoteDataSource>(
       () => FirebaseRemoteDataSourceImpl());
+
+  sl.registerLazySingleton<ProfileRemoteDataSource>(
+      () => ProfileRemoteDataSourceImpl());
 }

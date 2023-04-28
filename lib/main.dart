@@ -9,6 +9,7 @@ import 'package:internship_practice/features/chat/presentation/bloc/conversation
 import 'package:internship_practice/features/chat/presentation/bloc/notification/notification_bloc.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/conversation/conversation_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
+import 'package:internship_practice/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:internship_practice/injection_container.dart' as di;
 import 'package:internship_practice/router.dart';
 import 'package:internship_practice/ui_pages.dart';
@@ -55,6 +56,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider<NotificationBloc>(
           create: (context) => di.sl<NotificationBloc>(),
+        ),
+        BlocProvider<ProfileBloc>(
+          create: (context) => di.sl<ProfileBloc>(),
         )
       ],
       child: StreamBuilder<User?>(

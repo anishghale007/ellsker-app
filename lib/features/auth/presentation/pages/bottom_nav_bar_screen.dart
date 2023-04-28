@@ -4,7 +4,7 @@ import 'package:internship_practice/colors_utils.dart';
 import 'package:internship_practice/features/auth/presentation/cubit/sign_out_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/pages/chat_list_screen.dart';
 import 'package:internship_practice/features/auth/presentation/pages/home_screen.dart';
-import 'package:internship_practice/features/auth/presentation/pages/profile_screen.dart';
+import 'package:internship_practice/features/profile/presentation/pages/profile_screen.dart';
 import 'package:internship_practice/injection_container.dart';
 import 'package:internship_practice/ui_pages.dart';
 
