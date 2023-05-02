@@ -45,7 +45,6 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
     _messageController = TextEditingController();
     getToken();
-    requestPermission();
   }
 
   @override
@@ -62,40 +61,6 @@ class _ChatScreenState extends State<ChatScreen> {
           log("MyToken: $myToken");
         });
       },
-    );
-  }
-
-  void requestPermission() async {
-    FirebaseMessaging messaging = FirebaseMessaging.instance;
-
-    NotificationSettings settings = await messaging.requestPermission(
-      alert: true,
-      announcement: false,
-      badge: true,
-      carPlay: false,
-      criticalAlert: false,
-      provisional: false,
-      sound: true,
-    );
-
-    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      log('User granted permission');
-    } else if (settings.authorizationStatus ==
-        AuthorizationStatus.provisional) {
-      log('User granted provisional permission');
-    } else {
-      log('User declined or has not accepted permission');
-    }
-  }
-
-  initInfo() {
-    var androidInitialize =
-        const AndroidInitializationSettings('@mipmap/ic_launcher');
-    var iosInitialize = const DarwinInitializationSettings();
-    var initializationsSettings =
-        InitializationSettings(android: androidInitialize, iOS: iosInitialize);
-    flutterLocalNotificationsPlugin.initialize(
-      initializationsSettings,
     );
   }
 
@@ -277,6 +242,17 @@ class _ChatScreenState extends State<ChatScreen> {
                         }
                       },
                     ),
+                    BlocListener<NotificationBloc, NotificationState>(
+                      listener: (context, state) {
+                        if (state is NotificationSuccess) {
+                          log("Notification sent successfully");
+                          _messageController.clear();
+                          FocusScope.of(context).unfocus();
+                        } else if (state is NotificationError) {
+                          log(state.errorMessage);
+                        }
+                      },
+                    ),
                   ],
                   child: Container(
                     height: 40,
@@ -332,14 +308,14 @@ class _ChatScreenState extends State<ChatScreen> {
                                   receiverPhotoUrl: widget.photoUrl,
                                 ),
                               );
-                          context
-                              .read<MessageCubit>()
-                              .getAllMessages(conversationId: widget.userId);
+                          context.read<MessageCubit>().getAllMessages(
+                                conversationId: widget.userId,
+                              );
                           context.read<NotificationBloc>().add(
                                 SendNotificationEvent(
                                   notificationEntity: NotificationEntity(
                                     token: widget.token,
-                                    title: "New Message",
+                                    title: widget.username,
                                     body: _messageController.text.trim(),
                                   ),
                                 ),

@@ -1,9 +1,14 @@
+import 'dart:developer';
+
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:internship_practice/colors_utils.dart';
 import 'package:internship_practice/features/auth/presentation/cubit/sign_out_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/pages/chat_list_screen.dart';
 import 'package:internship_practice/features/auth/presentation/pages/home_screen.dart';
+import 'package:internship_practice/features/notification/firebase_messaging/notifications_config.dart';
 import 'package:internship_practice/features/profile/presentation/pages/profile_screen.dart';
 import 'package:internship_practice/injection_container.dart';
 import 'package:internship_practice/ui_pages.dart';
@@ -28,6 +33,8 @@ class _BottomNavBarScreenState extends State<BottomNavBarScreen> {
   @override
   void initState() {
     super.initState();
+    requestPermission();
+    initInfo();
     _bloc = sl<SignOutCubit>();
   }
 
@@ -35,6 +42,31 @@ class _BottomNavBarScreenState extends State<BottomNavBarScreen> {
   void dispose() {
     _bloc.close();
     super.dispose();
+  }
+
+  void requestPermission() async {
+    FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
+
+    NotificationSettings notificationSettings =
+        await firebaseMessaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+
+    if (notificationSettings.authorizationStatus ==
+        AuthorizationStatus.authorized) {
+      log("User granted permission");
+    } else if (notificationSettings.authorizationStatus ==
+        AuthorizationStatus.provisional) {
+      log("User granted provisional permission");
+    } else {
+      log("User declined or has not granted persmission");
+    }
   }
 
   Future<bool> _showExitPopup() async {
@@ -82,6 +114,44 @@ class _BottomNavBarScreenState extends State<BottomNavBarScreen> {
         ),
       ),
     );
+  }
+
+  initInfo() {
+    var androidInitialize =
+        const AndroidInitializationSettings('@mipmap/ic_launcher');
+    var iOSInitialize = const DarwinInitializationSettings();
+    var initializationSettings =
+        InitializationSettings(android: androidInitialize, iOS: iOSInitialize);
+    flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage remoteMessage) async {
+      BigTextStyleInformation bigTextStyleInformation = BigTextStyleInformation(
+        remoteMessage.notification!.body.toString(),
+        htmlFormatBigText: true,
+        contentTitle: remoteMessage.notification!.title.toString(),
+        htmlFormatContentTitle: true,
+      );
+      AndroidNotificationDetails androidNotificationDetails =
+          AndroidNotificationDetails(
+        'ellsker_app',
+        'ellsker_app',
+        importance: Importance.high,
+        styleInformation: bigTextStyleInformation,
+        priority: Priority.high,
+        playSound: true,
+      );
+      NotificationDetails notificationDetails = NotificationDetails(
+        android: androidNotificationDetails,
+        iOS: const DarwinNotificationDetails(),
+      );
+      await flutterLocalNotificationsPlugin.show(
+        0,
+        remoteMessage.notification?.title,
+        remoteMessage.notification?.body,
+        notificationDetails,
+        payload: remoteMessage.data['body'],
+      );
+    });
   }
 
   @override

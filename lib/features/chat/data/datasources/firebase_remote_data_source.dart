@@ -206,26 +206,6 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
   @override
   Future<String> sendNotification(NotificationEntity notificationEntity) async {
     try {
-      // FirebaseMessaging messaging = FirebaseMessaging.instance;
-
-      // NotificationSettings settings = await messaging.requestPermission(
-      //   alert: true,
-      //   announcement: false,
-      //   badge: true,
-      //   carPlay: false,
-      //   criticalAlert: false,
-      //   provisional: false,
-      //   sound: true,
-      // );
-
-      // if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      //   print('User granted permission');
-      // } else if (settings.authorizationStatus ==
-      //     AuthorizationStatus.provisional) {
-      //   print('User granted provisional permission');
-      // } else {
-      //   print('User declined or has not accepted permission');
-      // }
       await http.post(
         Uri.parse('https://fcm.googleapis.com/fcm/send'),
         headers: <String, String>{
@@ -233,21 +213,23 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
           'Authorization':
               'key=AAAAdr6nbyo:APA91bFZBHMea1EOmdGMGeiuVY7CdzpykOcgFSAn7cHwh0RTYoMrY6iOKH4RXkcanq2OQPT6jeDYmfXkC5kN6g8Yp_xBNFtqVw7Oa5UTZqTh1Xq0Ere7BoJULhfENGvpm1SyAE5RfLxM',
         },
-        body: jsonEncode(<String, dynamic>{
-          'priority': 'high',
-          'data': <String, dynamic>{
-            'click-action': 'FLUTTER_NOTIFICATION_CLICK',
-            'status': 'done',
-            'body': notificationEntity.body,
-            'title': notificationEntity.title,
+        body: jsonEncode(
+          <String, dynamic>{
+            'priority': 'high',
+            'data': <String, dynamic>{
+              'click-action': 'FLUTTER_NOTIFICATION_CLICK',
+              'status': 'done',
+              'body': notificationEntity.body,
+              'title': notificationEntity.title,
+            },
+            "notification": <String, dynamic>{
+              "title": notificationEntity.title,
+              "body": notificationEntity.body,
+              "android_channel_id": "ellsker_app",
+            },
+            "to": notificationEntity.token,
           },
-          'notification': <String, dynamic>{
-            'title': notificationEntity.title,
-            'body': notificationEntity.body,
-            'android_channel_id': 'internship_practice',
-          },
-          'to': notificationEntity.token,
-        }),
+        ),
       );
       return Future.value("Success");
     } on FirebaseException catch (e) {
