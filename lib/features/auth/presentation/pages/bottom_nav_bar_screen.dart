@@ -45,31 +45,6 @@ class _BottomNavBarScreenState extends State<BottomNavBarScreen> {
     super.dispose();
   }
 
-  void requestPermission() async {
-    FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
-
-    NotificationSettings notificationSettings =
-        await firebaseMessaging.requestPermission(
-      alert: true,
-      announcement: false,
-      badge: true,
-      carPlay: false,
-      criticalAlert: false,
-      provisional: false,
-      sound: true,
-    );
-
-    if (notificationSettings.authorizationStatus ==
-        AuthorizationStatus.authorized) {
-      log("User granted permission");
-    } else if (notificationSettings.authorizationStatus ==
-        AuthorizationStatus.provisional) {
-      log("User granted provisional permission");
-    } else {
-      log("User declined or has not granted persmission");
-    }
-  }
-
   Future<bool> _showExitPopup() async {
     return await showDialog(
       context: context,
@@ -115,6 +90,31 @@ class _BottomNavBarScreenState extends State<BottomNavBarScreen> {
         ),
       ),
     );
+  }
+
+  void requestPermission() async {
+    FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
+
+    NotificationSettings notificationSettings =
+        await firebaseMessaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+
+    if (notificationSettings.authorizationStatus ==
+        AuthorizationStatus.authorized) {
+      log("User granted permission");
+    } else if (notificationSettings.authorizationStatus ==
+        AuthorizationStatus.provisional) {
+      log("User granted provisional permission");
+    } else {
+      log("User declined or has not granted persmission");
+    }
   }
 
   initInfo() {

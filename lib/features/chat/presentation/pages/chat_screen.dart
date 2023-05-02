@@ -9,10 +9,10 @@ import 'package:internship_practice/colors_utils.dart';
 import 'package:internship_practice/common/widgets/chat_box_widget.dart';
 import 'package:internship_practice/features/chat/domain/entities/conversation_entity.dart';
 import 'package:internship_practice/features/chat/domain/entities/message_entity.dart';
-import 'package:internship_practice/features/chat/domain/entities/notification_entity.dart';
+import 'package:internship_practice/features/notification/domain/entities/notification_entity.dart';
 import 'package:internship_practice/features/chat/presentation/bloc/conversation/conversation_bloc.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
-import 'package:internship_practice/features/chat/presentation/cubit/notification/notification_cubit.dart';
+import 'package:internship_practice/features/notification/presentation/cubit/notification/notification_cubit.dart';
 import 'package:internship_practice/injection_container.dart';
 
 class ChatScreen extends StatefulWidget {

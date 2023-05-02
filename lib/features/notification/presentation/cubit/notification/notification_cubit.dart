@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:internship_practice/features/chat/domain/entities/notification_entity.dart';
-import 'package:internship_practice/features/chat/domain/usecases/send_notification_usecase.dart';
+import 'package:internship_practice/features/notification/domain/entities/notification_entity.dart';
+import 'package:internship_practice/features/notification/domain/usecases/send_notification_usecase.dart';
 
 part 'notification_state.dart';
 

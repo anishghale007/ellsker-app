@@ -8,16 +8,16 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internship_practice/colors_utils.dart';
 import 'package:internship_practice/features/chat/presentation/bloc/conversation/conversation_bloc.dart';
-import 'package:internship_practice/features/chat/presentation/bloc/notification/notification_bloc.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/conversation/conversation_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
-import 'package:internship_practice/features/chat/presentation/cubit/notification/notification_cubit.dart';
+import 'package:internship_practice/features/notification/presentation/cubit/notification/notification_cubit.dart';
 import 'package:internship_practice/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:internship_practice/injection_container.dart' as di;
 import 'package:internship_practice/router.dart';
 import 'package:internship_practice/ui_pages.dart';
 import 'features/auth/presentation/bloc/facebook_sign_in/facebook_sign_in_bloc.dart';
 import 'features/auth/presentation/bloc/google_sign_in/google_sign_in_bloc.dart';
+import 'features/notification/presentation/bloc/notification/notification_bloc.dart';
 import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 

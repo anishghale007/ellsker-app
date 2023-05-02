@@ -2,7 +2,6 @@ import 'package:dartz/dartz.dart';
 import 'package:internship_practice/core/error/failure.dart';
 import 'package:internship_practice/features/chat/domain/entities/conversation_entity.dart';
 import 'package:internship_practice/features/chat/domain/entities/message_entity.dart';
-import 'package:internship_practice/features/chat/domain/entities/notification_entity.dart';
 import 'package:internship_practice/features/chat/domain/entities/user_entity.dart';
 
 abstract class FirebaseRepository {
@@ -15,6 +14,4 @@ abstract class FirebaseRepository {
   Future<Either<Failure, Stream<List<MessageEntity>>>> getAllMessages(
       String conversationId);
   Future<Either<Failure, void>> seenMessage(String conversationId);
-  Future<Either<Failure, String>> sendNotification(
-      NotificationEntity notificationEntity);
 }
