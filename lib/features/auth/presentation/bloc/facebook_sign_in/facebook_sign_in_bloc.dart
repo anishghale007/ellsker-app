@@ -24,8 +24,8 @@ class FacebookSignInBloc
     try {
       final facebookUser = await facebookLoginUseCase.call(NoParams());
       facebookUser.fold(
-          (failure) => emit(
-              const FacebookSignInFailure(errorMessage: serverFailureMessage)),
+          (failure) => emit(const FacebookSignInFailure(
+              errorMessage: Constant.serverFailureMessage)),
           (facebookUserEntity) => emit(
               FacebookSignInSuccess(facebookUserEntity: facebookUserEntity)));
     } catch (e) {

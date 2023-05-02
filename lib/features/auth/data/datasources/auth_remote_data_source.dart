@@ -99,7 +99,11 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<void> signOut() async {
     try {
+      GoogleSignIn googleSignIn = GoogleSignIn();
+      FacebookAuth facebookAuth = FacebookAuth.instance;
       await FirebaseAuth.instance.signOut();
+      await facebookAuth.logOut();
+      await googleSignIn.signOut();
     } on FirebaseAuthException catch (e) {
       throw Exception(e.toString());
     }

@@ -2,17 +2,18 @@ import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:internship_practice/core/error/failure.dart';
 import 'package:internship_practice/core/usecases/usecase.dart';
-import 'package:internship_practice/features/chat/domain/entities/notification_entity.dart';
-import 'package:internship_practice/features/chat/domain/repositories/firebase_repository.dart';
+import 'package:internship_practice/features/notification/domain/entities/notification_entity.dart';
+import 'package:internship_practice/features/notification/domain/repositories/notification_repository.dart';
 
 class SendNotificationUseCase implements UseCase<String, Params> {
-  final FirebaseRepository firebaseRepository;
+  final NotificationRepository notificationRepository;
 
-  const SendNotificationUseCase({required this.firebaseRepository});
+  const SendNotificationUseCase({required this.notificationRepository});
 
   @override
   Future<Either<Failure, String>> call(Params params) async {
-    return await firebaseRepository.sendNotification(params.notificationEntity);
+    return await notificationRepository
+        .sendNotification(params.notificationEntity);
   }
 }
 
