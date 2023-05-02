@@ -11,8 +11,8 @@ import 'package:internship_practice/features/chat/domain/entities/conversation_e
 import 'package:internship_practice/features/chat/domain/entities/message_entity.dart';
 import 'package:internship_practice/features/chat/domain/entities/notification_entity.dart';
 import 'package:internship_practice/features/chat/presentation/bloc/conversation/conversation_bloc.dart';
-import 'package:internship_practice/features/chat/presentation/bloc/notification/notification_bloc.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
+import 'package:internship_practice/features/chat/presentation/cubit/notification/notification_cubit.dart';
 import 'package:internship_practice/injection_container.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -242,14 +242,16 @@ class _ChatScreenState extends State<ChatScreen> {
                         }
                       },
                     ),
-                    BlocListener<NotificationBloc, NotificationState>(
+                    BlocListener<NotificationCubit, NotificationState>(
                       listener: (context, state) {
                         if (state is NotificationSuccess) {
                           log("Notification sent successfully");
                           _messageController.clear();
                           FocusScope.of(context).unfocus();
                         } else if (state is NotificationError) {
-                          log(state.errorMessage);
+                          log("Notification Error:${state.errorMessage}");
+                        } else {
+                          log("Notification not sent");
                         }
                       },
                     ),
@@ -311,13 +313,23 @@ class _ChatScreenState extends State<ChatScreen> {
                           context.read<MessageCubit>().getAllMessages(
                                 conversationId: widget.userId,
                               );
-                          context.read<NotificationBloc>().add(
-                                SendNotificationEvent(
-                                  notificationEntity: NotificationEntity(
-                                    token: widget.token,
-                                    title: widget.username,
-                                    body: _messageController.text.trim(),
-                                  ),
+                          // context.read<NotificationBloc>().add(
+                          //       SendNotificationEvent(
+                          //         notificationEntity: NotificationEntity(
+                          //           token: widget.token,
+                          //           title: widget.username,
+                          //           body: _messageController.text.trim(),
+                          //         ),
+                          //       ),
+                          //     );
+                          context.read<NotificationCubit>().sendNotification(
+                                notificationEntity: NotificationEntity(
+                                  conversationId: widget.userId,
+                                  token: widget.token,
+                                  title: currentUser.displayName!,
+                                  body: _messageController.text.trim(),
+                                  photoUrl: widget.photoUrl,
+                                  username: widget.username,
                                 ),
                               );
                         }

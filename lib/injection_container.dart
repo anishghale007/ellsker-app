@@ -22,6 +22,7 @@ import 'package:internship_practice/features/chat/presentation/bloc/conversation
 import 'package:internship_practice/features/chat/presentation/bloc/notification/notification_bloc.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/conversation/conversation_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
+import 'package:internship_practice/features/chat/presentation/cubit/notification/notification_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/user_list/user_list_cubit.dart';
 import 'package:internship_practice/features/profile/data/datasources/profile_remote_data_source.dart';
 import 'package:internship_practice/features/profile/data/repositories/profile_repository_impl.dart';
@@ -78,6 +79,10 @@ Future<void> init() async {
 
   sl.registerFactory<NotificationBloc>(
     () => NotificationBloc(sendNotificationUseCase: sl()),
+  );
+
+  sl.registerFactory<NotificationCubit>(
+    () => NotificationCubit(sendNotificationUseCase: sl()),
   );
 
   // profile bloc

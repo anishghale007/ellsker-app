@@ -8,6 +8,7 @@ import 'package:internship_practice/colors_utils.dart';
 import 'package:internship_practice/features/auth/presentation/cubit/sign_out_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/pages/chat_list_screen.dart';
 import 'package:internship_practice/features/auth/presentation/pages/home_screen.dart';
+import 'package:internship_practice/features/chat/presentation/pages/chat_screen.dart';
 import 'package:internship_practice/features/notification/firebase_messaging/notifications_config.dart';
 import 'package:internship_practice/features/profile/presentation/pages/profile_screen.dart';
 import 'package:internship_practice/injection_container.dart';
@@ -151,7 +152,36 @@ class _BottomNavBarScreenState extends State<BottomNavBarScreen> {
         notificationDetails,
         payload: remoteMessage.data['body'],
       );
+      checkRoute(remoteMessage);
     });
+
+    // If the app is open in background (Not termainated)
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      checkRoute(message);
+    });
+  }
+
+  checkRoute(RemoteMessage message) async {
+    var notificationDetails =
+        await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
+    if (notificationDetails!.didNotificationLaunchApp ||
+        notificationDetails.notificationResponse == null) {
+      if (message.data['conversationId'] != null) {
+        if (mounted) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ChatScreen(
+                username: message.data['username'],
+                userId: message.data['conversationId'],
+                photoUrl: message.data['photoUrl'],
+                token: message.data['token'],
+              ),
+            ),
+          );
+        }
+      }
+    }
   }
 
   @override

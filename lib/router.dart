@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:internship_practice/features/auth/presentation/pages/bottom_nav_bar_screen.dart';
-import 'package:internship_practice/features/chat/presentation/pages/chat_details_screen.dart';
 import 'package:internship_practice/features/chat/presentation/pages/chat_list_screen.dart';
 import 'package:internship_practice/features/profile/presentation/pages/edit_profile_screen.dart';
 import 'package:internship_practice/features/auth/presentation/pages/home_screen.dart';
@@ -23,8 +22,6 @@ class Routers {
         return MaterialPageRoute(builder: (_) => const ChatListScreen());
       case kProfileScreenPath:
         return MaterialPageRoute(builder: (_) => const ProfileScreen());
-      case kChatDetailsScreenPath:
-        return MaterialPageRoute(builder: (_) => const ChatDetailsScreen());
       case kEditProfileScreenPath:
         return MaterialPageRoute(builder: (_) {
           Map<String, dynamic> arguments =

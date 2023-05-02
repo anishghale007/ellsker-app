@@ -1,13 +1,17 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internship_practice/colors_utils.dart';
 import 'package:internship_practice/features/chat/presentation/bloc/conversation/conversation_bloc.dart';
 import 'package:internship_practice/features/chat/presentation/bloc/notification/notification_bloc.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/conversation/conversation_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
+import 'package:internship_practice/features/chat/presentation/cubit/notification/notification_cubit.dart';
 import 'package:internship_practice/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:internship_practice/injection_container.dart' as di;
 import 'package:internship_practice/router.dart';
@@ -20,11 +24,23 @@ import 'package:firebase_core/firebase_core.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await di.init();
+  await dotenv.load(fileName: ".env");
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await FirebaseMessaging.instance.getInitialMessage();
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
   runApp(const MyApp());
+}
+
+@pragma('vm:entry-point')
+Future<void> firebaseMessagingBackgroundHandler(
+    RemoteMessage remoteMessage) async {
+  log("Handling a background message: ${remoteMessage.toString()}");
+  log("Background message data: ${remoteMessage.data['name']}");
+  log("Background message Time: ${remoteMessage.sentTime}");
+  log("Message from: ${remoteMessage.from}");
+  log("Message Sender ID: ${remoteMessage.senderId}");
 }
 
 class MyApp extends StatelessWidget {
@@ -55,6 +71,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider<NotificationBloc>(
           create: (context) => di.sl<NotificationBloc>(),
+        ),
+        BlocProvider<NotificationCubit>(
+          create: (context) => di.sl<NotificationCubit>(),
         ),
         BlocProvider<ProfileBloc>(
           create: (context) => di.sl<ProfileBloc>(),

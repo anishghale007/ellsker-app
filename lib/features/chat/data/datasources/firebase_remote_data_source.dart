@@ -3,6 +3,8 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:internship_practice/constants.dart';
 import 'package:internship_practice/features/chat/data/models/conversation_model.dart';
 import 'package:internship_practice/features/chat/data/models/message_model.dart';
 import 'package:internship_practice/features/chat/data/models/user_model.dart';
@@ -206,12 +208,12 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
   @override
   Future<String> sendNotification(NotificationEntity notificationEntity) async {
     try {
+      final String serverKey = dotenv.get('SERVER_KEY', fallback: 'Not found');
       await http.post(
-        Uri.parse('https://fcm.googleapis.com/fcm/send'),
+        Uri.parse(Constant.notificationUrl),
         headers: <String, String>{
           'Content-Type': 'application/json',
-          'Authorization':
-              'key=AAAAdr6nbyo:APA91bFZBHMea1EOmdGMGeiuVY7CdzpykOcgFSAn7cHwh0RTYoMrY6iOKH4RXkcanq2OQPT6jeDYmfXkC5kN6g8Yp_xBNFtqVw7Oa5UTZqTh1Xq0Ere7BoJULhfENGvpm1SyAE5RfLxM',
+          'Authorization': 'key=$serverKey',
         },
         body: jsonEncode(
           <String, dynamic>{
@@ -221,6 +223,10 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
               'status': 'done',
               'body': notificationEntity.body,
               'title': notificationEntity.title,
+              'conversationId': notificationEntity.conversationId,
+              'token': notificationEntity.token,
+              'photoUrl': notificationEntity.photoUrl,
+              'username': notificationEntity.username,
             },
             "notification": <String, dynamic>{
               "title": notificationEntity.title,
