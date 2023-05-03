@@ -221,7 +221,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           textCapitalization: TextCapitalization.none,
                           validator: (value) {
                             if (value!.isEmpty) {
-                              return "";
+                              return "Age is required";
                             }
                             return null;
                           },

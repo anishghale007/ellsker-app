@@ -81,23 +81,27 @@ class ProfileScreen extends StatelessWidget {
                     const SizedBox(
                       height: 80,
                     ),
-                    Center(
-                      child: Text(
-                        "${data['username']} , ${data['age']}",
-                        style: GoogleFonts.sourceSansPro(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 32,
-                          color: Colors.white,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 30),
+                      child: Center(
+                        child: Text(
+                          "${data['username']} , ${data['age']}",
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.sourceSansPro(
+                            fontWeight: FontWeight.w400,
+                            fontSize: 32,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
                     const SizedBox(
                       height: 20,
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        RichText(
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 30),
+                      child: Center(
+                        child: RichText(
                           text: TextSpan(
                             children: [
                               WidgetSpan(
@@ -111,25 +115,27 @@ class ProfileScreen extends StatelessWidget {
                                 text: data['location'],
                                 style: GoogleFonts.sourceSansPro(
                                   fontWeight: FontWeight.w400,
-                                  fontSize: 14,
+                                  fontSize: 17,
+                                  color: ColorUtil.kTertiaryColor,
+                                ),
+                              ),
+                              const WidgetSpan(
+                                child: SizedBox(
+                                  width: 30,
+                                ),
+                              ),
+                              TextSpan(
+                                text: "@${data['email']}",
+                                style: GoogleFonts.sourceSansPro(
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 17,
                                   color: ColorUtil.kTertiaryColor,
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        const SizedBox(
-                          width: 45,
-                        ),
-                        Text(
-                          "@${data['email']}",
-                          style: GoogleFonts.sourceSansPro(
-                            fontWeight: FontWeight.w400,
-                            fontSize: 14,
-                            color: ColorUtil.kTertiaryColor,
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ],
                 );
