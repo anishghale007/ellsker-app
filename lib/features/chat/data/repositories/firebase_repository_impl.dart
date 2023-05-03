@@ -35,6 +35,18 @@ class FirebaseRepositoryImpl implements FirebaseRepository {
   }
 
   @override
+  Future<Either<Failure, String>> deleteConversation(
+      String conversationId) async {
+    try {
+      final response =
+          await firebaseRemoteDataSource.deleteConversation(conversationId);
+      return Right(response);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
   Future<Either<Failure, String>> sendMessage(
       MessageEntity messageEntity) async {
     try {

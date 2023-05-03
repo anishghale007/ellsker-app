@@ -15,6 +15,7 @@ class ConversationTile extends StatelessWidget {
   final bool isSeen;
   final String unSeenMessages;
   final VoidCallback onPress;
+  final Function(BuildContext) onDelete;
 
   const ConversationTile({
     Key? key,
@@ -27,6 +28,7 @@ class ConversationTile extends StatelessWidget {
     required this.isSeen,
     required this.unSeenMessages,
     required this.onPress,
+    required this.onDelete,
   }) : super(key: key);
 
   @override
@@ -47,7 +49,7 @@ class ConversationTile extends StatelessWidget {
             backgroundColor: ColorUtil.kSecondaryColor.withOpacity(0.8),
           ),
           SlidableAction(
-            onPressed: (context) {},
+            onPressed: onDelete,
             borderRadius: BorderRadius.circular(6),
             icon: Icons.close,
             label: "Delete",
@@ -98,38 +100,6 @@ class ConversationTile extends StatelessWidget {
                     fontSize: 14,
                   ),
                 ),
-          // trailing: hasUnreadMessage == true
-          //     ? Column(
-          //         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          //         children: [
-          //           Text(
-          //             messageTime,
-          //             style: GoogleFonts.sourceSansPro(
-          //               color: ColorUtil.kTertiaryColor,
-          //               fontWeight: FontWeight.w400,
-          //               fontSize: 14,
-          //             ),
-          //           ),
-          //           Container(
-          //             padding: const EdgeInsets.symmetric(
-          //               horizontal: 10,
-          //               vertical: 1,
-          //             ),
-          //             decoration: BoxDecoration(
-          //               borderRadius: BorderRadius.circular(50),
-          //               color: ColorUtil.kMessageAlertColor,
-          //             ),
-          //             child: Text(
-          //               numberOfMessage!,
-          //               style: GoogleFonts.sourceSansPro(
-          //                 fontWeight: FontWeight.w600,
-          //                 fontSize: 14,
-          //                 color: Colors.white,
-          //               ),
-          //             ),
-          //           ),
-          //         ],
-          //       )
           trailing: lastMessageSenderName == currentUser
               ? Column(
                   mainAxisAlignment: MainAxisAlignment.start,

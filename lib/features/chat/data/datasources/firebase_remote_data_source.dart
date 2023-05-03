@@ -12,6 +12,7 @@ import 'package:internship_practice/features/chat/domain/entities/user_entity.da
 abstract class FirebaseRemoteDataSource {
   Stream<List<UserEntity>> getAllUsers();
   Future<String> createConversation(ConversationEntity conversationEntity);
+  Future<String> deleteConversation(String conversationId);
   Stream<List<ConversationEntity>> getAllConversations();
   Future<String> sendMessage(MessageEntity messageEntity);
   Stream<List<MessageEntity>> getAllMessages(String conversationId);
@@ -21,6 +22,7 @@ abstract class FirebaseRemoteDataSource {
 
 class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
   CollectionReference dbUser = FirebaseFirestore.instance.collection("users");
+  final currentUser = FirebaseAuth.instance.currentUser!;
 
   @override
   Stream<List<UserEntity>> getAllUsers() {
@@ -74,6 +76,28 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
             .doc(conversationEntity.senderId)
             .set(receiverData);
       }
+      return Future.value("Success");
+    } on FirebaseException catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  @override
+  Future<String> deleteConversation(String conversationId) async {
+    try {
+      final currentUser = FirebaseAuth.instance.currentUser!.uid;
+      // Deleting the conversation doc from the current user
+      dbUser
+          .doc(currentUser)
+          .collection('conversation')
+          .doc(conversationId)
+          .delete();
+      // Deleting the conversation doc from the other user
+      // dbUser
+      //     .doc(conversationId)
+      //     .collection('conversation')
+      //     .doc(currentUser)
+      //     .delete();
       return Future.value("Success");
     } on FirebaseException catch (e) {
       throw Exception(e.toString());

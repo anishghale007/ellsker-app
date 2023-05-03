@@ -16,6 +16,15 @@ class CreateConversationEvent extends ConversationEvent {
   List<Object> get props => [conversationEntity];
 }
 
+class DeleteConversationEvent extends ConversationEvent {
+  final String conversationId;
+
+  const DeleteConversationEvent({required this.conversationId});
+
+  @override
+  List<Object> get props => [conversationId];
+}
+
 class SeenConversationEvent extends ConversationEvent {
   final String conversationId;
 
