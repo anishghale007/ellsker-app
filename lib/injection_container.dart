@@ -12,6 +12,7 @@ import 'package:internship_practice/features/chat/data/datasources/firebase_remo
 import 'package:internship_practice/features/chat/data/repositories/firebase_repository_impl.dart';
 import 'package:internship_practice/features/chat/domain/repositories/firebase_repository.dart';
 import 'package:internship_practice/features/chat/domain/usecases/create_conversation_usecase.dart';
+import 'package:internship_practice/features/chat/domain/usecases/delete_conversation_usecase.dart';
 import 'package:internship_practice/features/chat/domain/usecases/get_all_conversation_usecase.dart';
 import 'package:internship_practice/features/chat/domain/usecases/get_all_messages_usecase.dart';
 import 'package:internship_practice/features/chat/domain/usecases/get_all_users_usecase.dart';
@@ -70,6 +71,7 @@ Future<void> init() async {
     () => ConversationBloc(
       createConversationUseCase: sl(),
       seenMessageUsecase: sl(),
+      deleteConversationUseCase: sl(),
     ),
   );
 
@@ -132,16 +134,8 @@ Future<void> init() async {
     () => SeenMessageUsecase(firebaseRepository: sl()),
   );
 
-  sl.registerLazySingleton<SendNotificationUseCase>(
-    () => SendNotificationUseCase(notificationRepository: sl()),
-  );
-
-  sl.registerLazySingleton<GetCurrentUserUseCase>(
-    () => GetCurrentUserUseCase(profileRepository: sl()),
-  );
-
-  sl.registerLazySingleton<EditProfileUseCase>(
-    () => EditProfileUseCase(profileRepository: sl()),
+  sl.registerLazySingleton<DeleteConversationUseCase>(
+    () => DeleteConversationUseCase(firebaseRepository: sl()),
   );
 
   /// Repository

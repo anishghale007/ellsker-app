@@ -14,4 +14,5 @@ abstract class FirebaseRepository {
   Future<Either<Failure, Stream<List<MessageEntity>>>> getAllMessages(
       String conversationId);
   Future<Either<Failure, void>> seenMessage(String conversationId);
+  Future<Either<Failure, String>> deleteConversation(String conversationId);
 }

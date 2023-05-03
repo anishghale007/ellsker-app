@@ -93,6 +93,13 @@ class ChatListScreen extends StatelessWidget {
                               lastMessageTime: data.lastMessageTime,
                               isSeen: data.isSeen,
                               unSeenMessages: data.unSeenMessages.toString(),
+                              onDelete: (context) {
+                                context.read<ConversationBloc>().add(
+                                      DeleteConversationEvent(
+                                        conversationId: data.receiverId,
+                                      ),
+                                    );
+                              },
                             );
                           },
                         );

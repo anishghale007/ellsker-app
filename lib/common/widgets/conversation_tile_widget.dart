@@ -16,6 +16,7 @@ class ConversationTile extends StatelessWidget {
   final bool isSeen;
   final String unSeenMessages;
   final VoidCallback onPress;
+  final Function(BuildContext) onDelete;
 
   const ConversationTile({
     Key? key,
@@ -29,6 +30,7 @@ class ConversationTile extends StatelessWidget {
     required this.isSeen,
     required this.unSeenMessages,
     required this.onPress,
+    required this.onDelete,
   }) : super(key: key);
 
   @override
@@ -49,7 +51,7 @@ class ConversationTile extends StatelessWidget {
             backgroundColor: ColorUtil.kSecondaryColor.withOpacity(0.8),
           ),
           SlidableAction(
-            onPressed: (context) {},
+            onPressed: onDelete,
             borderRadius: BorderRadius.circular(6),
             icon: Icons.close,
             label: "Delete",
