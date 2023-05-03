@@ -22,8 +22,8 @@ class GoogleSignInBloc extends Bloc<GoogleSignInEvent, GoogleSignInState> {
     try {
       final googleUser = await gooogleLoginUseCase.call(NoParams());
       googleUser.fold(
-        (failure) =>
-            emit(const GoogleSignInFailure(errorMessage: serverFailureMessage)),
+        (failure) => emit(const GoogleSignInFailure(
+            errorMessage: Constant.serverFailureMessage)),
         (googleUserEntity) =>
             emit(GoogleSignInSuccess(googleUserEntity: googleUserEntity)),
       );

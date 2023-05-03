@@ -25,58 +25,49 @@ class ProfileHeader extends StatelessWidget {
             fontWeight: FontWeight.w400,
           ),
         ),
-        InkWell(
-          onTap: onPress,
-          child: buttonText == "Save"
-              ? Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 5,
-                  ),
-                  decoration: BoxDecoration(
+        buttonText == "Save"
+            ? ElevatedButton(
+                onPressed: onPress,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
-                    color: Colors.white,
-                    border: Border.all(
-                      width: 0.5,
-                      color: Colors.white,
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    buttonText,
+                    style: GoogleFonts.sourceSansPro(
+                      color: ColorUtil.kPrimaryColor,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
                     ),
                   ),
-                  child: Center(
-                    child: Text(
-                      buttonText,
-                      style: GoogleFonts.sourceSansPro(
-                        color: ColorUtil.kPrimaryColor,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                )
-              : Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 5,
-                  ),
-                  decoration: BoxDecoration(
+                ),
+              )
+            : ElevatedButton(
+                onPressed: onPress,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.transparent,
+                  shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
-                    color: Colors.transparent,
-                    border: Border.all(
+                    side: BorderSide(
                       width: 0.5,
                       color: ColorUtil.kTertiaryColor,
                     ),
                   ),
-                  child: Center(
-                    child: Text(
-                      buttonText,
-                      style: GoogleFonts.sourceSansPro(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                      ),
+                ),
+                child: Center(
+                  child: Text(
+                    buttonText,
+                    style: GoogleFonts.sourceSansPro(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
                     ),
                   ),
                 ),
-        ),
+              ),
       ],
     );
   }

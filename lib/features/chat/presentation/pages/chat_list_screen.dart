@@ -80,6 +80,7 @@ class ChatListScreen extends StatelessWidget {
                                     "username": data.receiverName,
                                     "userId": data.receiverId,
                                     "photoUrl": data.receiverPhotoUrl,
+                                    "token": data.receiverToken,
                                   },
                                 );
                               },
@@ -88,6 +89,7 @@ class ChatListScreen extends StatelessWidget {
                               receiverPhotoUrl: data.receiverPhotoUrl,
                               lastMessage: data.lastMessage,
                               lastMessageSenderName: data.lastMessageSenderName,
+                              lastMessageSenderId: data.lastMessageSenderId,
                               lastMessageTime: data.lastMessageTime,
                               isSeen: data.isSeen,
                               unSeenMessages: data.unSeenMessages.toString(),

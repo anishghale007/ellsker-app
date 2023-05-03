@@ -18,10 +18,22 @@ import 'package:internship_practice/features/chat/domain/usecases/get_all_messag
 import 'package:internship_practice/features/chat/domain/usecases/get_all_users_usecase.dart';
 import 'package:internship_practice/features/chat/domain/usecases/seen_message_usecase.dart';
 import 'package:internship_practice/features/chat/domain/usecases/send_message_usecase.dart';
+import 'package:internship_practice/features/notification/data/datasources/notification_remote_data_source.dart';
+import 'package:internship_practice/features/notification/data/repositories/notification_repository_impl.dart';
+import 'package:internship_practice/features/notification/domain/repositories/notification_repository.dart';
+import 'package:internship_practice/features/notification/domain/usecases/send_notification_usecase.dart';
 import 'package:internship_practice/features/chat/presentation/bloc/conversation/conversation_bloc.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/conversation/conversation_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/user_list/user_list_cubit.dart';
+import 'package:internship_practice/features/notification/presentation/bloc/notification/notification_bloc.dart';
+import 'package:internship_practice/features/notification/presentation/cubit/notification/notification_cubit.dart';
+import 'package:internship_practice/features/profile/data/datasources/profile_remote_data_source.dart';
+import 'package:internship_practice/features/profile/data/repositories/profile_repository_impl.dart';
+import 'package:internship_practice/features/profile/domain/repositories/profile_repository.dart';
+import 'package:internship_practice/features/profile/domain/usecases/edit_profile_usecase.dart';
+import 'package:internship_practice/features/profile/domain/usecases/get_current_user_usecase.dart';
+import 'package:internship_practice/features/profile/presentation/bloc/profile_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -45,6 +57,7 @@ Future<void> init() async {
   sl.registerFactory<UserListCubit>(
     () => UserListCubit(getAllUsersUsecase: sl.call()),
   );
+
   // chat bloc
   sl.registerFactory<ConversationCubit>(
     () => ConversationCubit(
@@ -66,6 +79,22 @@ Future<void> init() async {
     () => MessageCubit(
       sendMessageUseCase: sl(),
       getAllMessagesUsecase: sl(),
+    ),
+  );
+
+  sl.registerFactory<NotificationBloc>(
+    () => NotificationBloc(sendNotificationUseCase: sl()),
+  );
+
+  sl.registerFactory<NotificationCubit>(
+    () => NotificationCubit(sendNotificationUseCase: sl()),
+  );
+
+  // profile bloc
+  sl.registerFactory<ProfileBloc>(
+    () => ProfileBloc(
+      getCurrentUserUseCase: sl(),
+      editProfileUseCase: sl(),
     ),
   );
 
@@ -118,10 +147,24 @@ Future<void> init() async {
     () => FirebaseRepositoryImpl(firebaseRemoteDataSource: sl()),
   );
 
+  sl.registerLazySingleton<ProfileRepository>(
+    () => ProfileRepositoryImpl(profileRemoteDataSource: sl()),
+  );
+
+  sl.registerLazySingleton<NotificationRepository>(
+    () => NotificationRepositoryImpl(notificationRemoteDataSource: sl()),
+  );
+
   /// Data Sources
   sl.registerLazySingleton<AuthRemoteDataSource>(
       () => AuthRemoteDataSourceImpl());
 
   sl.registerLazySingleton<FirebaseRemoteDataSource>(
       () => FirebaseRemoteDataSourceImpl());
+
+  sl.registerLazySingleton<ProfileRemoteDataSource>(
+      () => ProfileRemoteDataSourceImpl());
+
+  sl.registerLazySingleton<NotificationRemoteDataSource>(
+      () => NotificationRemoteDataSourceImpl());
 }

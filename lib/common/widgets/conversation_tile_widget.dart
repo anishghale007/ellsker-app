@@ -11,6 +11,7 @@ class ConversationTile extends StatelessWidget {
   final String receiverPhotoUrl;
   final String lastMessage;
   final String lastMessageSenderName;
+  final String lastMessageSenderId;
   final String lastMessageTime;
   final bool isSeen;
   final String unSeenMessages;
@@ -24,6 +25,7 @@ class ConversationTile extends StatelessWidget {
     required this.receiverPhotoUrl,
     required this.lastMessage,
     required this.lastMessageSenderName,
+    required this.lastMessageSenderId,
     required this.lastMessageTime,
     required this.isSeen,
     required this.unSeenMessages,
@@ -33,7 +35,7 @@ class ConversationTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final currentUser = FirebaseAuth.instance.currentUser!.displayName;
+    final currentUser = FirebaseAuth.instance.currentUser!.uid;
 
     return Slidable(
       endActionPane: ActionPane(
@@ -76,7 +78,7 @@ class ConversationTile extends StatelessWidget {
               color: Colors.white,
             ),
           ),
-          subtitle: lastMessageSenderName == currentUser
+          subtitle: lastMessageSenderId == currentUser
               ? Text(
                   "You: $lastMessage",
                   maxLines: 1,
@@ -100,7 +102,7 @@ class ConversationTile extends StatelessWidget {
                     fontSize: 14,
                   ),
                 ),
-          trailing: lastMessageSenderName == currentUser
+          trailing: lastMessageSenderId == currentUser
               ? Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [

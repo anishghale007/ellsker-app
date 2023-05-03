@@ -124,6 +124,7 @@ class _UserListScreenState extends State<UserListScreen> {
                                     "username": data.userName,
                                     "userId": data.userId,
                                     "photoUrl": data.photoUrl,
+                                    "token": data.token,
                                   },
                                 );
                               },

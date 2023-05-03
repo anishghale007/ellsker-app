@@ -1,25 +1,31 @@
 import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internship_practice/colors_utils.dart';
 import 'package:internship_practice/common/widgets/chat_box_widget.dart';
 import 'package:internship_practice/features/chat/domain/entities/conversation_entity.dart';
 import 'package:internship_practice/features/chat/domain/entities/message_entity.dart';
+import 'package:internship_practice/features/notification/domain/entities/notification_entity.dart';
 import 'package:internship_practice/features/chat/presentation/bloc/conversation/conversation_bloc.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
+import 'package:internship_practice/features/notification/presentation/cubit/notification/notification_cubit.dart';
 import 'package:internship_practice/injection_container.dart';
 
 class ChatScreen extends StatefulWidget {
   final String username;
   final String userId;
   final String photoUrl;
+  final String token;
 
   const ChatScreen({
     required this.username,
     required this.userId,
     required this.photoUrl,
+    required this.token,
     Key? key,
   }) : super(key: key);
 
@@ -28,19 +34,34 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
   late TextEditingController _messageController;
   final _form = GlobalKey<FormState>();
+  String? myToken = "";
 
   @override
   void initState() {
     super.initState();
     _messageController = TextEditingController();
+    getToken();
   }
 
   @override
   void dispose() {
     _messageController.dispose();
     super.dispose();
+  }
+
+  void getToken() async {
+    await FirebaseMessaging.instance.getToken().then(
+      (token) {
+        setState(() {
+          myToken = token;
+          log("MyToken: $myToken");
+        });
+      },
+    );
   }
 
   @override
@@ -221,6 +242,19 @@ class _ChatScreenState extends State<ChatScreen> {
                         }
                       },
                     ),
+                    BlocListener<NotificationCubit, NotificationState>(
+                      listener: (context, state) {
+                        if (state is NotificationSuccess) {
+                          log("Notification sent successfully");
+                          _messageController.clear();
+                          FocusScope.of(context).unfocus();
+                        } else if (state is NotificationError) {
+                          log("Notification Error:${state.errorMessage}");
+                        } else {
+                          log("Notification not sent");
+                        }
+                      },
+                    ),
                   ],
                   child: Container(
                     height: 40,
@@ -248,15 +282,18 @@ class _ChatScreenState extends State<ChatScreen> {
                                     receiverId: widget.userId,
                                     receiverName: widget.username,
                                     receiverPhotoUrl: widget.photoUrl,
-                                    senderId: currentUser.uid,
+                                    senderId: currentUser.uid, // me
                                     senderName: currentUser.displayName!,
                                     senderPhotoUrl: currentUser.photoURL!,
                                     lastMessage: _messageController.text.trim(),
                                     lastMessageTime: DateTime.now().toString(),
                                     lastMessageSenderName:
                                         currentUser.displayName!,
+                                    lastMessageSenderId: currentUser.uid,
                                     isSeen: false,
                                     unSeenMessages: 0,
+                                    receiverToken: widget.token,
+                                    senderToken: myToken!,
                                   ),
                                 ),
                               );
@@ -273,9 +310,28 @@ class _ChatScreenState extends State<ChatScreen> {
                                   receiverPhotoUrl: widget.photoUrl,
                                 ),
                               );
-                          context
-                              .read<MessageCubit>()
-                              .getAllMessages(conversationId: widget.userId);
+                          context.read<MessageCubit>().getAllMessages(
+                                conversationId: widget.userId,
+                              );
+                          // context.read<NotificationBloc>().add(
+                          //       SendNotificationEvent(
+                          //         notificationEntity: NotificationEntity(
+                          //           token: widget.token,
+                          //           title: widget.username,
+                          //           body: _messageController.text.trim(),
+                          //         ),
+                          //       ),
+                          //     );
+                          context.read<NotificationCubit>().sendNotification(
+                                notificationEntity: NotificationEntity(
+                                  conversationId: widget.userId,
+                                  token: widget.token,
+                                  title: currentUser.displayName!,
+                                  body: _messageController.text.trim(),
+                                  photoUrl: widget.photoUrl,
+                                  username: widget.username,
+                                ),
+                              );
                         }
                       },
                       style: ElevatedButton.styleFrom(

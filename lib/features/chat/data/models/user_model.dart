@@ -6,21 +6,24 @@ class UserModel extends UserEntity {
     required super.userId,
     required super.userName,
     required super.photoUrl,
+    required super.token,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
       userId: json['userId'],
-      userName: json['userName'],
+      userName: json['username'],
       photoUrl: json['photoUrl'],
+      token: json['token'],
     );
   }
 
   factory UserModel.fromSnapshot(DocumentSnapshot snapshot) {
     return UserModel(
       userId: snapshot.get('userId'),
-      userName: snapshot.get('userName'),
+      userName: snapshot.get('username'),
       photoUrl: snapshot.get('photoUrl'),
+      token: snapshot.get('token'),
     );
   }
 }

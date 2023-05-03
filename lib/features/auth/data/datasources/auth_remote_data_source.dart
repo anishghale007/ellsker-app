@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:internship_practice/features/auth/data/models/facebook_user_model.dart';
@@ -32,6 +33,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final userInfo =
           (await FirebaseAuth.instance.signInWithCredential(credential)).user;
       var id = userInfo!.uid;
+      final String? token = await FirebaseMessaging.instance.getToken();
       if (await isExistentUser(id)) {
         log("User already exists");
       } else {
@@ -40,6 +42,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           email: userInfo.email!,
           photoUrl: userInfo.photoURL!,
           userName: userInfo.displayName!,
+          token: token!,
+          age: 18,
+          instagram: "@instagram",
+          location: "Location",
         ).toJson();
         dbUser.doc(userInfo.uid).set(userData);
       }
@@ -67,6 +73,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
               .signInWithCredential(facebookAuthCredential))
           .user;
       var id = userInfo!.uid;
+      final String? token = await FirebaseMessaging.instance.getToken();
       if (await isExistentUser(id)) {
         log("User already exists");
       } else {
@@ -75,6 +82,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           email: userInfo.email!,
           photoUrl: userInfo.photoURL!,
           userName: userInfo.displayName!,
+          token: token!,
+          age: 18,
+          instagram: "@instagram",
+          location: "Location",
         ).toJson();
         dbUser.doc(userInfo.uid).set(userData);
       }
@@ -88,7 +99,11 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<void> signOut() async {
     try {
+      GoogleSignIn googleSignIn = GoogleSignIn();
+      FacebookAuth facebookAuth = FacebookAuth.instance;
       await FirebaseAuth.instance.signOut();
+      await facebookAuth.logOut();
+      await googleSignIn.signOut();
     } on FirebaseAuthException catch (e) {
       throw Exception(e.toString());
     }
