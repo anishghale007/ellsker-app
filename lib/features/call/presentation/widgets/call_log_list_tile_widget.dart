@@ -45,11 +45,17 @@ class CallLogListTileWidget extends StatelessWidget {
       ),
       subtitle: Row(
         children: [
-          Icon(
-            Icons.phone_callback,
-            color: ColorUtil.kTertiaryColor,
-            size: 15,
-          ),
+          data.didPickup
+              ? Icon(
+                  Icons.local_phone_rounded,
+                  color: ColorUtil.kTertiaryColor,
+                  size: 15,
+                )
+              : Icon(
+                  Icons.phone_missed,
+                  color: ColorUtil.kTertiaryColor,
+                  size: 15,
+                ),
           Text(
             "  $callTime mins  ",
             style: GoogleFonts.sourceSansPro(

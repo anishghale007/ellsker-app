@@ -262,6 +262,18 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     // If the app is open in background (Not termainated)
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       checkRoute(message);
+      AwesomeNotifications().setListeners(
+        onActionReceivedMethod: (receivedAction) =>
+            NotificationController.onActionReceivedMethod(
+          receivedAction,
+          context: context,
+          userId: message.data['conversationId'],
+          photoUrl: message.data['photoUrl'],
+          username: message.data['username'],
+          token: message.data['token'],
+          senderToken: myToken!,
+        ),
+      );
     });
   }
 
