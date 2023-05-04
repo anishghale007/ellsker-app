@@ -18,6 +18,7 @@ abstract class FirebaseRemoteDataSource {
   Stream<List<MessageEntity>> getAllMessages(String conversationId);
   Future<void> seenMessage(String conversationId);
   Future<bool> isExistentDocument();
+  Future<bool> isNotExistentAtOtherUserDocument(String receiverId);
 }
 
 class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
@@ -35,7 +36,55 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
       ConversationEntity conversationEntity) async {
     try {
       if (await isExistentDocument()) {
-        log("Document already exists");
+        // checks the document of current user
+        log("Document already exists in the current user");
+      } else if (await isNotExistentAtOtherUserDocument(
+          conversationEntity.receiverId)) {
+        log("Document does not exist in the other user. Creating it now");
+        // sender data
+        final senderData = ConversationModel(
+          receiverId: conversationEntity.receiverId,
+          receiverName: conversationEntity.receiverName,
+          receiverPhotoUrl: conversationEntity.receiverPhotoUrl,
+          senderId: conversationEntity.senderId,
+          senderName: conversationEntity.senderName,
+          senderPhotoUrl: conversationEntity.senderPhotoUrl,
+          lastMessage: conversationEntity.lastMessage,
+          lastMessageSenderName: conversationEntity.lastMessageSenderName,
+          lastMessageSenderId: conversationEntity.lastMessageSenderId,
+          lastMessageTime: conversationEntity.lastMessageTime,
+          isSeen: conversationEntity.isSeen,
+          unSeenMessages: conversationEntity.unSeenMessages,
+          senderToken: conversationEntity.senderToken,
+          receiverToken: conversationEntity.receiverToken,
+        ).toJson();
+        dbUser
+            .doc(conversationEntity.senderId)
+            .collection("conversation")
+            .doc(conversationEntity.receiverId)
+            .set(senderData);
+        // receiver data
+        final receiverData = ConversationModel(
+          receiverId: conversationEntity.senderId,
+          receiverName: conversationEntity.senderName,
+          receiverPhotoUrl: conversationEntity.senderPhotoUrl,
+          senderId: conversationEntity.receiverId,
+          senderName: conversationEntity.receiverName,
+          senderPhotoUrl: conversationEntity.receiverPhotoUrl,
+          lastMessage: conversationEntity.lastMessage,
+          lastMessageSenderName: conversationEntity.lastMessageSenderName,
+          lastMessageSenderId: conversationEntity.lastMessageSenderId,
+          lastMessageTime: conversationEntity.lastMessageTime,
+          isSeen: conversationEntity.isSeen,
+          unSeenMessages: conversationEntity.unSeenMessages,
+          senderToken: conversationEntity.receiverToken,
+          receiverToken: conversationEntity.senderToken,
+        ).toJson();
+        dbUser
+            .doc(conversationEntity.receiverId)
+            .collection("conversation")
+            .doc(conversationEntity.senderId)
+            .set(receiverData);
       } else {
         // sender data
         final senderData = ConversationModel(
@@ -91,19 +140,22 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
   @override
   Future<String> deleteConversation(String conversationId) async {
     try {
-      final currentUser = FirebaseAuth.instance.currentUser!.uid;
       // Deleting the conversation doc from the current user
+      final currentUser = FirebaseAuth.instance.currentUser!.uid;
       dbUser
           .doc(currentUser)
           .collection('conversation')
           .doc(conversationId)
           .delete();
-      // Deleting the conversation doc from the other user
-      // dbUser
-      //     .doc(conversationId)
-      //     .collection('conversation')
-      //     .doc(currentUser)
-      //     .delete();
+      var messageCollection = await dbUser
+          .doc(currentUser)
+          .collection('conversation')
+          .doc(conversationId)
+          .collection('message')
+          .get();
+      for (var doc in messageCollection.docs) {
+        await doc.reference.delete();
+      }
       return Future.value("Success");
     } on FirebaseException catch (e) {
       throw Exception(e.toString());
@@ -195,8 +247,8 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
 
   @override
   Future<void> seenMessage(String conversationId) async {
+    final currentUser = FirebaseAuth.instance.currentUser!.uid;
     try {
-      final currentUser = FirebaseAuth.instance.currentUser!.uid;
       Map<String, dynamic> updateSenderConversationData = {
         "isSeen": true,
         "unSeenMessages": 0,
@@ -221,5 +273,17 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
         .where('senderId', isEqualTo: currentUser)
         .get();
     return querySnapshot.docs.isNotEmpty;
+  }
+
+  @override
+  Future<bool> isNotExistentAtOtherUserDocument(String receiverId) async {
+    final currentUser = FirebaseAuth.instance.currentUser!.uid;
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(receiverId)
+        .collection('conversation')
+        .where('receiverId', isEqualTo: currentUser)
+        .get();
+    return querySnapshot.docs.isEmpty;
   }
 }

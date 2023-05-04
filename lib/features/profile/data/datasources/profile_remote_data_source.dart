@@ -9,7 +9,6 @@ import 'package:internship_practice/features/profile/domain/entities/user_profil
 abstract class ProfileRemoteDataSource {
   Stream<UserProfileEntity> getCurrentUser();
   Future<String> editProfile(UserProfileEntity userProfileEntity);
-  Future<bool> isMessageSender();
 }
 
 class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
@@ -38,9 +37,16 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
   @override
   Future<String> editProfile(UserProfileEntity userProfileEntity) async {
     try {
-      final currentUser = FirebaseAuth.instance.currentUser!.uid;
+      final currentUser = FirebaseAuth.instance.currentUser;
+      var currentUserConversationCollection =
+          await dbUser.doc(currentUser!.uid).collection('conversation').get();
+      var notCurrentUserCollection =
+          await dbUser.where('userId', isNotEqualTo: currentUser.uid).get();
       if (userProfileEntity.image != null) {
-        // If the user uploads a new profile picture
+        /* 
+        ////// IF THE USER UPLOADS A NEW PROFILE PICTURE
+         */
+
         final newImageId =
             "${userProfileEntity.email}:UploadedAt:${DateTime.now().toString()}";
         final newImageStorage = FirebaseStorage.instance
@@ -49,8 +55,11 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
         final newImageFile = File(userProfileEntity.image!.path);
         await newImageStorage.putFile(newImageFile);
         final newPhotoUrl = await newImageStorage.getDownloadURL();
-        // updating the User Collection
-        await dbUser.doc(currentUser).update({
+
+        // UPDATE THE CURRENT USER COLLECTION
+        await currentUser.updateDisplayName(userProfileEntity.username);
+        await currentUser.updatePhotoURL(newPhotoUrl);
+        await dbUser.doc(currentUser.uid).update({
           'username': userProfileEntity.username,
           'age': userProfileEntity.age,
           'instagram': userProfileEntity.instagram,
@@ -58,43 +67,48 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
           'photoUrl': newPhotoUrl,
         });
 
-        // updating the conversation collection of the current user
-        var currentUserConversationCollection =
-            await dbUser.doc(currentUser).collection('conversation').get();
+        // UPDATING THE CONVERSATION COLLECTION OF THE CURRENT USER
         for (var doc in currentUserConversationCollection.docs) {
           await doc.reference.update({
             'senderName': userProfileEntity.username,
             'senderPhotoUrl': newPhotoUrl,
           });
         }
-        // updating the conversation collection of the other user
-        // var otherUserConversationCollection = await FirebaseFirestore.instance
-        //     .collectionGroup('conversation')
-        //     .where('senderId', isNotEqualTo: currentUser)
-        //     .get();
-        // for (var doc in otherUserConversationCollection.docs) {
-        //   await doc.reference.update({
-        //     'receiverName': userProfileEntity.username,
-        //     'receiverPhotoUrl': newPhotoUrl,
-        //   });
-        // }
-        // updating the message collection
-        var messageCollection = await dbUser
-            .doc(currentUser)
-            .collection('conversation')
-            .doc()
-            .collection('message')
-            .get();
-        if (await isMessageSender()) {
-          // if the current user is the message sender
+
+        // UPDATING THE CONVERSATION COLLECTION OF THE OTHER USER
+        for (var doc in notCurrentUserCollection.docs) {
+          var conversationCollection =
+              await doc.reference.collection('conversation').get();
+          for (var doc in conversationCollection.docs) {
+            await doc.reference.update({
+              'receiverName': userProfileEntity.username,
+              'receiverPhotoUrl': newPhotoUrl,
+            });
+          }
+        }
+
+        // UPDATING THE MESSAGE COLLECTION OF THE CURRENT USER
+
+        // if the sender is the current user
+        for (var doc in currentUserConversationCollection.docs) {
+          var messageCollection = await doc.reference
+              .collection('message')
+              .where('senderId', isEqualTo: currentUser.uid)
+              .get();
           for (var doc in messageCollection.docs) {
             await doc.reference.update({
               'senderName': userProfileEntity.username,
               'senderPhotoUrl': newPhotoUrl,
             });
           }
-        } else {
-          // if the current user is not the message sender
+        }
+
+        // if the sender is not the current user
+        for (var doc in currentUserConversationCollection.docs) {
+          var messageCollection = await doc.reference
+              .collection('message')
+              .where('senderId', isNotEqualTo: currentUser.uid)
+              .get();
           for (var doc in messageCollection.docs) {
             await doc.reference.update({
               'receiverName': userProfileEntity.username,
@@ -102,43 +116,137 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
             });
           }
         }
+
+        // UPDATING THE MESSAGE COLLECTION OF THE OTHER USER
+
+        // if the sender is the current user
+        for (var doc in notCurrentUserCollection.docs) {
+          var conversationCollection =
+              await doc.reference.collection('conversation').get();
+          for (var doc in conversationCollection.docs) {
+            var messageCollection = await doc.reference
+                .collection('message')
+                .where('senderId', isEqualTo: currentUser.uid)
+                .get();
+            for (var doc in messageCollection.docs) {
+              await doc.reference.update({
+                'senderName': userProfileEntity.username,
+                'senderPhotoUrl': newPhotoUrl,
+              });
+            }
+          }
+        }
+
+        // if the sender is not the current user#
+        for (var doc in notCurrentUserCollection.docs) {
+          var conversationCollection =
+              await doc.reference.collection('conversation').get();
+          for (var doc in conversationCollection.docs) {
+            var messageCollection = await doc.reference
+                .collection('message')
+                .where('senderId', isNotEqualTo: currentUser.uid)
+                .get();
+            for (var doc in messageCollection.docs) {
+              await doc.reference.update({
+                'receiverName': userProfileEntity.username,
+                'receiverPhotoUrl': newPhotoUrl,
+              });
+            }
+          }
+        }
       } else {
-        // if the user does not upload a new profile picture
-        // updating the User Collection
-        await dbUser.doc(currentUser).update({
+        /* 
+        ///// IF THE USER DOES NOT UPLOAD A NEW PROFILE PICTURE
+         */
+
+        // UPDATING THE CURRENT USER COLLECTION
+        await currentUser.updateDisplayName(userProfileEntity.username);
+        await dbUser.doc(currentUser.uid).update({
           'username': userProfileEntity.username,
           'age': userProfileEntity.age,
           'instagram': userProfileEntity.instagram,
           'location': userProfileEntity.location,
         });
-        // updating the conversation collection
-        var conversationCollection =
-            await dbUser.doc(currentUser).collection('conversation').get();
-        for (var doc in conversationCollection.docs) {
+
+        // UPDATING THE CONVERSATION COLLECTION OF THE CURRENT USER
+        for (var doc in currentUserConversationCollection.docs) {
           await doc.reference.update({
             'senderName': userProfileEntity.username,
           });
         }
-        var messageCollection = await dbUser
-            .doc(currentUser)
-            .collection('conversation')
-            .doc()
-            .collection('message')
-            .get();
-        // updating the message collection
-        if (await isMessageSender()) {
-          // if the current user is the message sender
+
+        // UPDATING THE CONVERSATION COLLECTION OF THE OTHER USER
+        for (var doc in notCurrentUserCollection.docs) {
+          var conversationCollection =
+              await doc.reference.collection('conversation').get();
+          for (var doc in conversationCollection.docs) {
+            await doc.reference.update({
+              'receiverName': userProfileEntity.username,
+            });
+          }
+        }
+
+        // UPDATING THE MESSAGE COLLECTION OF THE CURRENT USER
+
+        // if the sender is the current user
+        for (var doc in currentUserConversationCollection.docs) {
+          var messageCollection = await doc.reference
+              .collection('message')
+              .where('senderId', isEqualTo: currentUser.uid)
+              .get();
           for (var doc in messageCollection.docs) {
             await doc.reference.update({
               'senderName': userProfileEntity.username,
             });
           }
-        } else {
-          // if the current user is not the message sender
+        }
+
+        // if the sender is not the current user
+        for (var doc in currentUserConversationCollection.docs) {
+          var messageCollection = await doc.reference
+              .collection('message')
+              .where('senderId', isNotEqualTo: currentUser.uid)
+              .get();
           for (var doc in messageCollection.docs) {
             await doc.reference.update({
               'receiverName': userProfileEntity.username,
             });
+          }
+        }
+
+        // UPDATING THE MESSAGE COLLECTION OF THE OTHER USER
+
+        // if the sender is the current user
+        for (var doc in notCurrentUserCollection.docs) {
+          var conversationCollection =
+              await doc.reference.collection('conversation').get();
+          for (var doc in conversationCollection.docs) {
+            var messageCollection = await doc.reference
+                .collection('message')
+                .where('senderId', isEqualTo: currentUser.uid)
+                .get();
+            for (var doc in messageCollection.docs) {
+              await doc.reference.update({
+                'senderName': userProfileEntity.username,
+              });
+            }
+          }
+        }
+
+        // if the sender is not the current user
+        for (var doc in notCurrentUserCollection.docs) {
+          var conversationCollection =
+              await doc.reference.collection('conversation').get();
+          for (var doc in conversationCollection.docs) {
+            var messageCollection = await doc.reference
+                .collection('message')
+                .where('senderId', isNotEqualTo: currentUser.uid)
+                .get();
+            for (var doc in messageCollection.docs) {
+              await doc.reference.update({
+                'receiverName': userProfileEntity.username,
+              });
+            }
           }
         }
       }
@@ -146,30 +254,5 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
     } on FirebaseException catch (e) {
       throw Exception(e.toString());
     }
-  }
-
-  @override
-  Future<bool> isMessageSender() async {
-    final currentUser = FirebaseAuth.instance.currentUser!.uid;
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-        .collection("users")
-        .doc(currentUser)
-        .collection("conversation")
-        .doc()
-        .collection("message")
-        .where('senderId', isEqualTo: currentUser)
-        .get();
-    return querySnapshot.docs.isNotEmpty;
-  }
-
-  Future<bool> isCurrentSender() async {
-    final currentUser = FirebaseAuth.instance.currentUser!.uid;
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-        .collection("users")
-        .doc(currentUser)
-        .collection("conversation")
-        .where('senderId', isEqualTo: currentUser)
-        .get();
-    return querySnapshot.docs.isNotEmpty;
   }
 }

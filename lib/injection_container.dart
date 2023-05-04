@@ -138,6 +138,18 @@ Future<void> init() async {
     () => DeleteConversationUseCase(firebaseRepository: sl()),
   );
 
+  sl.registerLazySingleton<SendNotificationUseCase>(
+    () => SendNotificationUseCase(notificationRepository: sl()),
+  );
+
+  sl.registerLazySingleton<EditProfileUseCase>(
+    () => EditProfileUseCase(profileRepository: sl()),
+  );
+
+  sl.registerLazySingleton<GetCurrentUserUseCase>(
+    () => GetCurrentUserUseCase(profileRepository: sl()),
+  );
+
   /// Repository
   sl.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(authRemoteDataSource: sl()),

@@ -152,7 +152,7 @@ class _BottomNavBarScreenState extends State<BottomNavBarScreen> {
         notificationDetails,
         payload: remoteMessage.data['body'],
       );
-      checkRoute(remoteMessage);
+      // checkRoute(remoteMessage);
     });
 
     // If the app is open in background (Not termainated)
