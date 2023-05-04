@@ -11,6 +11,9 @@ class MessageModel extends MessageEntity {
     required super.receiverId,
     required super.receiverName,
     required super.receiverPhotoUrl,
+    required super.messageType,
+    super.photoUrl,
+    super.image,
   });
 
   factory MessageModel.fromSnapshot(DocumentSnapshot snapshot) {
@@ -23,6 +26,8 @@ class MessageModel extends MessageEntity {
       receiverId: snapshot['receiverId'],
       receiverName: snapshot['receiverName'],
       receiverPhotoUrl: snapshot['receiverPhotoUrl'],
+      messageType: snapshot['messageType'],
+      photoUrl: snapshot['photoUrl'],
     );
   }
 
@@ -36,6 +41,8 @@ class MessageModel extends MessageEntity {
       "receiverId": receiverId,
       "receiverName": receiverName,
       "receiverPhotoUrl": receiverPhotoUrl,
+      "photoUrl": photoUrl,
+      "messageType": messageType,
     };
   }
 }

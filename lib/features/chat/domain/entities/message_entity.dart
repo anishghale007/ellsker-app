@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:image_picker/image_picker.dart';
 
 class MessageEntity extends Equatable {
   final String messageContent;
@@ -9,6 +10,9 @@ class MessageEntity extends Equatable {
   final String receiverId;
   final String receiverName;
   final String receiverPhotoUrl;
+  final String messageType;
+  final String? photoUrl;
+  final XFile? image;
 
   const MessageEntity({
     required this.messageContent,
@@ -19,6 +23,9 @@ class MessageEntity extends Equatable {
     required this.receiverId,
     required this.receiverName,
     required this.receiverPhotoUrl,
+    required this.messageType,
+    this.photoUrl,
+    this.image,
   });
 
   @override
@@ -31,5 +38,8 @@ class MessageEntity extends Equatable {
         receiverId,
         receiverName,
         receiverPhotoUrl,
+        messageType,
+        photoUrl,
+        image,
       ];
 }

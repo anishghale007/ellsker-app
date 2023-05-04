@@ -1,7 +1,9 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:internship_practice/features/chat/data/models/conversation_model.dart';
 import 'package:internship_practice/features/chat/data/models/message_model.dart';
 import 'package:internship_practice/features/chat/data/models/user_model.dart';
@@ -173,58 +175,130 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
   @override
   Future<String> sendMessage(MessageEntity messageEntity) async {
     try {
-      // sender data
-      final senderData = MessageModel(
-        messageContent: messageEntity.messageContent,
-        messageTime: messageEntity.messageTime,
-        senderId: messageEntity.senderId,
-        senderName: messageEntity.senderName,
-        senderPhotoUrl: messageEntity.senderPhotoUrl,
-        receiverId: messageEntity.receiverId,
-        receiverName: messageEntity.receiverName,
-        receiverPhotoUrl: messageEntity.receiverPhotoUrl,
-      ).toJson();
-      Map<String, dynamic> updateSenderConversationData = {
-        "lastMessage": messageEntity.messageContent,
-        "lastMessageSenderName": messageEntity.senderName,
-        "lastMessageSenderId": messageEntity.senderId,
-        "lastMessageTime": messageEntity.messageTime,
-        "isSeen": true,
-        "unSeenMessages": 0,
-      };
-      Map<String, dynamic> updateReceiverConversationData = {
-        "lastMessage": messageEntity.messageContent,
-        "lastMessageSenderName": messageEntity.senderName,
-        "lastMessageSenderId": messageEntity.senderId,
-        "lastMessageTime": messageEntity.messageTime,
-        "isSeen": false,
-        "unSeenMessages": FieldValue.increment(1),
-      };
-      dbUser
-          .doc(messageEntity.senderId)
-          .collection("conversation")
-          .doc(messageEntity.receiverId)
-          .update(updateSenderConversationData);
-      dbUser
-          .doc(messageEntity.senderId)
-          .collection("conversation")
-          .doc(messageEntity.receiverId)
-          .collection("message")
-          .doc()
-          .set(senderData);
-      // receiver data
-      dbUser
-          .doc(messageEntity.receiverId)
-          .collection("conversation")
-          .doc(messageEntity.senderId)
-          .update(updateReceiverConversationData);
-      dbUser
-          .doc(messageEntity.receiverId)
-          .collection("conversation")
-          .doc(messageEntity.senderId)
-          .collection("message")
-          .doc()
-          .set(senderData);
+      if (messageEntity.image != null) {
+        // IF THE USER SENDS A PHOTO MESSAGE
+        final newImageId =
+            "${messageEntity.senderId}:UploadedAt:${DateTime.now().toString()}";
+        final newImageStorage = FirebaseStorage.instance.ref().child(
+            '${messageEntity.senderId}-${messageEntity.receiverId}/$newImageId');
+        final newImageFile = File(messageEntity.image!.path);
+        await newImageStorage.putFile(newImageFile);
+        final photoUrl = await newImageStorage.getDownloadURL();
+        // sender data
+        final senderData = MessageModel(
+          messageContent: messageEntity.messageContent,
+          messageTime: messageEntity.messageTime,
+          senderId: messageEntity.senderId,
+          senderName: messageEntity.senderName,
+          senderPhotoUrl: messageEntity.senderPhotoUrl,
+          receiverId: messageEntity.receiverId,
+          receiverName: messageEntity.receiverName,
+          receiverPhotoUrl: messageEntity.receiverPhotoUrl,
+          messageType: messageEntity.messageType,
+          photoUrl: photoUrl,
+        ).toJson();
+        Map<String, dynamic> updateSenderConversationData = {
+          "lastMessage": messageEntity.messageContent,
+          "lastMessageSenderName": messageEntity.senderName,
+          "lastMessageSenderId": messageEntity.senderId,
+          "lastMessageTime": messageEntity.messageTime,
+          "messageType": messageEntity.messageType,
+          "isSeen": true,
+          "unSeenMessages": 0,
+        };
+        Map<String, dynamic> updateReceiverConversationData = {
+          "lastMessage": messageEntity.messageContent,
+          "lastMessageSenderName": messageEntity.senderName,
+          "lastMessageSenderId": messageEntity.senderId,
+          "lastMessageTime": messageEntity.messageTime,
+          "messageType": messageEntity.messageType,
+          "isSeen": false,
+          "unSeenMessages": FieldValue.increment(1),
+        };
+        dbUser
+            .doc(messageEntity.senderId)
+            .collection("conversation")
+            .doc(messageEntity.receiverId)
+            .update(updateSenderConversationData);
+        dbUser
+            .doc(messageEntity.senderId)
+            .collection("conversation")
+            .doc(messageEntity.receiverId)
+            .collection("message")
+            .doc()
+            .set(senderData);
+        // receiver data
+        dbUser
+            .doc(messageEntity.receiverId)
+            .collection("conversation")
+            .doc(messageEntity.senderId)
+            .update(updateReceiverConversationData);
+        dbUser
+            .doc(messageEntity.receiverId)
+            .collection("conversation")
+            .doc(messageEntity.senderId)
+            .collection("message")
+            .doc()
+            .set(senderData);
+      } else {
+        // If the user sends a text message
+        // sender data
+        final senderData = MessageModel(
+          messageContent: messageEntity.messageContent,
+          messageTime: messageEntity.messageTime,
+          senderId: messageEntity.senderId,
+          senderName: messageEntity.senderName,
+          senderPhotoUrl: messageEntity.senderPhotoUrl,
+          receiverId: messageEntity.receiverId,
+          receiverName: messageEntity.receiverName,
+          receiverPhotoUrl: messageEntity.receiverPhotoUrl,
+          messageType: messageEntity.messageType,
+          photoUrl: "",
+        ).toJson();
+        Map<String, dynamic> updateSenderConversationData = {
+          "lastMessage": messageEntity.messageContent,
+          "lastMessageSenderName": messageEntity.senderName,
+          "lastMessageSenderId": messageEntity.senderId,
+          "lastMessageTime": messageEntity.messageTime,
+          "messageType": messageEntity.messageType,
+          "isSeen": true,
+          "unSeenMessages": 0,
+        };
+        Map<String, dynamic> updateReceiverConversationData = {
+          "lastMessage": messageEntity.messageContent,
+          "lastMessageSenderName": messageEntity.senderName,
+          "lastMessageSenderId": messageEntity.senderId,
+          "lastMessageTime": messageEntity.messageTime,
+          "messageType": messageEntity.messageType,
+          "isSeen": false,
+          "unSeenMessages": FieldValue.increment(1),
+        };
+        dbUser
+            .doc(messageEntity.senderId)
+            .collection("conversation")
+            .doc(messageEntity.receiverId)
+            .update(updateSenderConversationData);
+        dbUser
+            .doc(messageEntity.senderId)
+            .collection("conversation")
+            .doc(messageEntity.receiverId)
+            .collection("message")
+            .doc()
+            .set(senderData);
+        // receiver data
+        dbUser
+            .doc(messageEntity.receiverId)
+            .collection("conversation")
+            .doc(messageEntity.senderId)
+            .update(updateReceiverConversationData);
+        dbUser
+            .doc(messageEntity.receiverId)
+            .collection("conversation")
+            .doc(messageEntity.senderId)
+            .collection("message")
+            .doc()
+            .set(senderData);
+      }
       return Future.value("Success");
     } on FirebaseException catch (e) {
       throw Exception(e.toString());

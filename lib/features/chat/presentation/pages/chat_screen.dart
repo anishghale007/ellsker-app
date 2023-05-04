@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:internship_practice/colors_utils.dart';
 import 'package:internship_practice/common/widgets/chat_box_widget.dart';
 import 'package:internship_practice/features/chat/domain/entities/conversation_entity.dart';
@@ -39,6 +40,7 @@ class _ChatScreenState extends State<ChatScreen> {
   late TextEditingController _messageController;
   final _form = GlobalKey<FormState>();
   String? myToken = "";
+  XFile? pickedImage;
 
   @override
   void initState() {
@@ -62,6 +64,18 @@ class _ChatScreenState extends State<ChatScreen> {
         });
       },
     );
+  }
+
+  Future<void> getImage() async {
+    try {
+      final ImagePicker imagePicker = ImagePicker();
+      final image = await imagePicker.pickImage(source: ImageSource.gallery);
+      setState(() {
+        pickedImage = image;
+      });
+    } catch (e) {
+      throw (Exception(e.toString()));
+    }
   }
 
   @override
@@ -142,6 +156,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                 senderId: data.senderId,
                                 senderName: data.senderName,
                                 senderPhotoUrl: data.senderPhotoUrl,
+                                messageType: data.messageType,
+                                photoUrl: data.photoUrl!,
                               );
                             },
                           );
@@ -171,8 +187,9 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ),
           bottomSheet: Container(
-            height: 55,
+            // height: 55,
             width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 12),
             decoration: BoxDecoration(
               color: ColorUtil.kSecondaryColor,
               border: Border.all(
@@ -183,7 +200,7 @@ class _ChatScreenState extends State<ChatScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Container(
-                  height: 36,
+                  // height: 36,
                   width: MediaQuery.of(context).size.width * 0.8,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
@@ -191,12 +208,18 @@ class _ChatScreenState extends State<ChatScreen> {
                   child: TextFormField(
                     controller: _messageController,
                     textCapitalization: TextCapitalization.sentences,
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return "";
-                      }
-                      return null;
-                    },
+                    textInputAction: TextInputAction.done,
+                    minLines: 1,
+                    maxLines: 3,
+                    readOnly: pickedImage != null ? true : false,
+                    validator: pickedImage != null
+                        ? null
+                        : (value) {
+                            if (value!.isEmpty) {
+                              return "";
+                            }
+                            return null;
+                          },
                     keyboardAppearance: Brightness.dark,
                     style: GoogleFonts.sourceSansPro(
                       color: Colors.white,
@@ -206,17 +229,40 @@ class _ChatScreenState extends State<ChatScreen> {
                       errorStyle: const TextStyle(fontSize: 0.01),
                       fillColor: Colors.grey[800],
                       filled: true,
+                      hintText: pickedImage != null ? pickedImage!.name : "",
+                      hintStyle: GoogleFonts.sourceSansPro(
+                        color: Colors.grey[400],
+                        fontSize: 16,
+                      ),
                       contentPadding: const EdgeInsets.symmetric(
                         vertical: 5,
-                        horizontal: 5,
+                        horizontal: 15,
                       ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(100),
                       ),
-                      prefixIcon: Icon(
-                        Icons.image_outlined,
-                        color: ColorUtil.kIconColor,
+                      prefixIcon: IconButton(
+                        onPressed: () {
+                          getImage();
+                        },
+                        icon: Icon(
+                          Icons.image_outlined,
+                          color: ColorUtil.kIconColor,
+                        ),
                       ),
+                      suffixIcon: pickedImage != null
+                          ? IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  pickedImage = null;
+                                });
+                              },
+                              icon: Icon(
+                                Icons.highlight_remove_outlined,
+                                color: ColorUtil.kTertiaryColor,
+                              ),
+                            )
+                          : null,
                     ),
                   ),
                 ),
@@ -276,62 +322,122 @@ class _ChatScreenState extends State<ChatScreen> {
                         if (_form.currentState!.validate()) {
                           final currentUser =
                               FirebaseAuth.instance.currentUser!;
-                          context.read<ConversationBloc>().add(
-                                CreateConversationEvent(
-                                  conversationEntity: ConversationEntity(
+                          if (pickedImage != null) {
+                            // If the user picks an image
+                            context.read<ConversationBloc>().add(
+                                  CreateConversationEvent(
+                                    conversationEntity: ConversationEntity(
+                                      receiverId: widget.userId,
+                                      receiverName: widget.username,
+                                      receiverPhotoUrl: widget.photoUrl,
+                                      senderId: currentUser.uid, // me
+                                      senderName: currentUser.displayName!,
+                                      senderPhotoUrl: currentUser.photoURL!,
+                                      lastMessage: "Sent a Photo.",
+                                      lastMessageTime:
+                                          DateTime.now().toString(),
+                                      lastMessageSenderName:
+                                          currentUser.displayName!,
+                                      lastMessageSenderId: currentUser.uid,
+                                      isSeen: false,
+                                      unSeenMessages: 0,
+                                      receiverToken: widget.token,
+                                      senderToken: myToken!,
+                                    ),
+                                  ),
+                                );
+                            context.read<MessageCubit>().sendMessage(
+                                  messageEntity: MessageEntity(
+                                    messageContent: "Sent a Photo.",
+                                    messageTime: DateTime.now().toString(),
+                                    senderId: currentUser.uid,
+                                    senderName: currentUser.displayName!,
+                                    senderPhotoUrl: currentUser.photoURL!,
                                     receiverId: widget.userId,
                                     receiverName: widget.username,
                                     receiverPhotoUrl: widget.photoUrl,
-                                    senderId: currentUser.uid, // me
+                                    messageType: "photo",
+                                    image: pickedImage,
+                                  ),
+                                );
+                            context.read<MessageCubit>().getAllMessages(
+                                  conversationId: widget.userId,
+                                );
+                            context.read<NotificationCubit>().sendNotification(
+                                  notificationEntity: NotificationEntity(
+                                    conversationId: widget.userId,
+                                    token: widget.token,
+                                    title: currentUser.displayName!,
+                                    body: "Sent a Photo.",
+                                    photoUrl: widget.photoUrl,
+                                    username: widget.username,
+                                  ),
+                                );
+                            setState(() {
+                              pickedImage = null;
+                            });
+                          } else {
+                            // If the user does not pick an image and sends a text message
+                            context.read<ConversationBloc>().add(
+                                  CreateConversationEvent(
+                                    conversationEntity: ConversationEntity(
+                                      receiverId: widget.userId,
+                                      receiverName: widget.username,
+                                      receiverPhotoUrl: widget.photoUrl,
+                                      senderId: currentUser.uid, // me
+                                      senderName: currentUser.displayName!,
+                                      senderPhotoUrl: currentUser.photoURL!,
+                                      lastMessage:
+                                          _messageController.text.trim(),
+                                      lastMessageTime:
+                                          DateTime.now().toString(),
+                                      lastMessageSenderName:
+                                          currentUser.displayName!,
+                                      lastMessageSenderId: currentUser.uid,
+                                      isSeen: false,
+                                      unSeenMessages: 0,
+                                      receiverToken: widget.token,
+                                      senderToken: myToken!,
+                                    ),
+                                  ),
+                                );
+                            context.read<MessageCubit>().sendMessage(
+                                  messageEntity: MessageEntity(
+                                    messageContent:
+                                        _messageController.text.trim(),
+                                    messageTime: DateTime.now().toString(),
+                                    senderId: currentUser.uid,
                                     senderName: currentUser.displayName!,
                                     senderPhotoUrl: currentUser.photoURL!,
-                                    lastMessage: _messageController.text.trim(),
-                                    lastMessageTime: DateTime.now().toString(),
-                                    lastMessageSenderName:
-                                        currentUser.displayName!,
-                                    lastMessageSenderId: currentUser.uid,
-                                    isSeen: false,
-                                    unSeenMessages: 0,
-                                    receiverToken: widget.token,
-                                    senderToken: myToken!,
+                                    receiverId: widget.userId,
+                                    receiverName: widget.username,
+                                    receiverPhotoUrl: widget.photoUrl,
+                                    messageType: "text",
                                   ),
-                                ),
-                              );
-                          context.read<MessageCubit>().sendMessage(
-                                messageEntity: MessageEntity(
-                                  messageContent:
-                                      _messageController.text.trim(),
-                                  messageTime: DateTime.now().toString(),
-                                  senderId: currentUser.uid,
-                                  senderName: currentUser.displayName!,
-                                  senderPhotoUrl: currentUser.photoURL!,
-                                  receiverId: widget.userId,
-                                  receiverName: widget.username,
-                                  receiverPhotoUrl: widget.photoUrl,
-                                ),
-                              );
-                          context.read<MessageCubit>().getAllMessages(
-                                conversationId: widget.userId,
-                              );
-                          // context.read<NotificationBloc>().add(
-                          //       SendNotificationEvent(
-                          //         notificationEntity: NotificationEntity(
-                          //           token: widget.token,
-                          //           title: widget.username,
-                          //           body: _messageController.text.trim(),
-                          //         ),
-                          //       ),
-                          //     );
-                          context.read<NotificationCubit>().sendNotification(
-                                notificationEntity: NotificationEntity(
+                                );
+                            context.read<MessageCubit>().getAllMessages(
                                   conversationId: widget.userId,
-                                  token: widget.token,
-                                  title: currentUser.displayName!,
-                                  body: _messageController.text.trim(),
-                                  photoUrl: widget.photoUrl,
-                                  username: widget.username,
-                                ),
-                              );
+                                );
+                            // context.read<NotificationBloc>().add(
+                            //       SendNotificationEvent(
+                            //         notificationEntity: NotificationEntity(
+                            //           token: widget.token,
+                            //           title: widget.username,
+                            //           body: _messageController.text.trim(),
+                            //         ),
+                            //       ),
+                            //     );
+                            context.read<NotificationCubit>().sendNotification(
+                                  notificationEntity: NotificationEntity(
+                                    conversationId: widget.userId,
+                                    token: widget.token,
+                                    title: currentUser.displayName!,
+                                    body: _messageController.text.trim(),
+                                    photoUrl: widget.photoUrl,
+                                    username: widget.username,
+                                  ),
+                                );
+                          }
                         }
                       },
                       style: ElevatedButton.styleFrom(
