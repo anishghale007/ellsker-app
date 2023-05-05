@@ -13,8 +13,8 @@ import 'package:internship_practice/features/chat/data/repositories/firebase_rep
 import 'package:internship_practice/features/chat/domain/repositories/firebase_repository.dart';
 import 'package:internship_practice/features/chat/domain/usecases/create_conversation_usecase.dart';
 import 'package:internship_practice/features/chat/domain/usecases/delete_conversation_usecase.dart';
+import 'package:internship_practice/features/chat/domain/usecases/get_all_chat_message.dart';
 import 'package:internship_practice/features/chat/domain/usecases/get_all_conversation_usecase.dart';
-import 'package:internship_practice/features/chat/domain/usecases/get_all_messages_usecase.dart';
 import 'package:internship_practice/features/chat/domain/usecases/get_all_users_usecase.dart';
 import 'package:internship_practice/features/chat/domain/usecases/seen_message_usecase.dart';
 import 'package:internship_practice/features/chat/domain/usecases/send_message_usecase.dart';
@@ -78,7 +78,7 @@ Future<void> init() async {
   sl.registerFactory<MessageCubit>(
     () => MessageCubit(
       sendMessageUseCase: sl(),
-      getAllMessagesUsecase: sl(),
+      getAllChatMessagesUseCase: sl(),
     ),
   );
 
@@ -123,8 +123,8 @@ Future<void> init() async {
     () => SendMessageUseCase(firebaseRepository: sl()),
   );
 
-  sl.registerLazySingleton<GetAllMessagesUsecase>(
-    () => GetAllMessagesUsecase(firebaseRepository: sl()),
+  sl.registerLazySingleton<GetAllChatMessagesUseCase>(
+    () => GetAllChatMessagesUseCase(firebaseRepository: sl()),
   );
 
   sl.registerLazySingleton<GetAllConversationUsecase>(

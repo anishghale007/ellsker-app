@@ -61,8 +61,7 @@ class MyApp extends StatelessWidget {
           create: (context) => di.sl<SignOutCubit>(),
         ),
         BlocProvider<ConversationCubit>(
-          create: (context) =>
-              di.sl<ConversationCubit>()..getAllConversations(),
+          create: (context) => di.sl<ConversationCubit>(),
         ),
         BlocProvider<ConversationBloc>(
           create: (context) => di.sl<ConversationBloc>(),

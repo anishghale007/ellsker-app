@@ -14,7 +14,6 @@ import 'package:internship_practice/features/notification/domain/entities/notifi
 import 'package:internship_practice/features/chat/presentation/bloc/conversation/conversation_bloc.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
 import 'package:internship_practice/features/notification/presentation/cubit/notification/notification_cubit.dart';
-import 'package:internship_practice/injection_container.dart';
 
 class ChatScreen extends StatefulWidget {
   final String username;
@@ -69,7 +68,10 @@ class _ChatScreenState extends State<ChatScreen> {
   Future<void> getImage() async {
     try {
       final ImagePicker imagePicker = ImagePicker();
-      final image = await imagePicker.pickImage(source: ImageSource.gallery);
+      final image = await imagePicker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 50,
+      );
       setState(() {
         pickedImage = image;
       });
@@ -130,55 +132,101 @@ class _ChatScreenState extends State<ChatScreen> {
                   const SizedBox(
                     height: 50,
                   ),
-                  BlocProvider<MessageCubit>(
-                    create: (context) => sl<MessageCubit>()
-                      ..getAllMessages(conversationId: widget.userId),
-                    child: BlocBuilder<MessageCubit, MessageState>(
-                      builder: (context, state) {
-                        if (state is MessageLoaded) {
-                          log("Message Loaded");
-                          return ListView.separated(
-                            separatorBuilder: (context, index) => const Divider(
-                              height: 30,
-                            ),
-                            itemCount: state.messageList.length,
-                            physics: const NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            scrollDirection: Axis.vertical,
-                            itemBuilder: (context, index) {
-                              final data = state.messageList[index];
-                              return ChatBoxWidget(
-                                messageContent: data.messageContent,
-                                messageTime: data.messageTime,
-                                receiverId: data.receiverId,
-                                receiverName: data.receiverName,
-                                receiverPhotoUrl: data.receiverPhotoUrl,
-                                senderId: data.senderId,
-                                senderName: data.senderName,
-                                senderPhotoUrl: data.senderPhotoUrl,
-                                messageType: data.messageType,
-                                photoUrl: data.photoUrl!,
-                              );
-                            },
-                          );
-                        } else if (state is MessageLoading) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        } else if (state is MessageError) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(state.errorMessage.toString()),
-                              duration: const Duration(seconds: 5),
-                            ),
-                          );
-                        } else {
-                          log("Message Not Loaded");
-                        }
-                        return Container();
-                      },
-                    ),
+                  StreamBuilder<List<MessageEntity>>(
+                    stream: context
+                        .read<MessageCubit>()
+                        .getAllChatMessages(conversationId: widget.userId),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                          ),
+                        );
+                      } else if (snapshot.hasData) {
+                        return ListView.separated(
+                          separatorBuilder: (context, index) => const Divider(
+                            height: 30,
+                          ),
+                          itemCount: snapshot.data!.length,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          scrollDirection: Axis.vertical,
+                          itemBuilder: (context, index) {
+                            final data = snapshot.data![index];
+                            return ChatBoxWidget(
+                              messageContent: data.messageContent,
+                              messageTime: data.messageTime,
+                              receiverId: data.receiverId,
+                              receiverName: data.receiverName,
+                              receiverPhotoUrl: data.receiverPhotoUrl,
+                              senderId: data.senderId,
+                              senderName: data.senderName,
+                              senderPhotoUrl: data.senderPhotoUrl,
+                              messageType: data.messageType,
+                              photoUrl: data.photoUrl!,
+                            );
+                          },
+                        );
+                      } else {
+                        return const Center(
+                          child: Text(
+                            "Empty",
+                            style: TextStyle(color: Colors.white, fontSize: 50),
+                          ),
+                        );
+                      }
+                    },
                   ),
+                  // BlocProvider<MessageCubit>(
+                  //   create: (context) => sl<MessageCubit>()
+                  //     ..getAllMessages(conversationId: widget.userId),
+                  //   child: BlocBuilder<MessageCubit, MessageState>(
+                  //     builder: (context, state) {
+                  //       if (state is MessageLoaded) {
+                  //         log("Message Loaded");
+                  //         return ListView.separated(
+                  //           separatorBuilder: (context, index) => const Divider(
+                  //             height: 30,
+                  //           ),
+                  //           itemCount: state.messageList.length,
+                  //           physics: const NeverScrollableScrollPhysics(),
+                  //           shrinkWrap: true,
+                  //           scrollDirection: Axis.vertical,
+                  //           itemBuilder: (context, index) {
+                  //             final data = state.messageList[index];
+                  //             return ChatBoxWidget(
+                  //               messageContent: data.messageContent,
+                  //               messageTime: data.messageTime,
+                  //               receiverId: data.receiverId,
+                  //               receiverName: data.receiverName,
+                  //               receiverPhotoUrl: data.receiverPhotoUrl,
+                  //               senderId: data.senderId,
+                  //               senderName: data.senderName,
+                  //               senderPhotoUrl: data.senderPhotoUrl,
+                  //               messageType: data.messageType,
+                  //               photoUrl: data.photoUrl!,
+                  //             );
+                  //           },
+                  //         );
+                  //       } else if (state is MessageLoading) {
+                  //         return const Center(
+                  //           child: CircularProgressIndicator(),
+                  //         );
+                  //       } else if (state is MessageError) {
+                  //         ScaffoldMessenger.of(context).showSnackBar(
+                  //           SnackBar(
+                  //             content: Text(state.errorMessage.toString()),
+                  //             duration: const Duration(seconds: 5),
+                  //           ),
+                  //         );
+                  //       } else {
+                  //         log("Message Not Loaded");
+                  //       }
+                  //       return Container();
+                  //     },
+                  //   ),
+                  // ),
                   const SizedBox(
                     height: 80,
                   ),
@@ -200,7 +248,6 @@ class _ChatScreenState extends State<ChatScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Container(
-                  // height: 36,
                   width: MediaQuery.of(context).size.width * 0.8,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
@@ -360,9 +407,6 @@ class _ChatScreenState extends State<ChatScreen> {
                                     image: pickedImage,
                                   ),
                                 );
-                            context.read<MessageCubit>().getAllMessages(
-                                  conversationId: widget.userId,
-                                );
                             context.read<NotificationCubit>().sendNotification(
                                   notificationEntity: NotificationEntity(
                                     conversationId: widget.userId,
@@ -415,9 +459,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                     messageType: "text",
                                   ),
                                 );
-                            context.read<MessageCubit>().getAllMessages(
-                                  conversationId: widget.userId,
-                                );
+
                             // context.read<NotificationBloc>().add(
                             //       SendNotificationEvent(
                             //         notificationEntity: NotificationEntity(

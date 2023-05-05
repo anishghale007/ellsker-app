@@ -22,8 +22,8 @@ class ConversationCubit extends Cubit<ConversationState> {
   Future<void> createConversation(
       {required ConversationEntity conversationEntity}) async {
     try {
-      final response = await createConversationUseCase
-          .call(Params(conversationEntity: conversationEntity));
+      final response = await createConversationUseCase.call(
+          CreateConversationParams(conversationEntity: conversationEntity));
       response.fold(
           (failure) =>
               emit(ConversationError(errorMessage: failure.toString())),
@@ -33,21 +33,25 @@ class ConversationCubit extends Cubit<ConversationState> {
     }
   }
 
-  Future<void> getAllConversations() async {
-    emit(ConversationLoading());
-    final response = await getAllConversationUsecase.call(NoParams());
-    response.fold(
-      (failure) => emit(ConversationError(errorMessage: failure.toString())),
-      (conversationList) => conversationList.listen((conversation) {
-        emit(ConversationLoaded(conversationList: conversation));
-      }),
-    );
+  Stream<List<ConversationEntity>> getAllConversations() {
+    return getAllConversationUsecase.call(NoParams());
   }
+
+  // Future<void> getAllConversations() async {
+  //   emit(ConversationLoading());
+  //   final response = await getAllConversationUsecase.call(NoParams());
+  //   response.fold(
+  //     (failure) => emit(ConversationError(errorMessage: failure.toString())),
+  //     (conversationList) => conversationList.listen((conversation) {
+  //       emit(ConversationLoaded(conversationList: conversation));
+  //     }),
+  //   );
+  // }
 
   Future<void> seenMessage({required String conversationId}) async {
     try {
-      final response =
-          await seenMessageUsecase.call(Param(conversationId: conversationId));
+      final response = await seenMessageUsecase
+          .call(SeenMessageParams(conversationId: conversationId));
       response.fold(
           (failure) =>
               emit(ConversationError(errorMessage: failure.toString())),

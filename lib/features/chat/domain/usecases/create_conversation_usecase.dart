@@ -5,22 +5,23 @@ import 'package:internship_practice/core/usecases/usecase.dart';
 import 'package:internship_practice/features/chat/domain/entities/conversation_entity.dart';
 import 'package:internship_practice/features/chat/domain/repositories/firebase_repository.dart';
 
-class CreateConversationUseCase implements UseCase<String, Params> {
+class CreateConversationUseCase
+    implements UseCase<String, CreateConversationParams> {
   final FirebaseRepository firebaseRepository;
 
   const CreateConversationUseCase({required this.firebaseRepository});
 
   @override
-  Future<Either<Failure, String>> call(Params params) async {
+  Future<Either<Failure, String>> call(CreateConversationParams params) async {
     return await firebaseRepository
         .createConversation(params.conversationEntity);
   }
 }
 
-class Params extends Equatable {
+class CreateConversationParams extends Equatable {
   final ConversationEntity conversationEntity;
 
-  const Params({required this.conversationEntity});
+  const CreateConversationParams({required this.conversationEntity});
 
   @override
   List<Object?> get props => [conversationEntity];

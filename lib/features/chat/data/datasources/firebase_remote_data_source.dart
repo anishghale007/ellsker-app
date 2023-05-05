@@ -17,10 +17,8 @@ abstract class FirebaseRemoteDataSource {
   Future<String> deleteConversation(String conversationId);
   Stream<List<ConversationEntity>> getAllConversations();
   Future<String> sendMessage(MessageEntity messageEntity);
-  Stream<List<MessageEntity>> getAllMessages(String conversationId);
+  Stream<List<MessageEntity>> getAllChatMessages(String conversationId);
   Future<void> seenMessage(String conversationId);
-  Future<bool> isExistentDocument();
-  Future<bool> isNotExistentAtOtherUserDocument(String receiverId);
 }
 
 class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
@@ -37,14 +35,15 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
   Future<String> createConversation(
       ConversationEntity conversationEntity) async {
     try {
-      if (await isExistentDocument()) {
-        // checks the document of current user
+      if (await isExistentConversationDocument()) {
+        // checks if the document exists in the current user collection
         log("Document already exists in the current user");
-      } else if (await isNotExistentAtOtherUserDocument(
+      } else if (await isNotExistentConversationDocumentAtOtherUser(
           conversationEntity.receiverId)) {
+        // checks if the document exists in both of the user collection. Used if the receiver deletes the conversation
         log("Document does not exist in the other user. Creating it now");
         // sender data
-        final senderData = ConversationModel(
+        _saveSenderDataToConversationCollection(
           receiverId: conversationEntity.receiverId,
           receiverName: conversationEntity.receiverName,
           receiverPhotoUrl: conversationEntity.receiverPhotoUrl,
@@ -59,14 +58,9 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
           unSeenMessages: conversationEntity.unSeenMessages,
           senderToken: conversationEntity.senderToken,
           receiverToken: conversationEntity.receiverToken,
-        ).toJson();
-        dbUser
-            .doc(conversationEntity.senderId)
-            .collection("conversation")
-            .doc(conversationEntity.receiverId)
-            .set(senderData);
+        );
         // receiver data
-        final receiverData = ConversationModel(
+        _saveReceiverDataToConversationCollection(
           receiverId: conversationEntity.senderId,
           receiverName: conversationEntity.senderName,
           receiverPhotoUrl: conversationEntity.senderPhotoUrl,
@@ -81,15 +75,11 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
           unSeenMessages: conversationEntity.unSeenMessages,
           senderToken: conversationEntity.receiverToken,
           receiverToken: conversationEntity.senderToken,
-        ).toJson();
-        dbUser
-            .doc(conversationEntity.receiverId)
-            .collection("conversation")
-            .doc(conversationEntity.senderId)
-            .set(receiverData);
+        );
       } else {
+        // creating a new conversation for both of the user
         // sender data
-        final senderData = ConversationModel(
+        _saveSenderDataToConversationCollection(
           receiverId: conversationEntity.receiverId,
           receiverName: conversationEntity.receiverName,
           receiverPhotoUrl: conversationEntity.receiverPhotoUrl,
@@ -104,14 +94,9 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
           unSeenMessages: conversationEntity.unSeenMessages,
           senderToken: conversationEntity.senderToken,
           receiverToken: conversationEntity.receiverToken,
-        ).toJson();
-        dbUser
-            .doc(conversationEntity.senderId)
-            .collection("conversation")
-            .doc(conversationEntity.receiverId)
-            .set(senderData);
+        );
         // receiver data
-        final receiverData = ConversationModel(
+        _saveReceiverDataToConversationCollection(
           receiverId: conversationEntity.senderId,
           receiverName: conversationEntity.senderName,
           receiverPhotoUrl: conversationEntity.senderPhotoUrl,
@@ -126,12 +111,7 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
           unSeenMessages: conversationEntity.unSeenMessages,
           senderToken: conversationEntity.receiverToken,
           receiverToken: conversationEntity.senderToken,
-        ).toJson();
-        dbUser
-            .doc(conversationEntity.receiverId)
-            .collection("conversation")
-            .doc(conversationEntity.senderId)
-            .set(receiverData);
+        );
       }
       return Future.value("Success");
     } on FirebaseException catch (e) {
@@ -177,15 +157,15 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
     try {
       if (messageEntity.image != null) {
         // IF THE USER SENDS A PHOTO MESSAGE
-        final newImageId =
+        final imageId =
             "${messageEntity.senderId}:UploadedAt:${DateTime.now().toString()}";
-        final newImageStorage = FirebaseStorage.instance.ref().child(
-            '${messageEntity.senderId}-${messageEntity.receiverId}/$newImageId');
-        final newImageFile = File(messageEntity.image!.path);
-        await newImageStorage.putFile(newImageFile);
-        final photoUrl = await newImageStorage.getDownloadURL();
-        // sender data
-        final senderData = MessageModel(
+        final imageStorage = FirebaseStorage.instance.ref().child(
+            '${messageEntity.senderId}-${messageEntity.receiverId}/$imageId');
+        final imageFile = File(messageEntity.image!.path);
+        await imageStorage.putFile(imageFile);
+        final photoUrl = await imageStorage.getDownloadURL();
+        // saving the data
+        _saveMessageDataToMessageCollection(
           messageContent: messageEntity.messageContent,
           messageTime: messageEntity.messageTime,
           senderId: messageEntity.senderId,
@@ -196,54 +176,11 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
           receiverPhotoUrl: messageEntity.receiverPhotoUrl,
           messageType: messageEntity.messageType,
           photoUrl: photoUrl,
-        ).toJson();
-        Map<String, dynamic> updateSenderConversationData = {
-          "lastMessage": messageEntity.messageContent,
-          "lastMessageSenderName": messageEntity.senderName,
-          "lastMessageSenderId": messageEntity.senderId,
-          "lastMessageTime": messageEntity.messageTime,
-          "messageType": messageEntity.messageType,
-          "isSeen": true,
-          "unSeenMessages": 0,
-        };
-        Map<String, dynamic> updateReceiverConversationData = {
-          "lastMessage": messageEntity.messageContent,
-          "lastMessageSenderName": messageEntity.senderName,
-          "lastMessageSenderId": messageEntity.senderId,
-          "lastMessageTime": messageEntity.messageTime,
-          "messageType": messageEntity.messageType,
-          "isSeen": false,
-          "unSeenMessages": FieldValue.increment(1),
-        };
-        dbUser
-            .doc(messageEntity.senderId)
-            .collection("conversation")
-            .doc(messageEntity.receiverId)
-            .update(updateSenderConversationData);
-        dbUser
-            .doc(messageEntity.senderId)
-            .collection("conversation")
-            .doc(messageEntity.receiverId)
-            .collection("message")
-            .doc()
-            .set(senderData);
-        // receiver data
-        dbUser
-            .doc(messageEntity.receiverId)
-            .collection("conversation")
-            .doc(messageEntity.senderId)
-            .update(updateReceiverConversationData);
-        dbUser
-            .doc(messageEntity.receiverId)
-            .collection("conversation")
-            .doc(messageEntity.senderId)
-            .collection("message")
-            .doc()
-            .set(senderData);
+        );
       } else {
         // If the user sends a text message
-        // sender data
-        final senderData = MessageModel(
+        // saving the data
+        _saveMessageDataToMessageCollection(
           messageContent: messageEntity.messageContent,
           messageTime: messageEntity.messageTime,
           senderId: messageEntity.senderId,
@@ -254,50 +191,7 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
           receiverPhotoUrl: messageEntity.receiverPhotoUrl,
           messageType: messageEntity.messageType,
           photoUrl: "",
-        ).toJson();
-        Map<String, dynamic> updateSenderConversationData = {
-          "lastMessage": messageEntity.messageContent,
-          "lastMessageSenderName": messageEntity.senderName,
-          "lastMessageSenderId": messageEntity.senderId,
-          "lastMessageTime": messageEntity.messageTime,
-          "messageType": messageEntity.messageType,
-          "isSeen": true,
-          "unSeenMessages": 0,
-        };
-        Map<String, dynamic> updateReceiverConversationData = {
-          "lastMessage": messageEntity.messageContent,
-          "lastMessageSenderName": messageEntity.senderName,
-          "lastMessageSenderId": messageEntity.senderId,
-          "lastMessageTime": messageEntity.messageTime,
-          "messageType": messageEntity.messageType,
-          "isSeen": false,
-          "unSeenMessages": FieldValue.increment(1),
-        };
-        dbUser
-            .doc(messageEntity.senderId)
-            .collection("conversation")
-            .doc(messageEntity.receiverId)
-            .update(updateSenderConversationData);
-        dbUser
-            .doc(messageEntity.senderId)
-            .collection("conversation")
-            .doc(messageEntity.receiverId)
-            .collection("message")
-            .doc()
-            .set(senderData);
-        // receiver data
-        dbUser
-            .doc(messageEntity.receiverId)
-            .collection("conversation")
-            .doc(messageEntity.senderId)
-            .update(updateReceiverConversationData);
-        dbUser
-            .doc(messageEntity.receiverId)
-            .collection("conversation")
-            .doc(messageEntity.senderId)
-            .collection("message")
-            .doc()
-            .set(senderData);
+        );
       }
       return Future.value("Success");
     } on FirebaseException catch (e) {
@@ -306,7 +200,7 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
   }
 
   @override
-  Stream<List<MessageEntity>> getAllMessages(String conversationId) {
+  Stream<List<MessageEntity>> getAllChatMessages(String conversationId) {
     final currentUser = FirebaseAuth.instance.currentUser!.uid;
     return dbUser
         .doc(currentUser)
@@ -315,8 +209,19 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
         .collection("message")
         .orderBy("messageTime")
         .snapshots()
-        .map((event) =>
-            event.docs.map((e) => MessageModel.fromSnapshot(e)).toList());
+        .map(
+      (event) {
+        List<MessageEntity> message = [];
+        if (event.size == 0) {
+          message = [];
+          log("Empty collection");
+        } else {
+          message =
+              event.docs.map((e) => MessageModel.fromSnapshot(e)).toList();
+        }
+        return message;
+      },
+    );
   }
 
   @override
@@ -337,8 +242,7 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
     }
   }
 
-  @override
-  Future<bool> isExistentDocument() async {
+  Future<bool> isExistentConversationDocument() async {
     final currentUser = FirebaseAuth.instance.currentUser!.uid;
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection("users")
@@ -349,8 +253,8 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
     return querySnapshot.docs.isNotEmpty;
   }
 
-  @override
-  Future<bool> isNotExistentAtOtherUserDocument(String receiverId) async {
+  Future<bool> isNotExistentConversationDocumentAtOtherUser(
+      String receiverId) async {
     final currentUser = FirebaseAuth.instance.currentUser!.uid;
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('users')
@@ -359,5 +263,153 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
         .where('receiverId', isEqualTo: currentUser)
         .get();
     return querySnapshot.docs.isEmpty;
+  }
+
+  void _saveSenderDataToConversationCollection({
+    required String receiverId,
+    required String receiverName,
+    required String receiverPhotoUrl,
+    required String senderId,
+    required String senderName,
+    required String senderPhotoUrl,
+    required String lastMessage,
+    required String lastMessageSenderName,
+    required String lastMessageSenderId,
+    required String lastMessageTime,
+    required bool isSeen,
+    required int unSeenMessages,
+    required String senderToken,
+    required String receiverToken,
+  }) {
+    final senderData = ConversationModel(
+      receiverId: receiverId,
+      receiverName: receiverName,
+      receiverPhotoUrl: receiverPhotoUrl,
+      senderId: senderId,
+      senderName: senderName,
+      senderPhotoUrl: senderPhotoUrl,
+      lastMessage: lastMessage,
+      lastMessageSenderName: lastMessageSenderName,
+      lastMessageSenderId: lastMessageSenderId,
+      lastMessageTime: lastMessageTime,
+      isSeen: isSeen,
+      unSeenMessages: unSeenMessages,
+      senderToken: senderToken,
+      receiverToken: receiverToken,
+    ).toJson();
+    dbUser
+        .doc(senderId)
+        .collection('conversation')
+        .doc(receiverId)
+        .set(senderData);
+  }
+
+  void _saveReceiverDataToConversationCollection({
+    required String receiverId,
+    required String receiverName,
+    required String receiverPhotoUrl,
+    required String senderId,
+    required String senderName,
+    required String senderPhotoUrl,
+    required String lastMessage,
+    required String lastMessageSenderName,
+    required String lastMessageSenderId,
+    required String lastMessageTime,
+    required bool isSeen,
+    required int unSeenMessages,
+    required String senderToken,
+    required String receiverToken,
+  }) {
+    final receiverData = ConversationModel(
+      receiverId: senderId,
+      receiverName: senderName,
+      receiverPhotoUrl: senderPhotoUrl,
+      senderId: receiverId,
+      senderName: receiverName,
+      senderPhotoUrl: receiverPhotoUrl,
+      lastMessage: lastMessage,
+      lastMessageSenderName: lastMessageSenderName,
+      lastMessageSenderId: lastMessageSenderId,
+      lastMessageTime: lastMessageTime,
+      isSeen: isSeen,
+      unSeenMessages: unSeenMessages,
+      senderToken: receiverToken,
+      receiverToken: senderToken,
+    ).toJson();
+    dbUser
+        .doc(receiverId)
+        .collection("conversation")
+        .doc(senderId)
+        .set(receiverData);
+  }
+
+  void _saveMessageDataToMessageCollection({
+    required String messageContent,
+    required String messageTime,
+    required String senderId,
+    required String senderName,
+    required String senderPhotoUrl,
+    required String receiverId,
+    required String receiverName,
+    required String receiverPhotoUrl,
+    required String messageType,
+    required String photoUrl,
+  }) {
+    final senderData = MessageModel(
+      messageContent: messageContent,
+      messageTime: messageTime,
+      senderId: senderId,
+      senderName: senderName,
+      senderPhotoUrl: senderPhotoUrl,
+      receiverId: receiverId,
+      receiverName: receiverName,
+      receiverPhotoUrl: receiverPhotoUrl,
+      messageType: messageType,
+      photoUrl: photoUrl,
+    ).toJson();
+    Map<String, dynamic> updateSenderConversationData = {
+      "lastMessage": messageContent,
+      "lastMessageSenderName": senderName,
+      "lastMessageSenderId": senderId,
+      "lastMessageTime": messageTime,
+      "messageType": messageType,
+      "isSeen": true,
+      "unSeenMessages": 0,
+    };
+    Map<String, dynamic> updateReceiverConversationData = {
+      "lastMessage": messageContent,
+      "lastMessageSenderName": senderName,
+      "lastMessageSenderId": senderId,
+      "lastMessageTime": messageTime,
+      "messageType": messageType,
+      "isSeen": false,
+      "unSeenMessages": FieldValue.increment(1),
+    };
+    // sender data
+    dbUser
+        .doc(senderId)
+        .collection("conversation")
+        .doc(receiverId)
+        .update(updateSenderConversationData);
+    dbUser
+        .doc(senderId)
+        .collection("conversation")
+        .doc(receiverId)
+        .collection("message")
+        .doc()
+        .set(senderData);
+    // receiver data
+    dbUser
+        .doc(receiverId)
+        .collection("conversation")
+        .doc(senderId)
+        .update(updateReceiverConversationData);
+    dbUser
+        .doc(receiverId)
+        .collection("conversation")
+        .doc(senderId)
+        .collection("message")
+        .doc()
+        .set(senderData);
   }
 }

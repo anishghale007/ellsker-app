@@ -4,21 +4,21 @@ import 'package:internship_practice/core/error/failure.dart';
 import 'package:internship_practice/core/usecases/usecase.dart';
 import 'package:internship_practice/features/chat/domain/repositories/firebase_repository.dart';
 
-class SeenMessageUsecase implements UseCase<void, Param> {
+class SeenMessageUsecase implements UseCase<void, SeenMessageParams> {
   final FirebaseRepository firebaseRepository;
 
   const SeenMessageUsecase({required this.firebaseRepository});
 
   @override
-  Future<Either<Failure, void>> call(Param params) async {
+  Future<Either<Failure, void>> call(SeenMessageParams params) async {
     return await firebaseRepository.seenMessage(params.conversationId);
   }
 }
 
-class Param extends Equatable {
+class SeenMessageParams extends Equatable {
   final String conversationId;
 
-  const Param({required this.conversationId});
+  const SeenMessageParams({required this.conversationId});
   @override
   List<Object?> get props => [conversationId];
 }

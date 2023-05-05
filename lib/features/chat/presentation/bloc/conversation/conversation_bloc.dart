@@ -26,7 +26,7 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationsState> {
   Future<void> _onCreateConversation(
       CreateConversationEvent event, Emitter<ConversationsState> emit) async {
     final createConversation = await createConversationUseCase.call(
-      Params(conversationEntity: event.conversationEntity),
+      CreateConversationParams(conversationEntity: event.conversationEntity),
     );
     emit(ConversationsLoading());
     createConversation.fold(
@@ -41,7 +41,7 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationsState> {
       DeleteConversationEvent event, Emitter<ConversationsState> emit) async {
     try {
       final deleteConversation = await deleteConversationUseCase
-          .call(Parameters(conversationId: event.conversationId));
+          .call(DeleteConversationParams(conversationId: event.conversationId));
       emit(ConversationsLoading());
       deleteConversation.fold(
           (failure) => ConversationsError(errorMessage: failure.toString()),
@@ -55,7 +55,7 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationsState> {
       SeenConversationEvent event, Emitter<ConversationsState> emit) async {
     try {
       final seenMessage = await seenMessageUsecase
-          .call(Param(conversationId: event.conversationId));
+          .call(SeenMessageParams(conversationId: event.conversationId));
       emit(ConversationsLoading());
       seenMessage.fold(
           (failure) => emit(

@@ -70,24 +70,12 @@ class FirebaseRepositoryImpl implements FirebaseRepository {
   }
 
   @override
-  Future<Either<Failure, Stream<List<MessageEntity>>>> getAllMessages(
-      String conversationId) async {
-    try {
-      final response = firebaseRemoteDataSource.getAllMessages(conversationId);
-      return Right(response);
-    } on ServerFailure {
-      return Left(ServerFailure());
-    }
+  Stream<List<MessageEntity>> getAllChatMessages(String conversationId) {
+    return firebaseRemoteDataSource.getAllChatMessages(conversationId);
   }
 
   @override
-  Future<Either<Failure, Stream<List<ConversationEntity>>>>
-      getAllConversations() async {
-    try {
-      final response = firebaseRemoteDataSource.getAllConversations();
-      return right(response);
-    } on ServerException {
-      return Left(ServerFailure());
-    }
+  Stream<List<ConversationEntity>> getAllConversations() {
+    return firebaseRemoteDataSource.getAllConversations();
   }
 }
