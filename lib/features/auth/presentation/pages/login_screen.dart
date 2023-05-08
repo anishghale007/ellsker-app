@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:internship_practice/common/loading_overlay/loading_overlay.dart';
 import 'package:internship_practice/common/widgets/login_button_widget.dart';
 import 'package:internship_practice/features/auth/presentation/bloc/google_sign_in/google_sign_in_bloc.dart';
 import 'package:internship_practice/features/auth/presentation/pages/bottom_nav_bar_screen.dart';
@@ -128,35 +129,5 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
-  }
-}
-
-class LoadingOverlay {
-  OverlayEntry? _overlay;
-
-  LoadingOverlay();
-
-  void show(BuildContext context) {
-    if (_overlay == null) {
-      _overlay = OverlayEntry(
-        // replace with your own layout
-        builder: (context) => const ColoredBox(
-          color: Color(0x80000000),
-          child: Center(
-            child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation(Colors.white),
-            ),
-          ),
-        ),
-      );
-      Overlay.of(context)?.insert(_overlay!);
-    }
-  }
-
-  void hide() {
-    if (_overlay != null) {
-      _overlay!.remove();
-      _overlay = null;
-    }
   }
 }

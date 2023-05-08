@@ -13,4 +13,6 @@ abstract class FirebaseRepository {
   Stream<List<MessageEntity>> getAllChatMessages(String conversationId);
   Future<Either<Failure, void>> seenMessage(String conversationId);
   Future<Either<Failure, String>> deleteConversation(String conversationId);
+  Future<Either<Failure, String>> editConversation(
+      {required conversationId, required newNickname});
 }

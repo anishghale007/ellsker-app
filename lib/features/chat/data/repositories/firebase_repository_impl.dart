@@ -78,4 +78,18 @@ class FirebaseRepositoryImpl implements FirebaseRepository {
   Stream<List<ConversationEntity>> getAllConversations() {
     return firebaseRemoteDataSource.getAllConversations();
   }
+
+  @override
+  Future<Either<Failure, String>> editConversation(
+      {required conversationId, required newNickname}) async {
+    try {
+      final response = await firebaseRemoteDataSource.editConversation(
+        conversationId: conversationId,
+        newNickname: newNickname,
+      );
+      return Right(response);
+    } on ServerFailure {
+      return Left(ServerFailure());
+    }
+  }
 }

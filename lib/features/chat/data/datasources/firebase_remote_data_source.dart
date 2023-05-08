@@ -19,6 +19,8 @@ abstract class FirebaseRemoteDataSource {
   Future<String> sendMessage(MessageEntity messageEntity);
   Stream<List<MessageEntity>> getAllChatMessages(String conversationId);
   Future<void> seenMessage(String conversationId);
+  Future<String> editConversation(
+      {required String conversationId, required String newNickname});
 }
 
 class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
@@ -150,6 +152,33 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
     return dbUser.doc(currentUser).collection("conversation").snapshots().map(
         (event) =>
             event.docs.map((e) => ConversationModel.fromSnapshot(e)).toList());
+  }
+
+  @override
+  Future<String> editConversation(
+      {required String conversationId, required String newNickname}) {
+    try {
+      final currentUser = FirebaseAuth.instance.currentUser!.uid;
+      // updating the conversation collection of the current user
+      dbUser
+          .doc(currentUser)
+          .collection('conversation')
+          .doc(conversationId)
+          .update({
+        "receiverName": newNickname,
+      });
+      // updating the conversation collection of the other user
+      dbUser
+          .doc(conversationId)
+          .collection('conversation')
+          .doc(currentUser)
+          .update({
+        "senderName": newNickname,
+      });
+      return Future.value("Success");
+    } on FirebaseException catch (e) {
+      throw Exception(e.toString());
+    }
   }
 
   @override

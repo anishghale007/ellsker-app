@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:internship_practice/features/chat/domain/entities/conversation_entity.dart';
 import 'package:internship_practice/features/chat/domain/usecases/create_conversation_usecase.dart';
 import 'package:internship_practice/features/chat/domain/usecases/delete_conversation_usecase.dart';
+import 'package:internship_practice/features/chat/domain/usecases/edit_conversation_usecase.dart';
 import 'package:internship_practice/features/chat/domain/usecases/seen_message_usecase.dart';
 
 part 'conversation_event.dart';
@@ -12,15 +13,18 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationsState> {
   final CreateConversationUseCase createConversationUseCase;
   final SeenMessageUsecase seenMessageUsecase;
   final DeleteConversationUseCase deleteConversationUseCase;
+  final EditConversationUsecase editConversationUsecase;
 
   ConversationBloc({
     required this.createConversationUseCase,
     required this.seenMessageUsecase,
     required this.deleteConversationUseCase,
+    required this.editConversationUsecase,
   }) : super(ConversationsInitial()) {
     on<CreateConversationEvent>(_onCreateConversation);
     on<SeenConversationEvent>(_seenMessage);
     on<DeleteConversationEvent>(_onDeleteConversation);
+    on<EditConversationEvent>(_onEditConversation);
   }
 
   Future<void> _onCreateConversation(
@@ -46,6 +50,23 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationsState> {
       deleteConversation.fold(
           (failure) => ConversationsError(errorMessage: failure.toString()),
           (success) => emit(ConversationsDeleted()));
+    } catch (e) {
+      emit(ConversationsError(errorMessage: e.toString()));
+    }
+  }
+
+  Future<void> _onEditConversation(
+      EditConversationEvent event, Emitter<ConversationsState> emit) async {
+    try {
+      final editConversation = await editConversationUsecase.call(
+        EditConversationParams(
+          conversationId: event.conversationId,
+          newNickname: event.newNickname,
+        ),
+      );
+      editConversation.fold(
+          (failure) => ConversationsError(errorMessage: failure.toString()),
+          (success) => emit(ConversationsEdited()));
     } catch (e) {
       emit(ConversationsError(errorMessage: e.toString()));
     }

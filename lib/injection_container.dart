@@ -13,6 +13,7 @@ import 'package:internship_practice/features/chat/data/repositories/firebase_rep
 import 'package:internship_practice/features/chat/domain/repositories/firebase_repository.dart';
 import 'package:internship_practice/features/chat/domain/usecases/create_conversation_usecase.dart';
 import 'package:internship_practice/features/chat/domain/usecases/delete_conversation_usecase.dart';
+import 'package:internship_practice/features/chat/domain/usecases/edit_conversation_usecase.dart';
 import 'package:internship_practice/features/chat/domain/usecases/get_all_chat_message.dart';
 import 'package:internship_practice/features/chat/domain/usecases/get_all_conversation_usecase.dart';
 import 'package:internship_practice/features/chat/domain/usecases/get_all_users_usecase.dart';
@@ -72,6 +73,7 @@ Future<void> init() async {
       createConversationUseCase: sl(),
       seenMessageUsecase: sl(),
       deleteConversationUseCase: sl(),
+      editConversationUsecase: sl(),
     ),
   );
 
@@ -136,6 +138,10 @@ Future<void> init() async {
 
   sl.registerLazySingleton<DeleteConversationUseCase>(
     () => DeleteConversationUseCase(firebaseRepository: sl()),
+  );
+
+  sl.registerLazySingleton<EditConversationUsecase>(
+    () => EditConversationUsecase(firebaseRepository: sl()),
   );
 
   sl.registerLazySingleton<SendNotificationUseCase>(

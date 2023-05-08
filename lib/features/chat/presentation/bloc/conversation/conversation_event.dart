@@ -25,6 +25,19 @@ class DeleteConversationEvent extends ConversationEvent {
   List<Object> get props => [conversationId];
 }
 
+class EditConversationEvent extends ConversationEvent {
+  final String conversationId;
+  final String newNickname;
+
+  const EditConversationEvent({
+    required this.conversationId,
+    required this.newNickname,
+  });
+
+  @override
+  List<Object> get props => [conversationId, newNickname];
+}
+
 class SeenConversationEvent extends ConversationEvent {
   final String conversationId;
 

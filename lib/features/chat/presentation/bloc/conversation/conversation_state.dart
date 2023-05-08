@@ -17,6 +17,8 @@ class ConversationsCreated extends ConversationsState {}
 
 class ConversationsDeleted extends ConversationsState {}
 
+class ConversationsEdited extends ConversationsState {}
+
 class ConversationsSeen extends ConversationsState {}
 
 class ConversationsError extends ConversationsState {
