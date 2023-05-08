@@ -11,7 +11,7 @@ import 'package:internship_practice/features/chat/domain/entities/conversation_e
 import 'package:internship_practice/features/chat/domain/entities/message_entity.dart';
 import 'package:internship_practice/features/chat/domain/entities/user_entity.dart';
 
-abstract class FirebaseRemoteDataSource {
+abstract class ChatRemoteDataSource {
   Stream<List<UserEntity>> getAllUsers();
   Future<String> createConversation(ConversationEntity conversationEntity);
   Future<String> deleteConversation(String conversationId);
@@ -23,7 +23,7 @@ abstract class FirebaseRemoteDataSource {
       {required String conversationId, required String newNickname});
 }
 
-class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
+class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
   CollectionReference dbUser = FirebaseFirestore.instance.collection("users");
   final currentUser = FirebaseAuth.instance.currentUser!;
 

@@ -2,16 +2,16 @@ import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:internship_practice/core/error/failure.dart';
 import 'package:internship_practice/core/usecases/usecase.dart';
-import 'package:internship_practice/features/chat/domain/repositories/firebase_repository.dart';
+import 'package:internship_practice/features/chat/domain/repositories/chat_repository.dart';
 
 class EditConversationUsecase
     implements UseCase<String, EditConversationParams> {
-  final FirebaseRepository firebaseRepository;
+  final ChatRepository chatRepository;
 
-  const EditConversationUsecase({required this.firebaseRepository});
+  const EditConversationUsecase({required this.chatRepository});
   @override
   Future<Either<Failure, String>> call(EditConversationParams params) async {
-    return await firebaseRepository.editConversation(
+    return await chatRepository.editConversation(
       conversationId: params.conversationId,
       newNickname: params.newNickname,
     );

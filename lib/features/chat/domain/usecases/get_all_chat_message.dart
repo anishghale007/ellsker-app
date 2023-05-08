@@ -1,16 +1,16 @@
 import 'package:equatable/equatable.dart';
 import 'package:internship_practice/core/usecases/usecase.dart';
 import 'package:internship_practice/features/chat/domain/entities/message_entity.dart';
-import 'package:internship_practice/features/chat/domain/repositories/firebase_repository.dart';
+import 'package:internship_practice/features/chat/domain/repositories/chat_repository.dart';
 
 class GetAllChatMessagesUseCase
     extends StreamUseCase<List<MessageEntity>, GetAllChatMessagesParams> {
-  final FirebaseRepository firebaseRepository;
+  final ChatRepository chatRepository;
 
-  GetAllChatMessagesUseCase({required this.firebaseRepository});
+  GetAllChatMessagesUseCase({required this.chatRepository});
   @override
   Stream<List<MessageEntity>> call(GetAllChatMessagesParams params) {
-    return firebaseRepository.getAllChatMessages(params.conversationId);
+    return chatRepository.getAllChatMessages(params.conversationId);
   }
 }
 

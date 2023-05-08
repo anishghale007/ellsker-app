@@ -2,16 +2,16 @@ import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:internship_practice/core/error/failure.dart';
 import 'package:internship_practice/core/usecases/usecase.dart';
-import 'package:internship_practice/features/chat/domain/repositories/firebase_repository.dart';
+import 'package:internship_practice/features/chat/domain/repositories/chat_repository.dart';
 
 class SeenMessageUsecase implements UseCase<void, SeenMessageParams> {
-  final FirebaseRepository firebaseRepository;
+  final ChatRepository chatRepository;
 
-  const SeenMessageUsecase({required this.firebaseRepository});
+  const SeenMessageUsecase({required this.chatRepository});
 
   @override
   Future<Either<Failure, void>> call(SeenMessageParams params) async {
-    return await firebaseRepository.seenMessage(params.conversationId);
+    return await chatRepository.seenMessage(params.conversationId);
   }
 }
 

@@ -3,16 +3,16 @@ import 'package:equatable/equatable.dart';
 import 'package:internship_practice/core/error/failure.dart';
 import 'package:internship_practice/core/usecases/usecase.dart';
 import 'package:internship_practice/features/chat/domain/entities/message_entity.dart';
-import 'package:internship_practice/features/chat/domain/repositories/firebase_repository.dart';
+import 'package:internship_practice/features/chat/domain/repositories/chat_repository.dart';
 
 class SendMessageUseCase implements UseCase<String, SendMessageParams> {
-  final FirebaseRepository firebaseRepository;
+  final ChatRepository chatRepository;
 
-  const SendMessageUseCase({required this.firebaseRepository});
+  const SendMessageUseCase({required this.chatRepository});
 
   @override
   Future<Either<Failure, String>> call(SendMessageParams params) async {
-    return await firebaseRepository.sendMessage(params.messageEntity);
+    return await chatRepository.sendMessage(params.messageEntity);
   }
 }
 

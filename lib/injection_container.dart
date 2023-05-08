@@ -8,9 +8,9 @@ import 'package:internship_practice/features/auth/domain/usecases/sign_out_useca
 import 'package:internship_practice/features/auth/presentation/bloc/facebook_sign_in/facebook_sign_in_bloc.dart';
 import 'package:internship_practice/features/auth/presentation/bloc/google_sign_in/google_sign_in_bloc.dart';
 import 'package:internship_practice/features/auth/presentation/cubit/sign_out_cubit.dart';
-import 'package:internship_practice/features/chat/data/datasources/firebase_remote_data_source.dart';
-import 'package:internship_practice/features/chat/data/repositories/firebase_repository_impl.dart';
-import 'package:internship_practice/features/chat/domain/repositories/firebase_repository.dart';
+import 'package:internship_practice/features/chat/data/datasources/chat_remote_data_source.dart';
+import 'package:internship_practice/features/chat/data/repositories/chat_repository_impl.dart';
+import 'package:internship_practice/features/chat/domain/repositories/chat_repository.dart';
 import 'package:internship_practice/features/chat/domain/usecases/create_conversation_usecase.dart';
 import 'package:internship_practice/features/chat/domain/usecases/delete_conversation_usecase.dart';
 import 'package:internship_practice/features/chat/domain/usecases/edit_conversation_usecase.dart';
@@ -114,34 +114,34 @@ Future<void> init() async {
   );
 
   sl.registerLazySingleton<GetAllUsersUsecase>(
-    () => GetAllUsersUsecase(firebaseRepository: sl()),
+    () => GetAllUsersUsecase(chatRepository: sl()),
   );
 
   sl.registerLazySingleton<CreateConversationUseCase>(
-    () => CreateConversationUseCase(firebaseRepository: sl()),
+    () => CreateConversationUseCase(chatRepository: sl()),
   );
 
   sl.registerLazySingleton<SendMessageUseCase>(
-    () => SendMessageUseCase(firebaseRepository: sl()),
+    () => SendMessageUseCase(chatRepository: sl()),
   );
 
   sl.registerLazySingleton<GetAllChatMessagesUseCase>(
-    () => GetAllChatMessagesUseCase(firebaseRepository: sl()),
+    () => GetAllChatMessagesUseCase(chatRepository: sl()),
   );
 
   sl.registerLazySingleton<GetAllConversationUsecase>(
-      () => GetAllConversationUsecase(firebaseRepository: sl()));
+      () => GetAllConversationUsecase(chatRepository: sl()));
 
   sl.registerLazySingleton<SeenMessageUsecase>(
-    () => SeenMessageUsecase(firebaseRepository: sl()),
+    () => SeenMessageUsecase(chatRepository: sl()),
   );
 
   sl.registerLazySingleton<DeleteConversationUseCase>(
-    () => DeleteConversationUseCase(firebaseRepository: sl()),
+    () => DeleteConversationUseCase(chatRepository: sl()),
   );
 
   sl.registerLazySingleton<EditConversationUsecase>(
-    () => EditConversationUsecase(firebaseRepository: sl()),
+    () => EditConversationUsecase(chatRepository: sl()),
   );
 
   sl.registerLazySingleton<SendNotificationUseCase>(
@@ -161,8 +161,8 @@ Future<void> init() async {
     () => AuthRepositoryImpl(authRemoteDataSource: sl()),
   );
 
-  sl.registerLazySingleton<FirebaseRepository>(
-    () => FirebaseRepositoryImpl(firebaseRemoteDataSource: sl()),
+  sl.registerLazySingleton<ChatRepository>(
+    () => ChatRepositoryImpl(chatRemoteDataSource: sl()),
   );
 
   sl.registerLazySingleton<ProfileRepository>(
@@ -177,8 +177,8 @@ Future<void> init() async {
   sl.registerLazySingleton<AuthRemoteDataSource>(
       () => AuthRemoteDataSourceImpl());
 
-  sl.registerLazySingleton<FirebaseRemoteDataSource>(
-      () => FirebaseRemoteDataSourceImpl());
+  sl.registerLazySingleton<ChatRemoteDataSource>(
+      () => ChatRemoteDataSourceImpl());
 
   sl.registerLazySingleton<ProfileRemoteDataSource>(
       () => ProfileRemoteDataSourceImpl());

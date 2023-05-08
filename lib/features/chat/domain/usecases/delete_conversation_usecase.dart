@@ -2,17 +2,17 @@ import 'package:equatable/equatable.dart';
 import 'package:internship_practice/core/error/failure.dart';
 import 'package:dartz/dartz.dart';
 import 'package:internship_practice/core/usecases/usecase.dart';
-import 'package:internship_practice/features/chat/domain/repositories/firebase_repository.dart';
+import 'package:internship_practice/features/chat/domain/repositories/chat_repository.dart';
 
 class DeleteConversationUseCase
     implements UseCase<String, DeleteConversationParams> {
-  final FirebaseRepository firebaseRepository;
+  final ChatRepository chatRepository;
 
-  const DeleteConversationUseCase({required this.firebaseRepository});
+  const DeleteConversationUseCase({required this.chatRepository});
 
   @override
   Future<Either<Failure, String>> call(DeleteConversationParams params) async {
-    return await firebaseRepository.deleteConversation(params.conversationId);
+    return await chatRepository.deleteConversation(params.conversationId);
   }
 }
 

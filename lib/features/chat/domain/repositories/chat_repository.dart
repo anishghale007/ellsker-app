@@ -4,7 +4,7 @@ import 'package:internship_practice/features/chat/domain/entities/conversation_e
 import 'package:internship_practice/features/chat/domain/entities/message_entity.dart';
 import 'package:internship_practice/features/chat/domain/entities/user_entity.dart';
 
-abstract class FirebaseRepository {
+abstract class ChatRepository {
   Future<Either<Failure, Stream<List<UserEntity>>>> getAllUsers();
   Future<Either<Failure, String>> createConversation(
       ConversationEntity conversationEntity);
