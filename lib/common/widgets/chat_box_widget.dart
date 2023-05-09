@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:full_screen_image/full_screen_image.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internship_practice/colors_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -62,9 +63,12 @@ class ChatBoxWidget extends StatelessWidget {
                         ),
                         child: SizedBox(
                           height: 250,
-                          child: Image.network(
-                            photoUrl,
-                            fit: BoxFit.cover,
+                          child: FullScreenWidget(
+                            disposeLevel: DisposeLevel.Low,
+                            child: Image.network(
+                              photoUrl,
+                              fit: BoxFit.contain,
+                            ),
                           ),
                         ),
                       ),
@@ -151,9 +155,12 @@ class ChatBoxWidget extends StatelessWidget {
                           ),
                           child: SizedBox(
                             height: 250,
-                            child: Image.network(
-                              photoUrl,
-                              fit: BoxFit.cover,
+                            child: FullScreenWidget(
+                              disposeLevel: DisposeLevel.Low,
+                              child: Image.network(
+                                photoUrl,
+                                fit: BoxFit.contain,
+                              ),
                             ),
                           ),
                         ),

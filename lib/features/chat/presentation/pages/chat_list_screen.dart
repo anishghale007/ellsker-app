@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internship_practice/colors_utils.dart';
 import 'package:internship_practice/common/widgets/widgets.dart';
+import 'package:internship_practice/core/utils/strings_manager.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/conversation/conversation_cubit.dart';
 import 'package:internship_practice/ui_pages.dart';
 
@@ -64,7 +65,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                       horizontal: 20,
                     ),
                     child: Text(
-                      "Conversations",
+                      AppStrings.conversations,
                       style: GoogleFonts.sourceSansPro(
                         fontSize: 32,
                         fontWeight: FontWeight.w400,

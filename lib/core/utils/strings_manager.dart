@@ -8,4 +8,5 @@ class AppStrings {
   static const String profile = "Profile";
   static const String home = "Home";
   static const String chat = "Chat";
+  static const String conversations = "Conversations";
 }

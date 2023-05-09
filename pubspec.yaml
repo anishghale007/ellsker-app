@@ -39,6 +39,7 @@ dependencies:
   flutter_dotenv: ^5.0.2
   shared_preferences: ^2.1.0
   cached_network_image: ^3.2.3
+  full_screen_image: ^2.0.0
   
 
 dev_dependencies:
