@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internship_practice/colors_utils.dart';
+import 'package:internship_practice/core/utils/strings_manager.dart';
 
 class CardWidget extends StatelessWidget {
   final String title;
@@ -97,7 +98,7 @@ class CardWidget extends StatelessWidget {
                     ),
                     onPressed: () {},
                     child: Text(
-                      "Entar",
+                      AppStrings.entar,
                       style: GoogleFonts.sourceSansPro(
                         color: Colors.black,
                         fontWeight: FontWeight.w600,

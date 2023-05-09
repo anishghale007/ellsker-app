@@ -140,7 +140,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       if (snapshot.hasData) {
                         return ListView.separated(
                           separatorBuilder: (context, index) => const Divider(
-                            height: 30,
+                            height: 50,
                           ),
                           itemCount: snapshot.data!.length,
                           shrinkWrap: true,

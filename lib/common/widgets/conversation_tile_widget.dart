@@ -1,9 +1,12 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internship_practice/colors_utils.dart';
+import 'package:internship_practice/core/utils/strings_manager.dart';
 import 'package:intl/intl.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class ConversationTile extends StatelessWidget {
   final String receiverId;
@@ -92,14 +95,14 @@ class ConversationTile extends StatelessWidget {
             borderRadius: BorderRadius.circular(6),
             icon: Icons.autorenew,
             foregroundColor: ColorUtil.kIconColor,
-            label: "Update",
+            label: AppStrings.update,
             backgroundColor: ColorUtil.kSecondaryColor.withOpacity(0.8),
           ),
           SlidableAction(
             onPressed: onDelete,
             borderRadius: BorderRadius.circular(6),
             icon: Icons.close,
-            label: "Delete",
+            label: AppStrings.delete,
             backgroundColor: Colors.redAccent,
             foregroundColor: Colors.white,
           ),
@@ -111,9 +114,18 @@ class ConversationTile extends StatelessWidget {
         ),
         child: ListTile(
           onTap: onPress,
-          leading: CircleAvatar(
-            backgroundImage: NetworkImage(receiverPhotoUrl),
-            radius: 27,
+          leading: CachedNetworkImage(
+            imageUrl: receiverPhotoUrl,
+            errorWidget: (context, url, error) => const Icon(Icons.error),
+            progressIndicatorBuilder: (context, url, progress) =>
+                CircularProgressIndicator(
+              value: progress.progress,
+              backgroundColor: Colors.white,
+            ),
+            imageBuilder: (context, imageProvider) => CircleAvatar(
+              foregroundImage: imageProvider,
+              radius: 27,
+            ),
           ),
           title: Text(
             receiverName,
@@ -167,9 +179,11 @@ class ConversationTile extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Text(
-                      DateFormat()
-                          .add_Hm()
-                          .format(DateTime.parse(lastMessageTime)),
+                      timeago.format(DateTime.parse(lastMessageTime),
+                          locale: 'en_short'),
+                      // DateFormat()
+                      //     .add_Hm()
+                      //     .format(DateTime.parse(lastMessageTime)),
                       style: GoogleFonts.sourceSansPro(
                         color: ColorUtil.kTertiaryColor,
                         fontWeight: FontWeight.w400,

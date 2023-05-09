@@ -1,8 +1,10 @@
 import 'dart:developer';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:internship_practice/core/utils/strings_manager.dart';
 import 'package:internship_practice/features/chat/presentation/bloc/conversation/conversation_bloc.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/user_list/user_list_cubit.dart';
 import 'package:internship_practice/injection_container.dart';
@@ -60,7 +62,7 @@ class _UserListScreenState extends State<UserListScreen> {
             ),
           ),
           title: Text(
-            "Users List",
+            AppStrings.usersList,
             style: GoogleFonts.sourceSansPro(
               fontWeight: FontWeight.w400,
               fontSize: 20,
@@ -85,7 +87,7 @@ class _UserListScreenState extends State<UserListScreen> {
                       horizontal: 20,
                     ),
                     child: Text(
-                      "Start a conversation with a user",
+                      AppStrings.startAConversationWithAUser,
                       style: GoogleFonts.sourceSansPro(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
@@ -131,10 +133,24 @@ class _UserListScreenState extends State<UserListScreen> {
                               child: SizedBox(
                                 height: data.userId == currentUser ? 0 : 70,
                                 child: ListTile(
-                                  leading: CircleAvatar(
-                                    backgroundImage:
-                                        NetworkImage(data.photoUrl),
-                                    radius: 25,
+                                  leading: CachedNetworkImage(
+                                    imageUrl: data.photoUrl,
+                                    errorWidget: (context, url, error) =>
+                                        const Icon(
+                                      Icons.error,
+                                      color: Colors.white,
+                                    ),
+                                    progressIndicatorBuilder:
+                                        (context, url, progress) =>
+                                            CircularProgressIndicator(
+                                      value: progress.progress,
+                                      backgroundColor: Colors.white,
+                                    ),
+                                    imageBuilder: (context, imageProvider) =>
+                                        CircleAvatar(
+                                      foregroundImage: imageProvider,
+                                      radius: 27,
+                                    ),
                                   ),
                                   title: Text(
                                     data.userName,
