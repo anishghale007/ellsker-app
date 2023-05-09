@@ -1,3 +1,5 @@
+import 'package:internship_practice/core/utils/assets_manager.dart';
+
 class Card {
   final String title;
   final String subtitle;
@@ -14,17 +16,17 @@ List<Card> festivalList = [
   Card(
     title: "Lollapalooza",
     subtitle: "Interlagos",
-    imagePath: "assets/images/card_one.png",
+    imagePath: ImageAssets.cardOne,
   ),
   Card(
     title: "Tomorrowland ",
     subtitle: "Itu",
-    imagePath: "assets/images/card_two.png",
+    imagePath: ImageAssets.cardTwo,
   ),
   Card(
     title: "Lollapalooza",
     subtitle: "Interlagos",
-    imagePath: "assets/images/card_one.png",
+    imagePath: ImageAssets.cardOne,
   ),
 ];
 
@@ -32,17 +34,17 @@ List<Card> rolesList = [
   Card(
     title: "Rolê Botafogo",
     subtitle: "Voluntários da Pátria",
-    imagePath: "assets/images/card_three.png",
+    imagePath: ImageAssets.cardThree,
   ),
   Card(
     title: "Rolê Leblon ",
     subtitle: "Praça Cazuza",
-    imagePath: "assets/images/card_four.png",
+    imagePath: ImageAssets.cardFour,
   ),
   Card(
     title: "Rolê Botafogo",
     subtitle: "Voluntários da Pátria",
-    imagePath: "assets/images/card_three.png",
+    imagePath: ImageAssets.cardThree,
   ),
 ];
 
@@ -50,16 +52,16 @@ List<Card> festasList = [
   Card(
     title: "ISSO NÃO É UMA FESTA",
     subtitle: "Marina da Glória",
-    imagePath: "assets/images/card_five.png",
+    imagePath: ImageAssets.cardFive,
   ),
   Card(
     title: "BALBVRDIA",
     subtitle: "Rio de Janeiro",
-    imagePath: "assets/images/card_six.png",
+    imagePath: ImageAssets.cardSix,
   ),
   Card(
     title: "ISSO NÃO É UMA FESTA",
     subtitle: "Marina da Glória",
-    imagePath: "assets/images/card_five.png",
+    imagePath: ImageAssets.cardFive,
   ),
 ];

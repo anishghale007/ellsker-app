@@ -20,6 +20,12 @@ class MessageLoaded extends MessageState {
 
   @override
   List<Object> get props => [messageList];
+
+  Map<String, dynamic> toJson() {
+    return {
+      'messageList': messageList,
+    };
+  }
 }
 
 class MessageSuccess extends MessageState {}

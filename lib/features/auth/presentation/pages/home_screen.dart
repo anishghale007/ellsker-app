@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internship_practice/colors_utils.dart';
 import 'package:internship_practice/common/widgets/card_widget.dart';
+import 'package:internship_practice/core/utils/strings_manager.dart';
 import 'package:internship_practice/features/auth/data/models/card_model.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -58,7 +59,7 @@ class HomeScreen extends StatelessWidget {
                           vertical: 10,
                         ),
                         isDense: true,
-                        hintText: "Buscar por evento ou rolê",
+                        hintText: "Search by event or tour",
                         border: InputBorder.none,
                         hintStyle: GoogleFonts.sourceSansPro(
                           color: ColorUtil.kTertiaryColor,
@@ -72,7 +73,7 @@ class HomeScreen extends StatelessWidget {
                     height: 40,
                   ),
                   Text(
-                    "FESTIVALS",
+                    AppStrings.festivals,
                     style: GoogleFonts.sourceSansPro(
                       fontSize: 20,
                       fontWeight: FontWeight.w600,
@@ -99,7 +100,7 @@ class HomeScreen extends StatelessWidget {
                     height: 25,
                   ),
                   Text(
-                    "ROLÊS",
+                    AppStrings.roles,
                     style: GoogleFonts.sourceSansPro(
                       fontSize: 20,
                       fontWeight: FontWeight.w600,

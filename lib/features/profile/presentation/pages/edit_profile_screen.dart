@@ -4,8 +4,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:internship_practice/colors_utils.dart';
+import 'package:internship_practice/common/loading_overlay/loading_overlay.dart';
 import 'package:internship_practice/common/widgets/widgets.dart';
+import 'package:internship_practice/core/utils/strings_manager.dart';
 import 'package:internship_practice/features/profile/domain/entities/user_profile_entity.dart';
 import 'package:internship_practice/features/profile/presentation/bloc/profile_bloc.dart';
 
@@ -70,6 +73,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final currentUserEmail = FirebaseAuth.instance.currentUser!.email;
+    final LoadingOverlay loadingOverlay = LoadingOverlay();
 
     return Scaffold(
       backgroundColor: ColorUtil.kPrimaryColor,
@@ -91,7 +95,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   BlocConsumer<ProfileBloc, ProfileState>(
                     listener: (context, state) {
                       if (state is ProfileEditSuccess) {
+                        loadingOverlay.hide();
                         Navigator.of(context).pop();
+                      } else if (state is ProfileLoading) {
+                        loadingOverlay.show(context);
                       } else if (state is ProfileError) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
@@ -102,39 +109,67 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     },
                     builder: (context, state) {
                       return ProfileHeader(
-                        buttonText: "Save",
-                        onPress: () {
-                          _form.currentState!.save();
-                          if (_form.currentState!.validate()) {
-                            if (pickedImage != null) {
-                              context.read<ProfileBloc>().add(
-                                    EditProfileEvent(
-                                      userProfileEntity: UserProfileEntity(
-                                        username: _nameController.text.trim(),
-                                        email: currentUserEmail!,
-                                        age: _ageController.text.trim(),
-                                        instagram:
-                                            _instagramController.text.trim(),
-                                        location:
-                                            _locationController.text.trim(),
-                                        image: pickedImage,
-                                      ),
+                        buttonText: AppStrings.save,
+                        onPress: () async {
+                          bool result =
+                              await InternetConnectionChecker().hasConnection;
+                          if (result == false) {
+                            // if there is no internet connection
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: const Text("No Internet Connection"),
+                                  content: const Text(
+                                      "Please check your device connection."),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: const Text("Close"),
                                     ),
-                                  );
-                            } else {
-                              context.read<ProfileBloc>().add(
-                                    EditProfileEvent(
-                                      userProfileEntity: UserProfileEntity(
-                                        username: _nameController.text.trim(),
-                                        email: currentUserEmail!,
-                                        age: _ageController.text.trim(),
-                                        instagram:
-                                            _instagramController.text.trim(),
-                                        location:
-                                            _locationController.text.trim(),
-                                      ),
-                                    ),
-                                  );
+                                  ],
+                                );
+                              },
+                            );
+                          } else {
+                            _form.currentState!.save();
+                            if (_form.currentState!.validate()) {
+                              if (mounted) {
+                                if (pickedImage != null) {
+                                  context.read<ProfileBloc>().add(
+                                        EditProfileEvent(
+                                          userProfileEntity: UserProfileEntity(
+                                            username:
+                                                _nameController.text.trim(),
+                                            email: currentUserEmail!,
+                                            age: _ageController.text.trim(),
+                                            instagram: _instagramController.text
+                                                .trim(),
+                                            location:
+                                                _locationController.text.trim(),
+                                            image: pickedImage,
+                                          ),
+                                        ),
+                                      );
+                                } else {
+                                  context.read<ProfileBloc>().add(
+                                        EditProfileEvent(
+                                          userProfileEntity: UserProfileEntity(
+                                            username:
+                                                _nameController.text.trim(),
+                                            email: currentUserEmail!,
+                                            age: _ageController.text.trim(),
+                                            instagram: _instagramController.text
+                                                .trim(),
+                                            location:
+                                                _locationController.text.trim(),
+                                          ),
+                                        ),
+                                      );
+                                }
+                              }
                             }
                           }
                         },

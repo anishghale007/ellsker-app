@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:internship_practice/common/loading_overlay/loading_overlay.dart';
 import 'package:internship_practice/common/widgets/login_button_widget.dart';
+import 'package:internship_practice/core/utils/assets_manager.dart';
+import 'package:internship_practice/core/utils/strings_manager.dart';
 import 'package:internship_practice/features/auth/presentation/bloc/google_sign_in/google_sign_in_bloc.dart';
 import 'package:internship_practice/features/auth/presentation/pages/bottom_nav_bar_screen.dart';
 import '../bloc/facebook_sign_in/facebook_sign_in_bloc.dart';
@@ -22,7 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Container(
       decoration: const BoxDecoration(
         image: DecorationImage(
-          image: AssetImage("assets/images/login_background.png"),
+          image: AssetImage(ImageAssets.loginBackground),
           colorFilter: ColorFilter.mode(
             Colors.black26,
             BlendMode.srcOver,
@@ -47,7 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       width: 230,
                       decoration: const BoxDecoration(
                         image: DecorationImage(
-                          image: AssetImage("assets/images/logo.png"),
+                          image: AssetImage(ImageAssets.logo),
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -59,7 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   width: 100,
                   decoration: const BoxDecoration(
                     image: DecorationImage(
-                      image: AssetImage("assets/images/ellsker.png"),
+                      image: AssetImage(ImageAssets.ellsker),
                     ),
                   ),
                 ),
@@ -85,7 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                   builder: (context, state) {
                     return LoginButtonWidget(
-                      buttonText: "Continue with Google",
+                      buttonText: AppStrings.continueWithGoogle,
                       buttonIcon: FontAwesomeIcons.google,
                       onPress: () {
                         context.read<GoogleSignInBloc>().add(GoogleUserEvent());
@@ -113,7 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                   builder: (context, state) {
                     return LoginButtonWidget(
-                      buttonText: "Continue with Facebook",
+                      buttonText: AppStrings.continueWithFacebook,
                       buttonIcon: FontAwesomeIcons.facebook,
                       onPress: () {
                         context

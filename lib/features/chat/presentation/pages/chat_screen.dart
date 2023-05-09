@@ -137,13 +137,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         .read<MessageCubit>()
                         .getAllChatMessages(conversationId: widget.userId),
                     builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                          ),
-                        );
-                      } else if (snapshot.hasData) {
+                      if (snapshot.hasData) {
                         return ListView.separated(
                           separatorBuilder: (context, index) => const Divider(
                             height: 30,
@@ -170,9 +164,8 @@ class _ChatScreenState extends State<ChatScreen> {
                         );
                       } else {
                         return const Center(
-                          child: Text(
-                            "Empty",
-                            style: TextStyle(color: Colors.white, fontSize: 50),
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
                           ),
                         );
                       }
@@ -180,7 +173,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                   // BlocProvider<MessageCubit>(
                   //   create: (context) => sl<MessageCubit>()
-                  //     ..getAllMessages(conversationId: widget.userId),
+                  //     ..getAllChatMessages(conversationId: widget.userId),
                   //   child: BlocBuilder<MessageCubit, MessageState>(
                   //     builder: (context, state) {
                   //       if (state is MessageLoaded) {

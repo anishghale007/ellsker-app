@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:internship_practice/colors_utils.dart';
+import 'package:internship_practice/core/utils/strings_manager.dart';
 import 'package:internship_practice/features/auth/presentation/cubit/sign_out_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/pages/chat_list_screen.dart';
 import 'package:internship_practice/features/auth/presentation/pages/home_screen.dart';
@@ -208,8 +209,8 @@ class _BottomNavBarScreenState extends State<BottomNavBarScreen> {
             showUnselectedLabels: false,
             items: const [
               BottomNavigationBarItem(
-                tooltip: "Home",
-                label: "Home",
+                tooltip: AppStrings.home,
+                label: AppStrings.home,
                 activeIcon: Icon(
                   Icons.window,
                 ),
@@ -218,8 +219,8 @@ class _BottomNavBarScreenState extends State<BottomNavBarScreen> {
                 ),
               ),
               BottomNavigationBarItem(
-                tooltip: "Chat",
-                label: "Chat",
+                tooltip: AppStrings.chat,
+                label: AppStrings.chat,
                 activeIcon: Icon(
                   Icons.message,
                 ),
@@ -228,8 +229,8 @@ class _BottomNavBarScreenState extends State<BottomNavBarScreen> {
                 ),
               ),
               BottomNavigationBarItem(
-                tooltip: "Profile",
-                label: "Profile",
+                tooltip: AppStrings.profile,
+                label: AppStrings.profile,
                 activeIcon: Icon(Icons.person),
                 icon: Icon(
                   Icons.person_outline_outlined,

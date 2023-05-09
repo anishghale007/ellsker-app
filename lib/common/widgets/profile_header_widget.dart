@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internship_practice/colors_utils.dart';
+import 'package:internship_practice/core/utils/strings_manager.dart';
 
 class ProfileHeader extends StatelessWidget {
   final String buttonText;
@@ -18,14 +19,14 @@ class ProfileHeader extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          "Profile",
+          AppStrings.profile,
           style: GoogleFonts.sourceSansPro(
             fontSize: 32,
             color: Colors.white,
             fontWeight: FontWeight.w400,
           ),
         ),
-        buttonText == "Save"
+        buttonText == AppStrings.save
             ? ElevatedButton(
                 onPressed: onPress,
                 style: ElevatedButton.styleFrom(

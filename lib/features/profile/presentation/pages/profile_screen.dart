@@ -1,9 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internship_practice/colors_utils.dart';
 import 'package:internship_practice/common/widgets/profile_header_widget.dart';
+import 'package:internship_practice/core/utils/strings_manager.dart';
 import 'package:internship_practice/ui_pages.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -33,7 +35,7 @@ class ProfileScreen extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: ProfileHeader(
-                        buttonText: "Edit",
+                        buttonText: AppStrings.edit,
                         onPress: () {
                           Navigator.of(context).pushNamed(
                             kEditProfileScreenPath,
@@ -73,9 +75,15 @@ class ProfileScreen extends StatelessWidget {
                           ],
                         ),
                       ),
-                      child: Image.network(
-                        data!['photoUrl'],
+                      child: CachedNetworkImage(
+                        imageUrl: data!['photoUrl'],
                         fit: BoxFit.cover,
+                        progressIndicatorBuilder: (context, url, progress) =>
+                            CircularProgressIndicator(
+                                value: progress.progress,
+                                backgroundColor: Colors.white),
+                        errorWidget: (context, url, error) =>
+                            const Icon(Icons.error),
                       ),
                     ),
                     const SizedBox(

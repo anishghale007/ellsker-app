@@ -1,4 +1,6 @@
 import 'package:get_it/get_it.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:internship_practice/features/auth/data/datasources/auth_local_data_source.dart';
 import 'package:internship_practice/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:internship_practice/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:internship_practice/features/auth/domain/repositories/auth_repository.dart';
@@ -35,6 +37,7 @@ import 'package:internship_practice/features/profile/domain/repositories/profile
 import 'package:internship_practice/features/profile/domain/usecases/edit_profile_usecase.dart';
 import 'package:internship_practice/features/profile/domain/usecases/get_current_user_usecase.dart';
 import 'package:internship_practice/features/profile/presentation/bloc/profile_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final sl = GetIt.instance;
 
@@ -158,7 +161,10 @@ Future<void> init() async {
 
   /// Repository
   sl.registerLazySingleton<AuthRepository>(
-    () => AuthRepositoryImpl(authRemoteDataSource: sl()),
+    () => AuthRepositoryImpl(
+      authRemoteDataSource: sl(),
+      authLocalDataSource: sl(),
+    ),
   );
 
   sl.registerLazySingleton<ChatRepository>(
@@ -177,6 +183,10 @@ Future<void> init() async {
   sl.registerLazySingleton<AuthRemoteDataSource>(
       () => AuthRemoteDataSourceImpl());
 
+  sl.registerLazySingleton<AuthLocalDataSource>(
+    () => AuthLocalDataSourceImpl(sharedPreferences: sl()),
+  );
+
   sl.registerLazySingleton<ChatRemoteDataSource>(
       () => ChatRemoteDataSourceImpl());
 
@@ -185,4 +195,9 @@ Future<void> init() async {
 
   sl.registerLazySingleton<NotificationRemoteDataSource>(
       () => NotificationRemoteDataSourceImpl());
+
+  //!! External
+  final sharedPreferences = await SharedPreferences.getInstance();
+  sl.registerLazySingleton(() => sharedPreferences);
+  sl.registerLazySingleton(() => InternetConnectionChecker());
 }

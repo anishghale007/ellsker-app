@@ -12,7 +12,6 @@ abstract class AuthRemoteDataSource {
   Future<GoogleUserModel> googleSignIn();
   Future<FacebookUserModel> facebookSignIn();
   Future<void> signOut();
-  Future<bool> isExistentUser(String userId);
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -36,6 +35,14 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final String? token = await FirebaseMessaging.instance.getToken();
       if (await isExistentUser(id)) {
         log("User already exists");
+        if (await isNotSameToken(token!)) {
+          log("New token detected in an already existing user. Updating the token.");
+          dbUser.doc(userInfo.uid).update({
+            "token": token,
+          });
+        } else {
+          log("Same token");
+        }
       } else {
         final userData = UserModel(
           userId: userInfo.uid,
@@ -76,6 +83,14 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final String? token = await FirebaseMessaging.instance.getToken();
       if (await isExistentUser(id)) {
         log("User already exists");
+        if (await isNotSameToken(token!)) {
+          log("New token detected in an already existing user");
+          dbUser.doc(userInfo.uid).update({
+            "token": token,
+          });
+        } else {
+          log("Same token");
+        }
       } else {
         final userData = UserModel(
           userId: userInfo.uid,
@@ -109,11 +124,18 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     }
   }
 
-  @override
   Future<bool> isExistentUser(String userId) async {
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('users')
         .where('userId', isEqualTo: userId)
+        .get();
+    return querySnapshot.docs.isNotEmpty;
+  }
+
+  Future<bool> isNotSameToken(String token) async {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .where('token', isNotEqualTo: token)
         .get();
     return querySnapshot.docs.isNotEmpty;
   }
