@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:internship_practice/core/network/network_info.dart';
 import 'package:internship_practice/features/auth/data/datasources/auth_local_data_source.dart';
 import 'package:internship_practice/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:internship_practice/features/auth/data/repositories/auth_repository_impl.dart';
@@ -9,6 +10,7 @@ import 'package:internship_practice/features/auth/domain/usecases/google_login_u
 import 'package:internship_practice/features/auth/domain/usecases/sign_out_usecase.dart';
 import 'package:internship_practice/features/auth/presentation/bloc/facebook_sign_in/facebook_sign_in_bloc.dart';
 import 'package:internship_practice/features/auth/presentation/bloc/google_sign_in/google_sign_in_bloc.dart';
+import 'package:internship_practice/features/auth/presentation/bloc/network/network_bloc.dart';
 import 'package:internship_practice/features/auth/presentation/cubit/sign_out_cubit.dart';
 import 'package:internship_practice/features/chat/data/datasources/chat_remote_data_source.dart';
 import 'package:internship_practice/features/chat/data/repositories/chat_repository_impl.dart';
@@ -103,6 +105,11 @@ Future<void> init() async {
     ),
   );
 
+  // network bloc
+  sl.registerFactory<NetworkBloc>(
+    () => NetworkBloc(),
+  );
+
   /// Usecase
   sl.registerLazySingleton<GooogleLoginUseCase>(
     () => GooogleLoginUseCase(repository: sl()),
@@ -195,6 +202,9 @@ Future<void> init() async {
 
   sl.registerLazySingleton<NotificationRemoteDataSource>(
       () => NotificationRemoteDataSourceImpl());
+
+  //!! Core
+  sl.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(sl()));
 
   //!! External
   final sharedPreferences = await SharedPreferences.getInstance();

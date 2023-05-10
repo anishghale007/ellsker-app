@@ -1,6 +1,2 @@
-export 'card_widget.dart';
-export 'chat_box_widget.dart';
-export 'conversation_tile_widget.dart';
-export 'custom_textField_widget.dart';
-export 'login_button_widget.dart';
-export 'profile_header_widget.dart';
+export 'custom_text_field_widget.dart';
+export 'search_bar_widget.dart';

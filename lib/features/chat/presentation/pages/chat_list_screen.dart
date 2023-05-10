@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internship_practice/colors_utils.dart';
-import 'package:internship_practice/common/widgets/widgets.dart';
+import 'package:internship_practice/core/functions/app_dialogs.dart';
 import 'package:internship_practice/core/utils/strings_manager.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/conversation/conversation_cubit.dart';
+import 'package:internship_practice/features/chat/presentation/widgets/conversation_tile_widget.dart';
 import 'package:internship_practice/ui_pages.dart';
 
 import '../bloc/conversation/conversation_bloc.dart';
@@ -152,12 +153,33 @@ class _ChatListScreenState extends State<ChatListScreen> {
                                     }
                                   }
                                 },
-                                onDelete: (context) {
-                                  context.read<ConversationBloc>().add(
-                                        DeleteConversationEvent(
-                                          conversationId: data.receiverId,
-                                        ),
-                                      );
+                                onDelete: (dialogContext) {
+                                  AppDialogs.showAlertDialog(
+                                    context: dialogContext,
+                                    title: const Text(
+                                        "Are you sure you want to delete it?"),
+                                    content: const Text(
+                                        "Once deleted it cannot be undone. The conversation will be deleted from your side only."),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: const Text("No"),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          context.read<ConversationBloc>().add(
+                                                DeleteConversationEvent(
+                                                  conversationId:
+                                                      data.receiverId,
+                                                ),
+                                              );
+                                        },
+                                        child: const Text("Yes"),
+                                      ),
+                                    ],
+                                  );
                                 },
                               ),
                             );

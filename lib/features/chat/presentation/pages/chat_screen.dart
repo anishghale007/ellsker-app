@@ -7,9 +7,13 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:internship_practice/colors_utils.dart';
-import 'package:internship_practice/common/widgets/chat_box_widget.dart';
+import 'package:internship_practice/constants.dart';
+import 'package:internship_practice/core/enums/message_type_enum.dart';
+import 'package:internship_practice/features/chat/presentation/widgets/chat_box_widget.dart';
+import 'package:internship_practice/features/auth/presentation/bloc/network/network_bloc.dart';
 import 'package:internship_practice/features/chat/domain/entities/conversation_entity.dart';
 import 'package:internship_practice/features/chat/domain/entities/message_entity.dart';
+import 'package:internship_practice/features/chat/presentation/widgets/message_send_button_widget.dart';
 import 'package:internship_practice/features/notification/domain/entities/notification_entity.dart';
 import 'package:internship_practice/features/chat/presentation/bloc/conversation/conversation_bloc.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
@@ -308,6 +312,17 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 MultiBlocListener(
                   listeners: [
+                    BlocListener<NetworkBloc, NetworkState>(
+                      listener: (context, state) {
+                        if (state is NetworkFailure) {
+                          log("Not connected to Internet");
+                        } else if (state is NetworkSuccess) {
+                          log("Connected to Internet");
+                        } else {
+                          log("Not working");
+                        }
+                      },
+                    ),
                     BlocListener<ConversationBloc, ConversationsState>(
                       listener: (context, state) {
                         if (state is ConversationsCreated) {
@@ -342,150 +357,122 @@ class _ChatScreenState extends State<ChatScreen> {
                       },
                     ),
                   ],
-                  child: Container(
-                    height: 40,
-                    width: 40,
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [
-                          Color(0xffE45699),
-                          Color(0xff733DD6),
-                          Color(0xff3D88E4),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(100),
-                    ),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        _form.currentState!.save();
-                        FocusScope.of(context).unfocus();
-                        if (_form.currentState!.validate()) {
-                          final currentUser =
-                              FirebaseAuth.instance.currentUser!;
-                          if (pickedImage != null) {
-                            // If the user picks an image
-                            context.read<ConversationBloc>().add(
-                                  CreateConversationEvent(
-                                    conversationEntity: ConversationEntity(
-                                      receiverId: widget.userId,
-                                      receiverName: widget.username,
-                                      receiverPhotoUrl: widget.photoUrl,
-                                      senderId: currentUser.uid, // me
-                                      senderName: currentUser.displayName!,
-                                      senderPhotoUrl: currentUser.photoURL!,
-                                      lastMessage: "Sent a Photo.",
-                                      lastMessageTime:
-                                          DateTime.now().toString(),
-                                      lastMessageSenderName:
-                                          currentUser.displayName!,
-                                      lastMessageSenderId: currentUser.uid,
-                                      isSeen: false,
-                                      unSeenMessages: 0,
-                                      receiverToken: widget.token,
-                                      senderToken: myToken!,
-                                    ),
-                                  ),
-                                );
-                            context.read<MessageCubit>().sendMessage(
-                                  messageEntity: MessageEntity(
-                                    messageContent: "Sent a Photo.",
-                                    messageTime: DateTime.now().toString(),
-                                    senderId: currentUser.uid,
-                                    senderName: currentUser.displayName!,
-                                    senderPhotoUrl: currentUser.photoURL!,
+                  child: MessageSendButtonWidget(
+                    onPress: () {
+                      _form.currentState!.save();
+                      FocusScope.of(context).unfocus();
+                      if (_form.currentState!.validate()) {
+                        final currentUser = FirebaseAuth.instance.currentUser!;
+                        if (pickedImage != null) {
+                          // If the user picks an image
+                          context.read<ConversationBloc>().add(
+                                CreateConversationEvent(
+                                  conversationEntity: ConversationEntity(
                                     receiverId: widget.userId,
                                     receiverName: widget.username,
                                     receiverPhotoUrl: widget.photoUrl,
-                                    messageType: "photo",
-                                    image: pickedImage,
-                                  ),
-                                );
-                            context.read<NotificationCubit>().sendNotification(
-                                  notificationEntity: NotificationEntity(
-                                    conversationId: widget.userId,
-                                    token: widget.token,
-                                    title: currentUser.displayName!,
-                                    body: "Sent a Photo.",
-                                    photoUrl: widget.photoUrl,
-                                    username: widget.username,
-                                  ),
-                                );
-                            setState(() {
-                              pickedImage = null;
-                            });
-                          } else {
-                            // If the user does not pick an image and sends a text message
-                            context.read<ConversationBloc>().add(
-                                  CreateConversationEvent(
-                                    conversationEntity: ConversationEntity(
-                                      receiverId: widget.userId,
-                                      receiverName: widget.username,
-                                      receiverPhotoUrl: widget.photoUrl,
-                                      senderId: currentUser.uid, // me
-                                      senderName: currentUser.displayName!,
-                                      senderPhotoUrl: currentUser.photoURL!,
-                                      lastMessage:
-                                          _messageController.text.trim(),
-                                      lastMessageTime:
-                                          DateTime.now().toString(),
-                                      lastMessageSenderName:
-                                          currentUser.displayName!,
-                                      lastMessageSenderId: currentUser.uid,
-                                      isSeen: false,
-                                      unSeenMessages: 0,
-                                      receiverToken: widget.token,
-                                      senderToken: myToken!,
-                                    ),
-                                  ),
-                                );
-                            context.read<MessageCubit>().sendMessage(
-                                  messageEntity: MessageEntity(
-                                    messageContent:
-                                        _messageController.text.trim(),
-                                    messageTime: DateTime.now().toString(),
-                                    senderId: currentUser.uid,
+                                    senderId: currentUser.uid, // me
                                     senderName: currentUser.displayName!,
                                     senderPhotoUrl: currentUser.photoURL!,
+                                    lastMessage: Constant.photoMessageContent,
+                                    lastMessageTime: DateTime.now().toString(),
+                                    lastMessageSenderName:
+                                        currentUser.displayName!,
+                                    lastMessageSenderId: currentUser.uid,
+                                    isSeen: false,
+                                    unSeenMessages: 0,
+                                    receiverToken: widget.token,
+                                    senderToken: myToken!,
+                                  ),
+                                ),
+                              );
+                          context.read<MessageCubit>().sendMessage(
+                                messageEntity: MessageEntity(
+                                  messageContent: Constant.photoMessageContent,
+                                  messageTime: DateTime.now().toString(),
+                                  senderId: currentUser.uid,
+                                  senderName: currentUser.displayName!,
+                                  senderPhotoUrl: currentUser.photoURL!,
+                                  receiverId: widget.userId,
+                                  receiverName: widget.username,
+                                  receiverPhotoUrl: widget.photoUrl,
+                                  messageType: MessageType.photo.name,
+                                  image: pickedImage,
+                                ),
+                              );
+                          context.read<NotificationCubit>().sendNotification(
+                                notificationEntity: NotificationEntity(
+                                  conversationId: widget.userId,
+                                  token: widget.token,
+                                  title: currentUser.displayName!,
+                                  body: Constant.photoMessageContent,
+                                  photoUrl: widget.photoUrl,
+                                  username: widget.username,
+                                ),
+                              );
+                          setState(() {
+                            pickedImage = null;
+                          });
+                        } else {
+                          // If the user does not pick an image and sends a text message
+                          context.read<ConversationBloc>().add(
+                                CreateConversationEvent(
+                                  conversationEntity: ConversationEntity(
                                     receiverId: widget.userId,
                                     receiverName: widget.username,
                                     receiverPhotoUrl: widget.photoUrl,
-                                    messageType: "text",
+                                    senderId: currentUser.uid, // me
+                                    senderName: currentUser.displayName!,
+                                    senderPhotoUrl: currentUser.photoURL!,
+                                    lastMessage: _messageController.text.trim(),
+                                    lastMessageTime: DateTime.now().toString(),
+                                    lastMessageSenderName:
+                                        currentUser.displayName!,
+                                    lastMessageSenderId: currentUser.uid,
+                                    isSeen: false,
+                                    unSeenMessages: 0,
+                                    receiverToken: widget.token,
+                                    senderToken: myToken!,
                                   ),
-                                );
+                                ),
+                              );
+                          context.read<MessageCubit>().sendMessage(
+                                messageEntity: MessageEntity(
+                                  messageContent:
+                                      _messageController.text.trim(),
+                                  messageTime: DateTime.now().toString(),
+                                  senderId: currentUser.uid,
+                                  senderName: currentUser.displayName!,
+                                  senderPhotoUrl: currentUser.photoURL!,
+                                  receiverId: widget.userId,
+                                  receiverName: widget.username,
+                                  receiverPhotoUrl: widget.photoUrl,
+                                  messageType: MessageType.text.name,
+                                ),
+                              );
 
-                            // context.read<NotificationBloc>().add(
-                            //       SendNotificationEvent(
-                            //         notificationEntity: NotificationEntity(
-                            //           token: widget.token,
-                            //           title: widget.username,
-                            //           body: _messageController.text.trim(),
-                            //         ),
-                            //       ),
-                            //     );
-                            context.read<NotificationCubit>().sendNotification(
-                                  notificationEntity: NotificationEntity(
-                                    conversationId: widget.userId,
-                                    token: widget.token,
-                                    title: currentUser.displayName!,
-                                    body: _messageController.text.trim(),
-                                    photoUrl: widget.photoUrl,
-                                    username: widget.username,
-                                  ),
-                                );
-                          }
+                          // context.read<NotificationBloc>().add(
+                          //       SendNotificationEvent(
+                          //         notificationEntity: NotificationEntity(
+                          //           token: widget.token,
+                          //           title: widget.username,
+                          //           body: _messageController.text.trim(),
+                          //         ),
+                          //       ),
+                          //     );
+                          context.read<NotificationCubit>().sendNotification(
+                                notificationEntity: NotificationEntity(
+                                  conversationId: widget.userId,
+                                  token: widget.token,
+                                  title: currentUser.displayName!,
+                                  body: _messageController.text.trim(),
+                                  photoUrl: widget.photoUrl,
+                                  username: widget.username,
+                                ),
+                              );
                         }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        shape: const CircleBorder(),
-                        backgroundColor: Colors.transparent,
-                        shadowColor: Colors.transparent,
-                        padding: const EdgeInsets.only(left: 5),
-                      ),
-                      child: const Icon(
-                        Icons.send_outlined,
-                        color: Colors.white,
-                      ),
-                    ),
+                      }
+                    },
                   ),
                 ),
               ],

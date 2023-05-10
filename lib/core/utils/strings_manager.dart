@@ -1,6 +1,7 @@
 class AppStrings {
   static const String festivals = "FESTIVALS";
   static const String roles = "ROLÊS";
+  static const String festas = "FESTAS";
   static const String continueWithGoogle = "Continue with Google";
   static const String continueWithFacebook = "Continue with Facebook";
   static const String save = "Save";
@@ -13,6 +14,11 @@ class AppStrings {
   static const String update = "Update";
   static const String delete = "Delete";
   static const String usersList = "Users List";
+  static const String searchByEventOrTour = "Search by event or tour";
+  static const String name = "Name";
+  static const String age = "Age";
+  static const String instagram = "Instagram";
+  static const String location = "Location";
   static const String startAConversationWithAUser =
       "Start a conversation with a user";
 }

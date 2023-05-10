@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:internship_practice/colors_utils.dart';
-import 'package:internship_practice/common/widgets/card_widget.dart';
+import 'package:internship_practice/common/widgets/widgets.dart';
 import 'package:internship_practice/core/utils/strings_manager.dart';
 import 'package:internship_practice/features/auth/data/models/card_model.dart';
+import 'package:internship_practice/features/auth/presentation/widgets/card_widget.dart';
+import 'package:internship_practice/features/auth/presentation/widgets/header_widget.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -35,50 +35,12 @@ class HomeScreen extends StatelessWidget {
                   const SizedBox(
                     height: 40,
                   ),
-                  Container(
-                    height: 45,
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(horizontal: 14),
-                    decoration: BoxDecoration(
-                      color: ColorUtil.kSecondaryColor.withOpacity(0.8),
-                      borderRadius: BorderRadius.circular(100),
-                    ),
-                    child: TextField(
-                      textInputAction: TextInputAction.search,
-                      style: GoogleFonts.sourceSansPro(
-                        color: Colors.white,
-                        fontSize: 16,
-                      ),
-                      decoration: InputDecoration(
-                        icon: Icon(
-                          Icons.search,
-                          size: 24,
-                          color: Colors.white.withOpacity(0.7),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          vertical: 10,
-                        ),
-                        isDense: true,
-                        hintText: "Search by event or tour",
-                        border: InputBorder.none,
-                        hintStyle: GoogleFonts.sourceSansPro(
-                          color: ColorUtil.kTertiaryColor,
-                          fontSize: 16,
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-                    ),
-                  ),
+                  const SearchBarWidget(),
                   const SizedBox(
                     height: 40,
                   ),
-                  Text(
-                    AppStrings.festivals,
-                    style: GoogleFonts.sourceSansPro(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                      color: ColorUtil.kTertiaryColor,
-                    ),
+                  const HeaderWidget(
+                    header: AppStrings.festivals,
                   ),
                   SizedBox(
                     height: 300,
@@ -99,13 +61,8 @@ class HomeScreen extends StatelessWidget {
                   const SizedBox(
                     height: 25,
                   ),
-                  Text(
-                    AppStrings.roles,
-                    style: GoogleFonts.sourceSansPro(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                      color: ColorUtil.kTertiaryColor,
-                    ),
+                  const HeaderWidget(
+                    header: AppStrings.roles,
                   ),
                   SizedBox(
                     height: 300,
@@ -126,13 +83,8 @@ class HomeScreen extends StatelessWidget {
                   const SizedBox(
                     height: 25,
                   ),
-                  Text(
-                    "FESTAS",
-                    style: GoogleFonts.sourceSansPro(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                      color: ColorUtil.kTertiaryColor,
-                    ),
+                  const HeaderWidget(
+                    header: AppStrings.festas,
                   ),
                   SizedBox(
                     height: 300,
@@ -150,7 +102,9 @@ class HomeScreen extends StatelessWidget {
                       },
                     ),
                   ),
-                  const SizedBox(height: 30),
+                  const SizedBox(
+                    height: 30,
+                  ),
                 ],
               ),
             ),

@@ -37,9 +37,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         log("User already exists");
         if (await isNotSameToken(token!)) {
           log("New token detected in an already existing user. Updating the token.");
-          dbUser.doc(userInfo.uid).update({
-            "token": token,
-          });
+          _saveNewTokenToCollection(
+            uid: userInfo.uid,
+            token: token,
+          );
         } else {
           log("Same token");
         }
@@ -85,9 +86,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         log("User already exists");
         if (await isNotSameToken(token!)) {
           log("New token detected in an already existing user");
-          dbUser.doc(userInfo.uid).update({
-            "token": token,
-          });
+          _saveNewTokenToCollection(
+            uid: userInfo.uid,
+            token: token,
+          );
         } else {
           log("Same token");
         }
@@ -138,5 +140,36 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         .where('token', isNotEqualTo: token)
         .get();
     return querySnapshot.docs.isNotEmpty;
+  }
+
+  void _saveNewTokenToCollection({
+    required String uid,
+    required String token,
+  }) async {
+    log("New token detected in an already existing user. Updating the token.");
+    // Updating the user collection of the current user
+    dbUser.doc(uid).update({
+      "token": token,
+    });
+    // Updating the conversation collection of the current user
+    var currentUserConversationCollection =
+        await dbUser.doc(uid).collection('conversation').get();
+    for (var doc in currentUserConversationCollection.docs) {
+      await doc.reference.update({
+        "senderToken": token,
+      });
+    }
+    // Updating the conversation collection of the other user
+    var notCurrentUserCollection =
+        await dbUser.where('userId', isNotEqualTo: uid).get();
+    for (var doc in notCurrentUserCollection.docs) {
+      var conversationCollection =
+          await doc.reference.collection('conversation').get();
+      for (var doc in conversationCollection.docs) {
+        await doc.reference.update({
+          "receiverToken": token,
+        });
+      }
+    }
   }
 }

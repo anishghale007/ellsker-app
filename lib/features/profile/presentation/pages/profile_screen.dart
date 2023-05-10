@@ -1,11 +1,11 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:internship_practice/colors_utils.dart';
-import 'package:internship_practice/common/widgets/profile_header_widget.dart';
+import 'package:internship_practice/features/profile/presentation/widgets/profile_header_widget.dart';
 import 'package:internship_practice/core/utils/strings_manager.dart';
+import 'package:internship_practice/features/profile/presentation/widgets/profile_picture_widget.dart';
+import 'package:internship_practice/features/profile/presentation/widgets/user_info_widget.dart';
 import 'package:internship_practice/ui_pages.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -53,91 +53,17 @@ class ProfileScreen extends StatelessWidget {
                     const SizedBox(
                       height: 70,
                     ),
-                    Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: 350,
-                      foregroundDecoration: BoxDecoration(
-                        color: Colors.green,
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          stops: const [
-                            0,
-                            0.2,
-                            0.6,
-                            1,
-                          ],
-                          colors: [
-                            ColorUtil.kPrimaryColor,
-                            Colors.transparent,
-                            Colors.transparent,
-                            ColorUtil.kPrimaryColor,
-                          ],
-                        ),
-                      ),
-                      child: CachedNetworkImage(
-                        imageUrl: data!['photoUrl'],
-                        fit: BoxFit.cover,
-                        progressIndicatorBuilder: (context, url, progress) =>
-                            CircularProgressIndicator(
-                                value: progress.progress,
-                                backgroundColor: Colors.white),
-                        errorWidget: (context, url, error) =>
-                            const Icon(Icons.error),
-                      ),
+                    ProfilePictureWidget(
+                      profilePictureUrl: data!['photoUrl'],
                     ),
                     const SizedBox(
                       height: 80,
                     ),
-                    Center(
-                      child: Text(
-                        "${data['username']} , ${data['age']}",
-                        style: GoogleFonts.sourceSansPro(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 32,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        RichText(
-                          text: TextSpan(
-                            children: [
-                              WidgetSpan(
-                                child: Icon(
-                                  Icons.location_on_outlined,
-                                  color: ColorUtil.kTertiaryColor,
-                                  size: 20,
-                                ),
-                              ),
-                              TextSpan(
-                                text: data['location'],
-                                style: GoogleFonts.sourceSansPro(
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 14,
-                                  color: ColorUtil.kTertiaryColor,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 45,
-                        ),
-                        Text(
-                          "@${data['email']}",
-                          style: GoogleFonts.sourceSansPro(
-                            fontWeight: FontWeight.w400,
-                            fontSize: 14,
-                            color: ColorUtil.kTertiaryColor,
-                          ),
-                        ),
-                      ],
+                    UserInfoWidget(
+                      username: data['username'],
+                      age: data['age'].toString(),
+                      location: data['location'],
+                      email: data['email'],
                     ),
                   ],
                 );

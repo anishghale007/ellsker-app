@@ -8,9 +8,12 @@ import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:internship_practice/colors_utils.dart';
 import 'package:internship_practice/common/loading_overlay/loading_overlay.dart';
 import 'package:internship_practice/common/widgets/widgets.dart';
+import 'package:internship_practice/core/functions/app_dialogs.dart';
 import 'package:internship_practice/core/utils/strings_manager.dart';
 import 'package:internship_practice/features/profile/domain/entities/user_profile_entity.dart';
 import 'package:internship_practice/features/profile/presentation/bloc/profile_bloc.dart';
+import 'package:internship_practice/features/profile/presentation/widgets/change_profile_picture_widget.dart';
+import 'package:internship_practice/features/profile/presentation/widgets/profile_header_widget.dart';
 
 class EditProfileScreen extends StatefulWidget {
   final String photoUrl;
@@ -61,7 +64,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Future<void> getImage() async {
     try {
       final ImagePicker imagePicker = ImagePicker();
-      final image = await imagePicker.pickImage(source: ImageSource.gallery);
+      final image = await imagePicker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 60,
+      );
       setState(() {
         pickedImage = image;
       });
@@ -100,6 +106,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       } else if (state is ProfileLoading) {
                         loadingOverlay.show(context);
                       } else if (state is ProfileError) {
+                        loadingOverlay.hide();
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(state.errorMessage.toString()),
@@ -115,23 +122,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               await InternetConnectionChecker().hasConnection;
                           if (result == false) {
                             // if there is no internet connection
-                            showDialog(
+                            AppDialogs.showAlertDialog(
                               context: context,
-                              builder: (context) {
-                                return AlertDialog(
-                                  title: const Text("No Internet Connection"),
-                                  content: const Text(
-                                      "Please check your device connection."),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: const Text("Close"),
-                                    ),
-                                  ],
-                                );
-                              },
+                              title: const Text("No Internet Connection"),
+                              content: const Text(
+                                  "Please check your device connection."),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text("Close"),
+                                ),
+                              ],
                             );
                           } else {
                             _form.currentState!.save();
@@ -179,59 +182,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   const SizedBox(
                     height: 60,
                   ),
-                  Center(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: const Color(0xff666A83),
-                          width: 4,
-                        ),
-                      ),
-                      child: CircleAvatar(
-                        backgroundImage: pickedImage == null
-                            ? NetworkImage(widget.photoUrl)
-                            : Image.file(File(pickedImage!.path)).image,
-                        radius: 80,
-                        child: Stack(
-                          children: [
-                            Align(
-                              alignment: Alignment.bottomRight,
-                              child: InkWell(
-                                onTap: () {
-                                  getImage();
-                                },
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: Colors.black,
-                                      width: 3,
-                                    ),
-                                  ),
-                                  child: CircleAvatar(
-                                    radius: 20,
-                                    backgroundColor:
-                                        ColorUtil.kMessageAlertColor,
-                                    child: const Icon(
-                                      Icons.edit_outlined,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                  ChangeProfilePictureWidget(
+                    onPress: () {
+                      getImage();
+                    },
+                    backgroundImage: pickedImage == null
+                        ? NetworkImage(widget.photoUrl)
+                        : Image.file(File(pickedImage!.path)).image,
                   ),
                   const SizedBox(
                     height: 80,
                   ),
                   CustomTextField(
-                    heading: "Name",
-                    hintText: "Name",
+                    heading: AppStrings.name,
+                    hintText: AppStrings.name,
                     textInputType: TextInputType.name,
                     controller: _nameController,
                     textInputAction: TextInputAction.next,
@@ -248,7 +212,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       Expanded(
                         flex: 1,
                         child: CustomTextField(
-                          heading: "Age",
+                          heading: AppStrings.age,
                           hintText: "00",
                           textInputType: TextInputType.number,
                           controller: _ageController,
@@ -268,7 +232,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       Expanded(
                         flex: 5,
                         child: CustomTextField(
-                          heading: "Instagram",
+                          heading: AppStrings.instagram,
                           hintText: "@instagram",
                           textInputType: TextInputType.emailAddress,
                           controller: _instagramController,
@@ -285,8 +249,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ],
                   ),
                   CustomTextField(
-                    heading: "Location",
-                    hintText: "Location",
+                    heading: AppStrings.location,
+                    hintText: AppStrings.location,
                     textInputType: TextInputType.text,
                     controller: _locationController,
                     textInputAction: TextInputAction.done,

@@ -38,13 +38,13 @@ class ChatBoxWidget extends StatelessWidget {
         ? Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Text(
-                DateFormat('MMM d, h:mm a').format(DateTime.parse(messageTime)),
-                style: GoogleFonts.sourceSansPro(
-                  color: Colors.grey,
-                  fontSize: 12,
-                ),
-              ),
+              // Text(
+              //   DateFormat('MMM d, h:mm a').format(DateTime.parse(messageTime)),
+              //   style: GoogleFonts.sourceSansPro(
+              //     color: Colors.grey,
+              //     fontSize: 12,
+              //   ),
+              // ),
               messageType == "photo"
                   ? Flexible(
                       child: Container(
@@ -70,17 +70,33 @@ class ChatBoxWidget extends StatelessWidget {
                             bottomLeft: Radius.circular(15),
                           ),
                         ),
-                        child: SizedBox(
-                          height: 250,
-                          child: FullScreenWidget(
-                            disposeLevel: DisposeLevel.Low,
-                            child: CachedNetworkImage(
-                              imageUrl: photoUrl,
-                              fit: BoxFit.contain,
-                              errorWidget: (context, url, error) =>
-                                  const Icon(Icons.error),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            SizedBox(
+                              height: 250,
+                              child: FullScreenWidget(
+                                disposeLevel: DisposeLevel.Low,
+                                child: CachedNetworkImage(
+                                  imageUrl: photoUrl,
+                                  fit: BoxFit.contain,
+                                  errorWidget: (context, url, error) =>
+                                      const Icon(Icons.error),
+                                ),
+                              ),
                             ),
-                          ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Text(
+                              DateFormat('h:mm')
+                                  .format(DateTime.parse(messageTime)),
+                              style: GoogleFonts.sourceSansPro(
+                                color: Colors.grey,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     )
@@ -108,13 +124,26 @@ class ChatBoxWidget extends StatelessWidget {
                             bottomLeft: Radius.circular(15),
                           ),
                         ),
-                        child: Text(
-                          messageContent,
-                          style: GoogleFonts.sourceSansPro(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.white,
-                          ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              messageContent,
+                              style: GoogleFonts.sourceSansPro(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.white,
+                              ),
+                            ),
+                            Text(
+                              DateFormat('h:mm')
+                                  .format(DateTime.parse(messageTime)),
+                              style: GoogleFonts.sourceSansPro(
+                                color: Colors.grey,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),

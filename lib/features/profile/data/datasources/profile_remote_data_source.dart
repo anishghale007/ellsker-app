@@ -42,14 +42,19 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
         ////// IF THE USER UPLOADS A NEW PROFILE PICTURE
          */
 
-        final newImageId =
-            "${userProfileEntity.email}:UploadedAt:${DateTime.now().toString()}";
-        final newImageStorage = FirebaseStorage.instance
-            .ref()
-            .child('${userProfileEntity.email}/$newImageId');
-        final newImageFile = File(userProfileEntity.image!.path);
-        await newImageStorage.putFile(newImageFile);
-        final newPhotoUrl = await newImageStorage.getDownloadURL();
+        // final newImageId =
+        //     "${userProfileEntity.email}:UploadedAt:${DateTime.now().toString()}";
+        // final newImageStorage = FirebaseStorage.instance
+        //     .ref()
+        //     .child('${userProfileEntity.email}/$newImageId');
+        // final newImageFile = File(userProfileEntity.image!.path);
+        // await newImageStorage.putFile(newImageFile);
+        // final newPhotoUrl = await newImageStorage.getDownloadURL();
+
+        final newPhotoUrl = await _storeImageToFirebase(
+          file: File(userProfileEntity.image!.path),
+          email: userProfileEntity.email,
+        );
 
         _saveNewUserDataToCollection(
           username: userProfileEntity.username,
@@ -191,5 +196,19 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
         }
       }
     }
+  }
+
+  Future<String> _storeImageToFirebase({
+    required File file,
+    required String email,
+  }) async {
+    final newImageId = "$email:UploadedAt:${DateTime.now().toString()}";
+    UploadTask uploadTask = FirebaseStorage.instance
+        .ref()
+        .child('$email/$newImageId')
+        .putFile(file);
+    TaskSnapshot snapshot = await uploadTask;
+    String newPhotoUrl = await snapshot.ref.getDownloadURL();
+    return newPhotoUrl;
   }
 }

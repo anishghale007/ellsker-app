@@ -1,14 +1,12 @@
 import 'dart:developer';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internship_practice/core/utils/strings_manager.dart';
-import 'package:internship_practice/features/chat/presentation/bloc/conversation/conversation_bloc.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/user_list/user_list_cubit.dart';
+import 'package:internship_practice/features/chat/presentation/widgets/user_list_tile_widget.dart';
 import 'package:internship_practice/injection_container.dart';
-import 'package:internship_practice/ui_pages.dart';
 
 class UserListScreen extends StatefulWidget {
   const UserListScreen({super.key});
@@ -115,52 +113,9 @@ class _UserListScreenState extends State<UserListScreen> {
                           itemCount: state.users.length,
                           itemBuilder: (context, index) {
                             final data = state.users[index];
-                            return InkWell(
-                              onTap: () {
-                                context.read<ConversationBloc>().add(
-                                    SeenConversationEvent(
-                                        conversationId: data.userId));
-                                Navigator.of(context).pushNamed(
-                                  kChatScreenPath,
-                                  arguments: {
-                                    "username": data.userName,
-                                    "userId": data.userId,
-                                    "photoUrl": data.photoUrl,
-                                    "token": data.token,
-                                  },
-                                );
-                              },
-                              child: SizedBox(
-                                height: data.userId == currentUser ? 0 : 70,
-                                child: ListTile(
-                                  leading: CachedNetworkImage(
-                                    imageUrl: data.photoUrl,
-                                    errorWidget: (context, url, error) =>
-                                        const Icon(
-                                      Icons.error,
-                                      color: Colors.white,
-                                    ),
-                                    progressIndicatorBuilder:
-                                        (context, url, progress) =>
-                                            CircularProgressIndicator(
-                                      value: progress.progress,
-                                      backgroundColor: Colors.white,
-                                    ),
-                                    imageBuilder: (context, imageProvider) =>
-                                        CircleAvatar(
-                                      foregroundImage: imageProvider,
-                                      radius: 27,
-                                    ),
-                                  ),
-                                  title: Text(
-                                    data.userName,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                ),
-                              ),
+                            return UserListTileWidget(
+                              data: data,
+                              currentUser: currentUser,
                             );
                           },
                         );

@@ -14,7 +14,8 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
   @override
   Future<String> sendNotification(NotificationEntity notificationEntity) async {
     try {
-      final String serverKey = dotenv.get('SERVER_KEY', fallback: 'Not found');
+      final String serverKey =
+          dotenv.get(Constant.serveyKey, fallback: 'Not found');
       await http.post(
         Uri.parse(Constant.notificationUrl),
         headers: <String, String>{

@@ -70,6 +70,9 @@ class _BottomNavBarScreenState extends State<BottomNavBarScreen> {
               return AlertDialog(
                 title: const Text('Logout from APP'),
                 content: const Text('Are you sure you want to logout?'),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
                 actions: [
                   TextButton(
                     onPressed: () {

@@ -186,13 +186,20 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
     try {
       if (messageEntity.image != null) {
         // IF THE USER SENDS A PHOTO MESSAGE
-        final imageId =
-            "${messageEntity.senderId}:UploadedAt:${DateTime.now().toString()}";
-        final imageStorage = FirebaseStorage.instance.ref().child(
-            '${messageEntity.senderId}-${messageEntity.receiverId}/$imageId');
-        final imageFile = File(messageEntity.image!.path);
-        await imageStorage.putFile(imageFile);
-        final photoUrl = await imageStorage.getDownloadURL();
+        // final imageId =
+        //     "${messageEntity.senderId}:UploadedAt:${DateTime.now().toString()}";
+        // final imageStorage = FirebaseStorage.instance.ref().child(
+        //     '${messageEntity.senderId}-${messageEntity.receiverId}/$imageId');
+        // final imageFile = File(messageEntity.image!.path);
+        // await imageStorage.putFile(imageFile);
+        // final photoUrl = await imageStorage.getDownloadURL();
+
+        final photoUrl = await _storeImageToFirebase(
+          file: File(messageEntity.image!.path),
+          receiverId: messageEntity.receiverId,
+          senderId: messageEntity.senderId,
+        );
+
         // saving the data
         _saveMessageDataToMessageCollection(
           messageContent: messageEntity.messageContent,
@@ -440,5 +447,21 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
         .collection("message")
         .doc()
         .set(senderData);
+  }
+
+  Future<String> _storeImageToFirebase({
+    required File file,
+    required String receiverId,
+    required String senderId,
+  }) async {
+    final imageId = "$senderId:UploadedAt:${DateTime.now().toString()}";
+
+    UploadTask uploadTask = FirebaseStorage.instance
+        .ref()
+        .child('$senderId-$receiverId/$imageId')
+        .putFile(file);
+    TaskSnapshot snapshot = await uploadTask;
+    String newPhotoUrl = await snapshot.ref.getDownloadURL();
+    return newPhotoUrl;
   }
 }
