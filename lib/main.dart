@@ -89,7 +89,7 @@ class MyApp extends StatelessWidget {
         )
       ],
       child: StreamBuilder<User?>(
-        stream: FirebaseAuth.instance.authStateChanges(),
+        stream: FirebaseAuth.instance.userChanges(),
         initialData: FirebaseAuth.instance.currentUser,
         builder: (context, snapshot) {
           return MaterialApp(

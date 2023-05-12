@@ -11,6 +11,8 @@ class MessageEntity extends Equatable {
   final String receiverName;
   final String receiverPhotoUrl;
   final String messageType;
+  final String? latitude;
+  final String? longitude;
   final String? photoUrl;
   final XFile? image;
 
@@ -24,6 +26,8 @@ class MessageEntity extends Equatable {
     required this.receiverName,
     required this.receiverPhotoUrl,
     required this.messageType,
+    this.latitude,
+    this.longitude,
     this.photoUrl,
     this.image,
   });
@@ -39,6 +43,8 @@ class MessageEntity extends Equatable {
         receiverName,
         receiverPhotoUrl,
         messageType,
+        latitude,
+        longitude,
         photoUrl,
         image,
       ];

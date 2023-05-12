@@ -179,8 +179,7 @@ class ConversationTile extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Text(
-                      timeago.format(DateTime.parse(lastMessageTime),
-                          locale: 'en_short'),
+                      "${timeago.format(DateTime.parse(lastMessageTime), locale: 'en_short')} ago",
                       // DateFormat()
                       //     .add_Hm()
                       //     .format(DateTime.parse(lastMessageTime)),

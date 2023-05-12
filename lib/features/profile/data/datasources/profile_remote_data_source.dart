@@ -42,15 +42,6 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
         ////// IF THE USER UPLOADS A NEW PROFILE PICTURE
          */
 
-        // final newImageId =
-        //     "${userProfileEntity.email}:UploadedAt:${DateTime.now().toString()}";
-        // final newImageStorage = FirebaseStorage.instance
-        //     .ref()
-        //     .child('${userProfileEntity.email}/$newImageId');
-        // final newImageFile = File(userProfileEntity.image!.path);
-        // await newImageStorage.putFile(newImageFile);
-        // final newPhotoUrl = await newImageStorage.getDownloadURL();
-
         final newPhotoUrl = await _storeImageToFirebase(
           file: File(userProfileEntity.image!.path),
           email: userProfileEntity.email,

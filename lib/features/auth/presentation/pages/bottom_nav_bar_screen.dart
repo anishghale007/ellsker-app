@@ -10,6 +10,7 @@ import 'package:internship_practice/features/auth/presentation/cubit/sign_out_cu
 import 'package:internship_practice/features/chat/presentation/pages/chat_list_screen.dart';
 import 'package:internship_practice/features/auth/presentation/pages/home_screen.dart';
 import 'package:internship_practice/features/chat/presentation/pages/chat_screen.dart';
+import 'package:internship_practice/features/location/presentation/pages/location_screen.dart';
 import 'package:internship_practice/features/notification/firebase_messaging/notifications_config.dart';
 import 'package:internship_practice/features/profile/presentation/pages/profile_screen.dart';
 import 'package:internship_practice/injection_container.dart';
@@ -29,6 +30,7 @@ class _BottomNavBarScreenState extends State<BottomNavBarScreen> {
   List<Widget> pages = [
     const HomeScreen(),
     const ChatListScreen(),
+    const LocationScreen(),
     const ProfileScreen(),
   ];
 
@@ -229,6 +231,14 @@ class _BottomNavBarScreenState extends State<BottomNavBarScreen> {
                 ),
                 icon: Icon(
                   Icons.message_outlined,
+                ),
+              ),
+              BottomNavigationBarItem(
+                tooltip: AppStrings.location,
+                label: AppStrings.location,
+                activeIcon: Icon(Icons.location_on),
+                icon: Icon(
+                  Icons.location_on_outlined,
                 ),
               ),
               BottomNavigationBarItem(

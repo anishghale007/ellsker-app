@@ -41,6 +41,9 @@ dependencies:
   full_screen_image: ^2.0.0
   timeago: ^3.0.0
   connectivity_plus: ^3.0.0
+  google_maps_flutter: ^2.2.6
+  geolocator: ^9.0.2
+  geocoding: ^2.1.0
   
 
 dev_dependencies:

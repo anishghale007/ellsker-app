@@ -4,6 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:internship_practice/colors_utils.dart';
@@ -43,6 +44,8 @@ class _ChatScreenState extends State<ChatScreen> {
   late TextEditingController _messageController;
   final _form = GlobalKey<FormState>();
   String? myToken = "";
+  double? latitude;
+  double? longitude;
   XFile? pickedImage;
 
   @override
@@ -86,6 +89,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    LocationPermission? locationPermission;
+
     return Container(
       width: double.infinity,
       decoration: const BoxDecoration(
@@ -163,6 +168,8 @@ class _ChatScreenState extends State<ChatScreen> {
                               senderPhotoUrl: data.senderPhotoUrl,
                               messageType: data.messageType,
                               photoUrl: data.photoUrl!,
+                              latitude: data.latitude!,
+                              longitude: data.longitude!,
                             );
                           },
                         );
@@ -175,55 +182,6 @@ class _ChatScreenState extends State<ChatScreen> {
                       }
                     },
                   ),
-                  // BlocProvider<MessageCubit>(
-                  //   create: (context) => sl<MessageCubit>()
-                  //     ..getAllChatMessages(conversationId: widget.userId),
-                  //   child: BlocBuilder<MessageCubit, MessageState>(
-                  //     builder: (context, state) {
-                  //       if (state is MessageLoaded) {
-                  //         log("Message Loaded");
-                  //         return ListView.separated(
-                  //           separatorBuilder: (context, index) => const Divider(
-                  //             height: 30,
-                  //           ),
-                  //           itemCount: state.messageList.length,
-                  //           physics: const NeverScrollableScrollPhysics(),
-                  //           shrinkWrap: true,
-                  //           scrollDirection: Axis.vertical,
-                  //           itemBuilder: (context, index) {
-                  //             final data = state.messageList[index];
-                  //             return ChatBoxWidget(
-                  //               messageContent: data.messageContent,
-                  //               messageTime: data.messageTime,
-                  //               receiverId: data.receiverId,
-                  //               receiverName: data.receiverName,
-                  //               receiverPhotoUrl: data.receiverPhotoUrl,
-                  //               senderId: data.senderId,
-                  //               senderName: data.senderName,
-                  //               senderPhotoUrl: data.senderPhotoUrl,
-                  //               messageType: data.messageType,
-                  //               photoUrl: data.photoUrl!,
-                  //             );
-                  //           },
-                  //         );
-                  //       } else if (state is MessageLoading) {
-                  //         return const Center(
-                  //           child: CircularProgressIndicator(),
-                  //         );
-                  //       } else if (state is MessageError) {
-                  //         ScaffoldMessenger.of(context).showSnackBar(
-                  //           SnackBar(
-                  //             content: Text(state.errorMessage.toString()),
-                  //             duration: const Duration(seconds: 5),
-                  //           ),
-                  //         );
-                  //       } else {
-                  //         log("Message Not Loaded");
-                  //       }
-                  //       return Container();
-                  //     },
-                  //   ),
-                  // ),
                   const SizedBox(
                     height: 80,
                   ),
@@ -255,8 +213,12 @@ class _ChatScreenState extends State<ChatScreen> {
                     textInputAction: TextInputAction.done,
                     minLines: 1,
                     maxLines: 3,
-                    readOnly: pickedImage != null ? true : false,
-                    validator: pickedImage != null
+                    readOnly: pickedImage != null ||
+                            latitude != null && longitude != null
+                        ? true
+                        : false,
+                    validator: pickedImage != null ||
+                            latitude != null && longitude != null
                         ? null
                         : (value) {
                             if (value!.isEmpty) {
@@ -273,7 +235,11 @@ class _ChatScreenState extends State<ChatScreen> {
                       errorStyle: const TextStyle(fontSize: 0.01),
                       fillColor: Colors.grey[800],
                       filled: true,
-                      hintText: pickedImage != null ? pickedImage!.name : "",
+                      hintText: pickedImage != null
+                          ? pickedImage!.name
+                          : latitude != null && longitude != null
+                              ? "Lat: $latitude || Long: $longitude"
+                              : "",
                       hintStyle: GoogleFonts.sourceSansPro(
                         color: Colors.grey[400],
                         fontSize: 16,
@@ -294,11 +260,14 @@ class _ChatScreenState extends State<ChatScreen> {
                           color: ColorUtil.kIconColor,
                         ),
                       ),
-                      suffixIcon: pickedImage != null
+                      suffixIcon: pickedImage != null ||
+                              latitude != null && longitude != null
                           ? IconButton(
                               onPressed: () {
                                 setState(() {
                                   pickedImage = null;
+                                  latitude = null;
+                                  longitude = null;
                                 });
                               },
                               icon: Icon(
@@ -306,7 +275,36 @@ class _ChatScreenState extends State<ChatScreen> {
                                 color: ColorUtil.kTertiaryColor,
                               ),
                             )
-                          : null,
+                          : IconButton(
+                              onPressed: () async {
+                                locationPermission =
+                                    await Geolocator.requestPermission();
+                                if (locationPermission ==
+                                    LocationPermission.denied) {
+                                  locationPermission =
+                                      await Geolocator.requestPermission();
+                                } else if (locationPermission ==
+                                    LocationPermission.deniedForever) {
+                                  await Geolocator.openAppSettings();
+                                } else if (locationPermission ==
+                                        LocationPermission.always ||
+                                    locationPermission ==
+                                        LocationPermission.whileInUse) {
+                                  final response =
+                                      await Geolocator.getCurrentPosition();
+                                  setState(() {
+                                    longitude = response.longitude;
+                                    latitude = response.latitude;
+                                    log("Longitude: $longitude");
+                                    log("Latitude: $latitude");
+                                  });
+                                }
+                              },
+                              icon: Icon(
+                                Icons.location_on,
+                                color: ColorUtil.kIconColor,
+                              ),
+                            ),
                     ),
                   ),
                 ),
@@ -412,6 +410,60 @@ class _ChatScreenState extends State<ChatScreen> {
                               );
                           setState(() {
                             pickedImage = null;
+                          });
+                        } else if (latitude != null || longitude != null) {
+                          // If the user sends a location message
+                          context.read<ConversationBloc>().add(
+                                CreateConversationEvent(
+                                  conversationEntity: ConversationEntity(
+                                    receiverId: widget.userId,
+                                    receiverName: widget.username,
+                                    receiverPhotoUrl: widget.photoUrl,
+                                    senderId: currentUser.uid, // me
+                                    senderName: currentUser.displayName!,
+                                    senderPhotoUrl: currentUser.photoURL!,
+                                    lastMessage:
+                                        Constant.locationMessageContent,
+                                    lastMessageTime: DateTime.now().toString(),
+                                    lastMessageSenderName:
+                                        currentUser.displayName!,
+                                    lastMessageSenderId: currentUser.uid,
+                                    isSeen: false,
+                                    unSeenMessages: 0,
+                                    receiverToken: widget.token,
+                                    senderToken: myToken!,
+                                  ),
+                                ),
+                              );
+                          context.read<MessageCubit>().sendMessage(
+                                messageEntity: MessageEntity(
+                                  messageContent:
+                                      Constant.locationMessageContent,
+                                  messageTime: DateTime.now().toString(),
+                                  senderId: currentUser.uid,
+                                  senderName: currentUser.displayName!,
+                                  senderPhotoUrl: currentUser.photoURL!,
+                                  receiverId: widget.userId,
+                                  receiverName: widget.username,
+                                  receiverPhotoUrl: widget.photoUrl,
+                                  messageType: MessageType.location.name,
+                                  latitude: latitude.toString(),
+                                  longitude: longitude.toString(),
+                                ),
+                              );
+                          context.read<NotificationCubit>().sendNotification(
+                                notificationEntity: NotificationEntity(
+                                  conversationId: widget.userId,
+                                  token: widget.token,
+                                  title: currentUser.displayName!,
+                                  body: Constant.locationMessageContent,
+                                  photoUrl: widget.photoUrl,
+                                  username: widget.username,
+                                ),
+                              );
+                          setState(() {
+                            latitude = null;
+                            longitude = null;
                           });
                         } else {
                           // If the user does not pick an image and sends a text message

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:internship_practice/features/auth/presentation/pages/bottom_nav_bar_screen.dart';
 import 'package:internship_practice/features/chat/presentation/pages/chat_list_screen.dart';
+import 'package:internship_practice/features/location/presentation/pages/location_screen.dart';
+import 'package:internship_practice/features/location/presentation/pages/map_screen.dart';
 import 'package:internship_practice/features/profile/presentation/pages/edit_profile_screen.dart';
 import 'package:internship_practice/features/auth/presentation/pages/home_screen.dart';
 import 'package:internship_practice/features/auth/presentation/pages/login_screen.dart';
@@ -45,6 +47,17 @@ class Routers {
             userId: arguments["userId"],
             photoUrl: arguments["photoUrl"],
             token: arguments['token'],
+          );
+        });
+      case kLocationScreenPath:
+        return MaterialPageRoute(builder: (_) => const LocationScreen());
+      case kMapScreenPath:
+        return MaterialPageRoute(builder: (_) {
+          Map<String, dynamic> arguments =
+              routeSettings.arguments as Map<String, dynamic>;
+          return MapScreen(
+            latitude: arguments["latitude"],
+            longitude: arguments["longitude"],
           );
         });
       default:

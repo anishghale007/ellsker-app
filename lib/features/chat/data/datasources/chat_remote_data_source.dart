@@ -37,49 +37,53 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
   Future<String> createConversation(
       ConversationEntity conversationEntity) async {
     try {
-      if (await isExistentConversationDocument()) {
+      if (await isExistentConversationDocument() &&
+          await isExistentConversationDocumentAtOtherUser(
+              conversationEntity.receiverId)) {
         // checks if the document exists in the current user collection
         log("Document already exists in the current user");
-      } else if (await isNotExistentConversationDocumentAtOtherUser(
-          conversationEntity.receiverId)) {
-        // checks if the document exists in both of the user collection. Used if the receiver deletes the conversation
-        log("Document does not exist in the other user. Creating it now");
-        // sender data
-        _saveSenderDataToConversationCollection(
-          receiverId: conversationEntity.receiverId,
-          receiverName: conversationEntity.receiverName,
-          receiverPhotoUrl: conversationEntity.receiverPhotoUrl,
-          senderId: conversationEntity.senderId,
-          senderName: conversationEntity.senderName,
-          senderPhotoUrl: conversationEntity.senderPhotoUrl,
-          lastMessage: conversationEntity.lastMessage,
-          lastMessageSenderName: conversationEntity.lastMessageSenderName,
-          lastMessageSenderId: conversationEntity.lastMessageSenderId,
-          lastMessageTime: conversationEntity.lastMessageTime,
-          isSeen: conversationEntity.isSeen,
-          unSeenMessages: conversationEntity.unSeenMessages,
-          senderToken: conversationEntity.senderToken,
-          receiverToken: conversationEntity.receiverToken,
-        );
-        // receiver data
-        _saveReceiverDataToConversationCollection(
-          receiverId: conversationEntity.senderId,
-          receiverName: conversationEntity.senderName,
-          receiverPhotoUrl: conversationEntity.senderPhotoUrl,
-          senderId: conversationEntity.receiverId,
-          senderName: conversationEntity.receiverName,
-          senderPhotoUrl: conversationEntity.receiverPhotoUrl,
-          lastMessage: conversationEntity.lastMessage,
-          lastMessageSenderName: conversationEntity.lastMessageSenderName,
-          lastMessageSenderId: conversationEntity.lastMessageSenderId,
-          lastMessageTime: conversationEntity.lastMessageTime,
-          isSeen: conversationEntity.isSeen,
-          unSeenMessages: conversationEntity.unSeenMessages,
-          senderToken: conversationEntity.receiverToken,
-          receiverToken: conversationEntity.senderToken,
-        );
+        // }
+        // else if (await isNotExistentConversationDocumentAtOtherUser(
+        //     conversationEntity.receiverId)) {
+        //   // checks if the document exists in both of the user collection. Used if the receiver deletes the conversation
+        //   log("Document does not exist in the other user. Creating it now");
+        //   // sender data
+        //   _saveSenderDataToConversationCollection(
+        //     receiverId: conversationEntity.receiverId,
+        //     receiverName: conversationEntity.receiverName,
+        //     receiverPhotoUrl: conversationEntity.receiverPhotoUrl,
+        //     senderId: conversationEntity.senderId,
+        //     senderName: conversationEntity.senderName,
+        //     senderPhotoUrl: conversationEntity.senderPhotoUrl,
+        //     lastMessage: conversationEntity.lastMessage,
+        //     lastMessageSenderName: conversationEntity.lastMessageSenderName,
+        //     lastMessageSenderId: conversationEntity.lastMessageSenderId,
+        //     lastMessageTime: conversationEntity.lastMessageTime,
+        //     isSeen: conversationEntity.isSeen,
+        //     unSeenMessages: conversationEntity.unSeenMessages,
+        //     senderToken: conversationEntity.senderToken,
+        //     receiverToken: conversationEntity.receiverToken,
+        //   );
+        //   // receiver data
+        //   _saveReceiverDataToConversationCollection(
+        //     receiverId: conversationEntity.senderId,
+        //     receiverName: conversationEntity.senderName,
+        //     receiverPhotoUrl: conversationEntity.senderPhotoUrl,
+        //     senderId: conversationEntity.receiverId,
+        //     senderName: conversationEntity.receiverName,
+        //     senderPhotoUrl: conversationEntity.receiverPhotoUrl,
+        //     lastMessage: conversationEntity.lastMessage,
+        //     lastMessageSenderName: conversationEntity.lastMessageSenderName,
+        //     lastMessageSenderId: conversationEntity.lastMessageSenderId,
+        //     lastMessageTime: conversationEntity.lastMessageTime,
+        //     isSeen: conversationEntity.isSeen,
+        //     unSeenMessages: conversationEntity.unSeenMessages,
+        //     senderToken: conversationEntity.receiverToken,
+        //     receiverToken: conversationEntity.senderToken,
+        //   );
       } else {
         // creating a new conversation for both of the user
+        log("Creating a new conversation for both of the user");
         // sender data
         _saveSenderDataToConversationCollection(
           receiverId: conversationEntity.receiverId,
@@ -212,9 +216,28 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
           receiverPhotoUrl: messageEntity.receiverPhotoUrl,
           messageType: messageEntity.messageType,
           photoUrl: photoUrl,
+          latitude: "",
+          longitude: "",
+        );
+      } else if (messageEntity.latitude != null ||
+          messageEntity.longitude != null) {
+        // IF THE USER SENDS A LOCATION MESSAGE
+        _saveMessageDataToMessageCollection(
+          messageContent: messageEntity.messageContent,
+          messageTime: messageEntity.messageTime,
+          senderId: messageEntity.senderId,
+          senderName: messageEntity.senderName,
+          senderPhotoUrl: messageEntity.senderPhotoUrl,
+          receiverId: messageEntity.receiverId,
+          receiverName: messageEntity.receiverName,
+          receiverPhotoUrl: messageEntity.receiverPhotoUrl,
+          messageType: messageEntity.messageType,
+          photoUrl: "",
+          latitude: messageEntity.latitude!,
+          longitude: messageEntity.longitude!,
         );
       } else {
-        // If the user sends a text message
+        // IF THE USER SENDS A TEXT MESSAGE
         // saving the data
         _saveMessageDataToMessageCollection(
           messageContent: messageEntity.messageContent,
@@ -226,6 +249,8 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
           receiverName: messageEntity.receiverName,
           receiverPhotoUrl: messageEntity.receiverPhotoUrl,
           messageType: messageEntity.messageType,
+          latitude: "",
+          longitude: "",
           photoUrl: "",
         );
       }
@@ -289,6 +314,18 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
     return querySnapshot.docs.isNotEmpty;
   }
 
+  Future<bool> isExistentConversationDocumentAtOtherUser(
+      String receiverId) async {
+    final currentUser = FirebaseAuth.instance.currentUser!.uid;
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection("users")
+        .doc(receiverId)
+        .collection("conversation")
+        .where('receiverId', isEqualTo: currentUser)
+        .get();
+    return querySnapshot.docs.isNotEmpty;
+  }
+
   Future<bool> isNotExistentConversationDocumentAtOtherUser(
       String receiverId) async {
     final currentUser = FirebaseAuth.instance.currentUser!.uid;
@@ -298,7 +335,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
         .collection('conversation')
         .where('receiverId', isEqualTo: currentUser)
         .get();
-    return querySnapshot.docs.isEmpty;
+    return querySnapshot.docs.isNotEmpty;
   }
 
   void _saveSenderDataToConversationCollection({
@@ -357,25 +394,25 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
     required String receiverToken,
   }) {
     final receiverData = ConversationModel(
-      receiverId: senderId,
-      receiverName: senderName,
-      receiverPhotoUrl: senderPhotoUrl,
-      senderId: receiverId,
-      senderName: receiverName,
-      senderPhotoUrl: receiverPhotoUrl,
+      receiverId: receiverId,
+      receiverName: receiverName,
+      receiverPhotoUrl: receiverPhotoUrl,
+      senderId: senderId,
+      senderName: senderName,
+      senderPhotoUrl: senderPhotoUrl,
       lastMessage: lastMessage,
       lastMessageSenderName: lastMessageSenderName,
       lastMessageSenderId: lastMessageSenderId,
       lastMessageTime: lastMessageTime,
       isSeen: isSeen,
       unSeenMessages: unSeenMessages,
-      senderToken: receiverToken,
-      receiverToken: senderToken,
+      senderToken: senderToken,
+      receiverToken: receiverToken,
     ).toJson();
     dbUser
-        .doc(receiverId)
-        .collection("conversation")
         .doc(senderId)
+        .collection('conversation')
+        .doc(receiverId)
         .set(receiverData);
   }
 
@@ -390,6 +427,8 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
     required String receiverPhotoUrl,
     required String messageType,
     required String photoUrl,
+    required String latitude,
+    required String longitude,
   }) {
     final senderData = MessageModel(
       messageContent: messageContent,
@@ -402,6 +441,8 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
       receiverPhotoUrl: receiverPhotoUrl,
       messageType: messageType,
       photoUrl: photoUrl,
+      latitude: latitude,
+      longitude: longitude,
     ).toJson();
     Map<String, dynamic> updateSenderConversationData = {
       "lastMessage": messageContent,

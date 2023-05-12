@@ -4,5 +4,7 @@ const String kHomeScreenPath = "/homeScreen";
 const String kChatListScreenPath = "/chatListScreen";
 const String kProfileScreenPath = "/profileScreen";
 const String kEditProfileScreenPath = "/editProfileScreen";
+const String kLocationScreenPath = "/locationScreen";
+const String kMapScreenPath = "/mapScreen";
 const String kUserListScreenPath = "/userListScreen";
 const String kChatScreenPath = "/chatScreen";
