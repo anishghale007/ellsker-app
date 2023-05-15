@@ -50,8 +50,8 @@ class ChatBoxWidget extends StatelessWidget {
                           left: 40,
                         ),
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 20,
+                          horizontal: 15,
+                          vertical: 15,
                         ),
                         decoration: const BoxDecoration(
                           gradient: LinearGradient(
@@ -83,9 +83,9 @@ class ChatBoxWidget extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            const SizedBox(
-                              height: 10,
-                            ),
+                            // const SizedBox(
+                            //   height: 6,
+                            // ),
                             Text(
                               DateFormat('Hm')
                                   .format(DateTime.parse(messageTime)),
@@ -251,8 +251,8 @@ class ChatBoxWidget extends StatelessWidget {
                               right: 20,
                             ),
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 20,
+                              horizontal: 15,
+                              vertical: 15,
                             ),
                             decoration: BoxDecoration(
                               color: ColorUtil.kPrimaryColor,
@@ -277,9 +277,9 @@ class ChatBoxWidget extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
+                                // const SizedBox(
+                                //   height: 10,
+                                // ),
                                 Text(
                                   DateFormat('Hm').format(
                                     DateTime.parse(messageTime),
@@ -293,73 +293,64 @@ class ChatBoxWidget extends StatelessWidget {
                             ),
                           )
                         : messageType == "location"
-                            ? Flexible(
-                                child: InkWell(
-                                  onTap: () {
-                                    Navigator.of(context).pushNamed(
-                                      kMapScreenPath,
-                                      arguments: {
-                                        "latitude": double.parse(latitude),
-                                        "longitude": double.parse(longitude),
-                                      },
-                                    );
-                                  },
-                                  child: Container(
-                                    margin: const EdgeInsets.only(
-                                      left: 40,
+                            ? InkWell(
+                                onTap: () {
+                                  Navigator.of(context).pushNamed(
+                                    kMapScreenPath,
+                                    arguments: {
+                                      "latitude": double.parse(latitude),
+                                      "longitude": double.parse(longitude),
+                                    },
+                                  );
+                                },
+                                child: Container(
+                                  margin: const EdgeInsets.only(
+                                    right: 20,
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 15,
+                                    vertical: 15,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: ColorUtil.kPrimaryColor,
+                                    borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(15),
+                                      topRight: Radius.circular(15),
+                                      bottomLeft: Radius.circular(15),
                                     ),
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 15,
-                                      vertical: 15,
-                                    ),
-                                    decoration: const BoxDecoration(
-                                      gradient: LinearGradient(
-                                        begin: Alignment.topCenter,
-                                        end: Alignment.bottomCenter,
-                                        colors: [
-                                          Color(0xff6E56FF),
-                                          Color(0xff4329E5),
-                                        ],
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Latitude: $latitude \nLongitude: $longitude ",
+                                        style: GoogleFonts.sourceSansPro(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w400,
+                                          color: Colors.white,
+                                        ),
                                       ),
-                                      borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(15),
-                                        topRight: Radius.circular(15),
-                                        bottomLeft: Radius.circular(15),
+                                      Text(
+                                        'Tap on the box to view it in a map',
+                                        style: GoogleFonts.sourceSansPro(
+                                          color: Colors.grey,
+                                          fontSize: 12,
+                                        ),
                                       ),
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          "Latitude: $latitude \nLongitude: $longitude ",
-                                          style: GoogleFonts.sourceSansPro(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w400,
-                                            color: Colors.white,
-                                          ),
+                                      const SizedBox(
+                                        height: 8,
+                                      ),
+                                      Text(
+                                        DateFormat('Hm').format(
+                                          DateTime.parse(messageTime),
                                         ),
-                                        Text(
-                                          'Tap on the box to view it in a map',
-                                          style: GoogleFonts.sourceSansPro(
-                                            color: Colors.grey,
-                                            fontSize: 12,
-                                          ),
+                                        style: GoogleFonts.sourceSansPro(
+                                          color: Colors.grey,
+                                          fontSize: 12,
                                         ),
-                                        const SizedBox(
-                                          height: 8,
-                                        ),
-                                        Text(
-                                          DateFormat('Hm').format(
-                                            DateTime.parse(messageTime),
-                                          ),
-                                          style: GoogleFonts.sourceSansPro(
-                                            color: Colors.grey,
-                                            fontSize: 12,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               )

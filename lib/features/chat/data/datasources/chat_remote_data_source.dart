@@ -40,52 +40,13 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
       if (await isExistentConversationDocument() &&
           await isExistentConversationDocumentAtOtherUser(
               conversationEntity.receiverId)) {
-        // checks if the document exists in the current user collection
-        log("Document already exists in the current user");
-        // }
-        // else if (await isNotExistentConversationDocumentAtOtherUser(
-        //     conversationEntity.receiverId)) {
-        //   // checks if the document exists in both of the user collection. Used if the receiver deletes the conversation
-        //   log("Document does not exist in the other user. Creating it now");
-        //   // sender data
-        //   _saveSenderDataToConversationCollection(
-        //     receiverId: conversationEntity.receiverId,
-        //     receiverName: conversationEntity.receiverName,
-        //     receiverPhotoUrl: conversationEntity.receiverPhotoUrl,
-        //     senderId: conversationEntity.senderId,
-        //     senderName: conversationEntity.senderName,
-        //     senderPhotoUrl: conversationEntity.senderPhotoUrl,
-        //     lastMessage: conversationEntity.lastMessage,
-        //     lastMessageSenderName: conversationEntity.lastMessageSenderName,
-        //     lastMessageSenderId: conversationEntity.lastMessageSenderId,
-        //     lastMessageTime: conversationEntity.lastMessageTime,
-        //     isSeen: conversationEntity.isSeen,
-        //     unSeenMessages: conversationEntity.unSeenMessages,
-        //     senderToken: conversationEntity.senderToken,
-        //     receiverToken: conversationEntity.receiverToken,
-        //   );
-        //   // receiver data
-        //   _saveReceiverDataToConversationCollection(
-        //     receiverId: conversationEntity.senderId,
-        //     receiverName: conversationEntity.senderName,
-        //     receiverPhotoUrl: conversationEntity.senderPhotoUrl,
-        //     senderId: conversationEntity.receiverId,
-        //     senderName: conversationEntity.receiverName,
-        //     senderPhotoUrl: conversationEntity.receiverPhotoUrl,
-        //     lastMessage: conversationEntity.lastMessage,
-        //     lastMessageSenderName: conversationEntity.lastMessageSenderName,
-        //     lastMessageSenderId: conversationEntity.lastMessageSenderId,
-        //     lastMessageTime: conversationEntity.lastMessageTime,
-        //     isSeen: conversationEntity.isSeen,
-        //     unSeenMessages: conversationEntity.unSeenMessages,
-        //     senderToken: conversationEntity.receiverToken,
-        //     receiverToken: conversationEntity.senderToken,
-        //   );
+        // checks if the document exists in the current user and receiver users collection
+        log("Document already exists in the current user and the other user");
       } else {
         // creating a new conversation for both of the user
         log("Creating a new conversation for both of the user");
         // sender data
-        _saveSenderDataToConversationCollection(
+        _saveDataToConversationCollection(
           receiverId: conversationEntity.receiverId,
           receiverName: conversationEntity.receiverName,
           receiverPhotoUrl: conversationEntity.receiverPhotoUrl,
@@ -102,7 +63,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
           receiverToken: conversationEntity.receiverToken,
         );
         // receiver data
-        _saveReceiverDataToConversationCollection(
+        _saveDataToConversationCollection(
           receiverId: conversationEntity.senderId,
           receiverName: conversationEntity.senderName,
           receiverPhotoUrl: conversationEntity.senderPhotoUrl,
@@ -338,7 +299,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
     return querySnapshot.docs.isNotEmpty;
   }
 
-  void _saveSenderDataToConversationCollection({
+  void _saveDataToConversationCollection({
     required String receiverId,
     required String receiverName,
     required String receiverPhotoUrl,
@@ -354,7 +315,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
     required String senderToken,
     required String receiverToken,
   }) {
-    final senderData = ConversationModel(
+    final data = ConversationModel(
       receiverId: receiverId,
       receiverName: receiverName,
       receiverPhotoUrl: receiverPhotoUrl,
@@ -370,50 +331,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
       senderToken: senderToken,
       receiverToken: receiverToken,
     ).toJson();
-    dbUser
-        .doc(senderId)
-        .collection('conversation')
-        .doc(receiverId)
-        .set(senderData);
-  }
-
-  void _saveReceiverDataToConversationCollection({
-    required String receiverId,
-    required String receiverName,
-    required String receiverPhotoUrl,
-    required String senderId,
-    required String senderName,
-    required String senderPhotoUrl,
-    required String lastMessage,
-    required String lastMessageSenderName,
-    required String lastMessageSenderId,
-    required String lastMessageTime,
-    required bool isSeen,
-    required int unSeenMessages,
-    required String senderToken,
-    required String receiverToken,
-  }) {
-    final receiverData = ConversationModel(
-      receiverId: receiverId,
-      receiverName: receiverName,
-      receiverPhotoUrl: receiverPhotoUrl,
-      senderId: senderId,
-      senderName: senderName,
-      senderPhotoUrl: senderPhotoUrl,
-      lastMessage: lastMessage,
-      lastMessageSenderName: lastMessageSenderName,
-      lastMessageSenderId: lastMessageSenderId,
-      lastMessageTime: lastMessageTime,
-      isSeen: isSeen,
-      unSeenMessages: unSeenMessages,
-      senderToken: senderToken,
-      receiverToken: receiverToken,
-    ).toJson();
-    dbUser
-        .doc(senderId)
-        .collection('conversation')
-        .doc(receiverId)
-        .set(receiverData);
+    dbUser.doc(senderId).collection('conversation').doc(receiverId).set(data);
   }
 
   void _saveMessageDataToMessageCollection({

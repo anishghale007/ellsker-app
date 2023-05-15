@@ -175,6 +175,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                                                       data.receiverId,
                                                 ),
                                               );
+                                          Navigator.of(context).pop();
                                         },
                                         child: const Text("Yes"),
                                       ),

@@ -217,15 +217,16 @@ class _ChatScreenState extends State<ChatScreen> {
                             latitude != null && longitude != null
                         ? true
                         : false,
-                    validator: pickedImage != null ||
-                            latitude != null && longitude != null
+                    validator: pickedImage != null
                         ? null
-                        : (value) {
-                            if (value!.isEmpty) {
-                              return "";
-                            }
-                            return null;
-                          },
+                        : latitude != null
+                            ? null
+                            : (value) {
+                                if (value!.isEmpty) {
+                                  return "";
+                                }
+                                return null;
+                              },
                     keyboardAppearance: Brightness.dark,
                     style: GoogleFonts.sourceSansPro(
                       color: Colors.white,
@@ -237,7 +238,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       filled: true,
                       hintText: pickedImage != null
                           ? pickedImage!.name
-                          : latitude != null && longitude != null
+                          : latitude != null
                               ? "Lat: $latitude || Long: $longitude"
                               : "",
                       hintStyle: GoogleFonts.sourceSansPro(
@@ -251,15 +252,17 @@ class _ChatScreenState extends State<ChatScreen> {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(100),
                       ),
-                      prefixIcon: IconButton(
-                        onPressed: () {
-                          getImage();
-                        },
-                        icon: Icon(
-                          Icons.image_outlined,
-                          color: ColorUtil.kIconColor,
-                        ),
-                      ),
+                      prefixIcon: latitude == null && longitude == null
+                          ? IconButton(
+                              onPressed: () {
+                                getImage();
+                              },
+                              icon: Icon(
+                                Icons.image_outlined,
+                                color: ColorUtil.kIconColor,
+                              ),
+                            )
+                          : null,
                       suffixIcon: pickedImage != null ||
                               latitude != null && longitude != null
                           ? IconButton(
@@ -363,165 +366,38 @@ class _ChatScreenState extends State<ChatScreen> {
                         final currentUser = FirebaseAuth.instance.currentUser!;
                         if (pickedImage != null) {
                           // If the user picks an image
-                          context.read<ConversationBloc>().add(
-                                CreateConversationEvent(
-                                  conversationEntity: ConversationEntity(
-                                    receiverId: widget.userId,
-                                    receiverName: widget.username,
-                                    receiverPhotoUrl: widget.photoUrl,
-                                    senderId: currentUser.uid, // me
-                                    senderName: currentUser.displayName!,
-                                    senderPhotoUrl: currentUser.photoURL!,
-                                    lastMessage: Constant.photoMessageContent,
-                                    lastMessageTime: DateTime.now().toString(),
-                                    lastMessageSenderName:
-                                        currentUser.displayName!,
-                                    lastMessageSenderId: currentUser.uid,
-                                    isSeen: false,
-                                    unSeenMessages: 0,
-                                    receiverToken: widget.token,
-                                    senderToken: myToken!,
-                                  ),
-                                ),
-                              );
-                          context.read<MessageCubit>().sendMessage(
-                                messageEntity: MessageEntity(
-                                  messageContent: Constant.photoMessageContent,
-                                  messageTime: DateTime.now().toString(),
-                                  senderId: currentUser.uid,
-                                  senderName: currentUser.displayName!,
-                                  senderPhotoUrl: currentUser.photoURL!,
-                                  receiverId: widget.userId,
-                                  receiverName: widget.username,
-                                  receiverPhotoUrl: widget.photoUrl,
-                                  messageType: MessageType.photo.name,
-                                  image: pickedImage,
-                                ),
-                              );
-                          context.read<NotificationCubit>().sendNotification(
-                                notificationEntity: NotificationEntity(
-                                  conversationId: widget.userId,
-                                  token: widget.token,
-                                  title: currentUser.displayName!,
-                                  body: Constant.photoMessageContent,
-                                  photoUrl: widget.photoUrl,
-                                  username: widget.username,
-                                ),
-                              );
+                          _sendMessage(
+                            context,
+                            currentUser,
+                            messageContent: Constant.photoMessageContent,
+                            messageType: MessageType.photo.name,
+                            image: pickedImage,
+                          );
                           setState(() {
                             pickedImage = null;
                           });
                         } else if (latitude != null || longitude != null) {
                           // If the user sends a location message
-                          context.read<ConversationBloc>().add(
-                                CreateConversationEvent(
-                                  conversationEntity: ConversationEntity(
-                                    receiverId: widget.userId,
-                                    receiverName: widget.username,
-                                    receiverPhotoUrl: widget.photoUrl,
-                                    senderId: currentUser.uid, // me
-                                    senderName: currentUser.displayName!,
-                                    senderPhotoUrl: currentUser.photoURL!,
-                                    lastMessage:
-                                        Constant.locationMessageContent,
-                                    lastMessageTime: DateTime.now().toString(),
-                                    lastMessageSenderName:
-                                        currentUser.displayName!,
-                                    lastMessageSenderId: currentUser.uid,
-                                    isSeen: false,
-                                    unSeenMessages: 0,
-                                    receiverToken: widget.token,
-                                    senderToken: myToken!,
-                                  ),
-                                ),
-                              );
-                          context.read<MessageCubit>().sendMessage(
-                                messageEntity: MessageEntity(
-                                  messageContent:
-                                      Constant.locationMessageContent,
-                                  messageTime: DateTime.now().toString(),
-                                  senderId: currentUser.uid,
-                                  senderName: currentUser.displayName!,
-                                  senderPhotoUrl: currentUser.photoURL!,
-                                  receiverId: widget.userId,
-                                  receiverName: widget.username,
-                                  receiverPhotoUrl: widget.photoUrl,
-                                  messageType: MessageType.location.name,
-                                  latitude: latitude.toString(),
-                                  longitude: longitude.toString(),
-                                ),
-                              );
-                          context.read<NotificationCubit>().sendNotification(
-                                notificationEntity: NotificationEntity(
-                                  conversationId: widget.userId,
-                                  token: widget.token,
-                                  title: currentUser.displayName!,
-                                  body: Constant.locationMessageContent,
-                                  photoUrl: widget.photoUrl,
-                                  username: widget.username,
-                                ),
-                              );
+                          _sendMessage(
+                            context,
+                            currentUser,
+                            messageContent: Constant.locationMessageContent,
+                            messageType: MessageType.location.name,
+                            latitude: latitude.toString(),
+                            longitude: longitude.toString(),
+                          );
                           setState(() {
                             latitude = null;
                             longitude = null;
                           });
                         } else {
                           // If the user does not pick an image and sends a text message
-                          context.read<ConversationBloc>().add(
-                                CreateConversationEvent(
-                                  conversationEntity: ConversationEntity(
-                                    receiverId: widget.userId,
-                                    receiverName: widget.username,
-                                    receiverPhotoUrl: widget.photoUrl,
-                                    senderId: currentUser.uid, // me
-                                    senderName: currentUser.displayName!,
-                                    senderPhotoUrl: currentUser.photoURL!,
-                                    lastMessage: _messageController.text.trim(),
-                                    lastMessageTime: DateTime.now().toString(),
-                                    lastMessageSenderName:
-                                        currentUser.displayName!,
-                                    lastMessageSenderId: currentUser.uid,
-                                    isSeen: false,
-                                    unSeenMessages: 0,
-                                    receiverToken: widget.token,
-                                    senderToken: myToken!,
-                                  ),
-                                ),
-                              );
-                          context.read<MessageCubit>().sendMessage(
-                                messageEntity: MessageEntity(
-                                  messageContent:
-                                      _messageController.text.trim(),
-                                  messageTime: DateTime.now().toString(),
-                                  senderId: currentUser.uid,
-                                  senderName: currentUser.displayName!,
-                                  senderPhotoUrl: currentUser.photoURL!,
-                                  receiverId: widget.userId,
-                                  receiverName: widget.username,
-                                  receiverPhotoUrl: widget.photoUrl,
-                                  messageType: MessageType.text.name,
-                                ),
-                              );
-
-                          // context.read<NotificationBloc>().add(
-                          //       SendNotificationEvent(
-                          //         notificationEntity: NotificationEntity(
-                          //           token: widget.token,
-                          //           title: widget.username,
-                          //           body: _messageController.text.trim(),
-                          //         ),
-                          //       ),
-                          //     );
-                          context.read<NotificationCubit>().sendNotification(
-                                notificationEntity: NotificationEntity(
-                                  conversationId: widget.userId,
-                                  token: widget.token,
-                                  title: currentUser.displayName!,
-                                  body: _messageController.text.trim(),
-                                  photoUrl: widget.photoUrl,
-                                  username: widget.username,
-                                ),
-                              );
+                          _sendMessage(
+                            context,
+                            currentUser,
+                            messageContent: _messageController.text.trim(),
+                            messageType: MessageType.text.name,
+                          );
                         }
                       }
                     },
@@ -533,5 +409,62 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
       ),
     );
+  }
+
+  void _sendMessage(
+    BuildContext context,
+    User currentUser, {
+    required String messageContent,
+    required String messageType,
+    XFile? image,
+    String? latitude,
+    String? longitude,
+  }) {
+    context.read<ConversationBloc>().add(
+          CreateConversationEvent(
+            conversationEntity: ConversationEntity(
+              receiverId: widget.userId,
+              receiverName: widget.username,
+              receiverPhotoUrl: widget.photoUrl,
+              senderId: currentUser.uid, // me
+              senderName: currentUser.displayName!,
+              senderPhotoUrl: currentUser.photoURL!,
+              lastMessage: messageContent,
+              lastMessageTime: DateTime.now().toString(),
+              lastMessageSenderName: currentUser.displayName!,
+              lastMessageSenderId: currentUser.uid,
+              isSeen: false,
+              unSeenMessages: 0,
+              receiverToken: widget.token,
+              senderToken: myToken!,
+            ),
+          ),
+        );
+    context.read<MessageCubit>().sendMessage(
+          messageEntity: MessageEntity(
+            messageContent: messageContent,
+            messageTime: DateTime.now().toString(),
+            senderId: currentUser.uid,
+            senderName: currentUser.displayName!,
+            senderPhotoUrl: currentUser.photoURL!,
+            receiverId: widget.userId,
+            receiverName: widget.username,
+            receiverPhotoUrl: widget.photoUrl,
+            messageType: messageType,
+            image: image,
+            latitude: latitude,
+            longitude: longitude,
+          ),
+        );
+    context.read<NotificationCubit>().sendNotification(
+          notificationEntity: NotificationEntity(
+            conversationId: widget.userId,
+            token: widget.token,
+            title: currentUser.displayName!,
+            body: messageContent,
+            photoUrl: widget.photoUrl,
+            username: widget.username,
+          ),
+        );
   }
 }
