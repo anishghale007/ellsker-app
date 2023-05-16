@@ -107,7 +107,7 @@ class ChatBoxWidget extends StatelessWidget {
                                 arguments: {
                                   "userLatitude": double.parse(latitude),
                                   "userLongitude": double.parse(longitude),
-                                  "username": receiverName,
+                                  "username": senderName,
                                 },
                               );
                             },
@@ -301,7 +301,7 @@ class ChatBoxWidget extends StatelessWidget {
                                     arguments: {
                                       "userLatitude": double.parse(latitude),
                                       "userLongitude": double.parse(longitude),
-                                      "username": receiverName,
+                                      "username": senderName,
                                     },
                                   );
                                 },

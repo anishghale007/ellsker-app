@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:internship_practice/colors_utils.dart';
 
 class MapScreen extends StatefulWidget {
   final double? userLatitude;
@@ -45,15 +46,17 @@ class _MapScreenState extends State<MapScreen> {
               const InfoWindow(title: 'My Location', snippet: 'You are here'),
         ),
       );
-      marker.add(
-        Marker(
-          markerId: const MarkerId('id_2'),
-          position: LatLng(widget.userLatitude!, widget.userLongitude!),
-          infoWindow: InfoWindow(
-              title: '${widget.username} Location',
-              snippet: '${widget.username} is here'),
-        ),
-      );
+      widget.userLatitude != null
+          ? marker.add(
+              Marker(
+                markerId: const MarkerId('id_2'),
+                position: LatLng(widget.userLatitude!, widget.userLongitude!),
+                infoWindow: InfoWindow(
+                    title: '${widget.username} Location',
+                    snippet: '${widget.username} is here'),
+              ),
+            )
+          : null;
     });
   }
 
@@ -78,6 +81,8 @@ class _MapScreenState extends State<MapScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Map Screen"),
+        centerTitle: true,
+        backgroundColor: ColorUtil.kPrimaryColor,
       ),
       body: myLatitude != null && myLongitude != null
           ? GoogleMap(
@@ -86,8 +91,8 @@ class _MapScreenState extends State<MapScreen> {
               zoomControlsEnabled: false,
               initialCameraPosition: CameraPosition(
                 target: LatLng(
-                  myLatitude!,
-                  myLongitude!,
+                  widget.userLatitude ?? myLatitude!,
+                  widget.userLongitude ?? myLongitude!,
                 ),
                 zoom: 14.4746,
               ),
@@ -99,6 +104,21 @@ class _MapScreenState extends State<MapScreen> {
           : const Center(
               child: CircularProgressIndicator(),
             ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: ColorUtil.kPrimaryColor,
+        child: const Icon(Icons.gps_fixed),
+        onPressed: () async {
+          GoogleMapController controller = await _controller.future;
+          controller.animateCamera(
+            CameraUpdate.newCameraPosition(
+              CameraPosition(
+                target: LatLng(myLatitude!, myLongitude!),
+                zoom: 16,
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 }
