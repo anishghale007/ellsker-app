@@ -42,10 +42,10 @@ class _LocationScreenState extends State<LocationScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => MapScreen(
-                                latitude: response.latitude,
-                                longitude: response.longitude,
-                              ),
+                              builder: (context) => const MapScreen(
+                                  // latitude: response.latitude,
+                                  // longitude: response.longitude,
+                                  ),
                             ),
                           );
                         }

@@ -105,8 +105,9 @@ class ChatBoxWidget extends StatelessWidget {
                               Navigator.of(context).pushNamed(
                                 kMapScreenPath,
                                 arguments: {
-                                  "latitude": double.parse(latitude),
-                                  "longitude": double.parse(longitude),
+                                  "userLatitude": double.parse(latitude),
+                                  "userLongitude": double.parse(longitude),
+                                  "username": receiverName,
                                 },
                               );
                             },
@@ -298,8 +299,9 @@ class ChatBoxWidget extends StatelessWidget {
                                   Navigator.of(context).pushNamed(
                                     kMapScreenPath,
                                     arguments: {
-                                      "latitude": double.parse(latitude),
-                                      "longitude": double.parse(longitude),
+                                      "userLatitude": double.parse(latitude),
+                                      "userLongitude": double.parse(longitude),
+                                      "username": receiverName,
                                     },
                                   );
                                 },

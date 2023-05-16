@@ -56,8 +56,9 @@ class Routers {
           Map<String, dynamic> arguments =
               routeSettings.arguments as Map<String, dynamic>;
           return MapScreen(
-            latitude: arguments["latitude"],
-            longitude: arguments["longitude"],
+            userLatitude: arguments["userLatitude"],
+            userLongitude: arguments["userLongitude"],
+            username: arguments["username"],
           );
         });
       default:
