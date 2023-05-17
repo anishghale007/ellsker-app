@@ -7,20 +7,20 @@ import 'package:internship_practice/features/chat/domain/usecases/send_message_u
 part 'message_state.dart';
 
 class MessageCubit extends Cubit<MessageState> {
-  final SendMessageUseCase sendMessageUseCase;
+  final SendMessageUseCase sendTextMessageUseCase;
   final GetAllChatMessagesUseCase getAllChatMessagesUseCase;
 
   MessageCubit({
-    required this.sendMessageUseCase,
+    required this.sendTextMessageUseCase,
     required this.getAllChatMessagesUseCase,
   }) : super(MessageInitial());
 
   // static MessageCubit get(context) => BlocProvider.of(context);
 
-  Future<void> sendMessage({required MessageEntity messageEntity}) async {
+  Future<void> sendTextMessage({required MessageEntity messageEntity}) async {
     try {
       emit(MessageLoading());
-      final response = await sendMessageUseCase
+      final response = await sendTextMessageUseCase
           .call(SendMessageParams(messageEntity: messageEntity));
       response.fold(
           (failure) => emit(MessageError(errorMessage: failure.toString())),

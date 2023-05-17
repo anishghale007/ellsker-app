@@ -84,7 +84,7 @@ Future<void> init() async {
 
   sl.registerFactory<MessageCubit>(
     () => MessageCubit(
-      sendMessageUseCase: sl(),
+      sendTextMessageUseCase: sl(),
       getAllChatMessagesUseCase: sl(),
     ),
   );

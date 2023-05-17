@@ -46,6 +46,7 @@ dependencies:
   geocoding: ^2.1.0
   mockito: ^5.4.0
   shimmer: ^2.0.0
+  giphy_get: ^3.0.0
 
 
 dev_dependencies:

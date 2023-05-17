@@ -14,6 +14,7 @@ class MessageEntity extends Equatable {
   final String? latitude;
   final String? longitude;
   final String? photoUrl;
+  final String? gifUrl;
   final XFile? image;
 
   const MessageEntity({
@@ -30,6 +31,7 @@ class MessageEntity extends Equatable {
     this.longitude,
     this.photoUrl,
     this.image,
+    this.gifUrl,
   });
 
   @override
@@ -47,5 +49,6 @@ class MessageEntity extends Equatable {
         longitude,
         photoUrl,
         image,
+        gifUrl,
       ];
 }

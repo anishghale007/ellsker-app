@@ -18,6 +18,7 @@ class ChatBoxWidget extends StatelessWidget {
   final String receiverPhotoUrl;
   final String messageType;
   final String photoUrl;
+  final String gifUrl;
   final String latitude;
   final String longitude;
 
@@ -33,6 +34,7 @@ class ChatBoxWidget extends StatelessWidget {
     required this.receiverPhotoUrl,
     required this.messageType,
     required this.photoUrl,
+    required this.gifUrl,
     required this.latitude,
     required this.longitude,
   }) : super(key: key);
@@ -83,9 +85,9 @@ class ChatBoxWidget extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            // const SizedBox(
-                            //   height: 6,
-                            // ),
+                            const SizedBox(
+                              height: 6,
+                            ),
                             Text(
                               DateFormat('Hm')
                                   .format(DateTime.parse(messageTime)),
@@ -168,53 +170,100 @@ class ChatBoxWidget extends StatelessWidget {
                             ),
                           ),
                         )
-                      : Flexible(
-                          child: Container(
-                            margin: const EdgeInsets.only(
-                              left: 40,
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 15,
-                              vertical: 15,
-                            ),
-                            decoration: const BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors: [
-                                  Color(0xff6E56FF),
-                                  Color(0xff4329E5),
-                                ],
-                              ),
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(15),
-                                topRight: Radius.circular(15),
-                                bottomLeft: Radius.circular(15),
-                              ),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Text(
-                                  messageContent,
-                                  style: GoogleFonts.sourceSansPro(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w400,
-                                    color: Colors.white,
+                      : messageType == "gif"
+                          ? Flexible(
+                              child: Container(
+                                margin: const EdgeInsets.only(
+                                  left: 40,
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 15,
+                                  vertical: 15,
+                                ),
+                                decoration: const BoxDecoration(
+                                  borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(15),
+                                    topRight: Radius.circular(15),
+                                    bottomLeft: Radius.circular(15),
                                   ),
                                 ),
-                                Text(
-                                  DateFormat('Hm')
-                                      .format(DateTime.parse(messageTime)),
-                                  style: GoogleFonts.sourceSansPro(
-                                    color: Colors.grey,
-                                    fontSize: 12,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    SizedBox(
+                                      height: 250,
+                                      child: FullScreenWidget(
+                                        disposeLevel: DisposeLevel.Low,
+                                        child: CachedNetworkImage(
+                                          imageUrl: gifUrl,
+                                          fit: BoxFit.contain,
+                                          errorWidget: (context, url, error) =>
+                                              const Icon(Icons.error),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 6,
+                                    ),
+                                    Text(
+                                      DateFormat('Hm')
+                                          .format(DateTime.parse(messageTime)),
+                                      style: GoogleFonts.sourceSansPro(
+                                        color: Colors.grey,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                          : Flexible(
+                              child: Container(
+                                margin: const EdgeInsets.only(
+                                  left: 40,
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 15,
+                                  vertical: 15,
+                                ),
+                                decoration: const BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      Color(0xff6E56FF),
+                                      Color(0xff4329E5),
+                                    ],
+                                  ),
+                                  borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(15),
+                                    topRight: Radius.circular(15),
+                                    bottomLeft: Radius.circular(15),
                                   ),
                                 ),
-                              ],
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      messageContent,
+                                      style: GoogleFonts.sourceSansPro(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w400,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    Text(
+                                      DateFormat('Hm')
+                                          .format(DateTime.parse(messageTime)),
+                                      style: GoogleFonts.sourceSansPro(
+                                        color: Colors.grey,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
             ],
           )
         : Row(
@@ -278,9 +327,9 @@ class ChatBoxWidget extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                // const SizedBox(
-                                //   height: 10,
-                                // ),
+                                const SizedBox(
+                                  height: 6,
+                                ),
                                 Text(
                                   DateFormat('Hm').format(
                                     DateTime.parse(messageTime),
@@ -356,48 +405,98 @@ class ChatBoxWidget extends StatelessWidget {
                                   ),
                                 ),
                               )
-                            : Container(
-                                margin: const EdgeInsets.only(
-                                  right: 20,
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 15,
-                                  vertical: 15,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: ColorUtil.kPrimaryColor,
-                                  borderRadius: const BorderRadius.only(
-                                    topLeft: Radius.circular(15),
-                                    topRight: Radius.circular(15),
-                                    bottomRight: Radius.circular(15),
+                            : messageType == "gif"
+                                ? Container(
+                                    margin: const EdgeInsets.only(
+                                      right: 20,
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                      // horizontal: 15,
+                                      vertical: 15,
+                                    ),
+                                    decoration: const BoxDecoration(
+                                      // color: ColorUtil.kPrimaryColor,
+                                      borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(15),
+                                        topRight: Radius.circular(15),
+                                        bottomRight: Radius.circular(15),
+                                      ),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        SizedBox(
+                                          height: 250,
+                                          child: FullScreenWidget(
+                                            disposeLevel: DisposeLevel.Low,
+                                            child: CachedNetworkImage(
+                                              imageUrl: gifUrl,
+                                              fit: BoxFit.contain,
+                                              errorWidget:
+                                                  (context, url, error) =>
+                                                      const Icon(Icons.error),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        Text(
+                                          DateFormat('Hm').format(
+                                            DateTime.parse(messageTime),
+                                          ),
+                                          style: GoogleFonts.sourceSansPro(
+                                            color: Colors.grey,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                : Container(
+                                    margin: const EdgeInsets.only(
+                                      right: 20,
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 15,
+                                      vertical: 15,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: ColorUtil.kPrimaryColor,
+                                      borderRadius: const BorderRadius.only(
+                                        topLeft: Radius.circular(15),
+                                        topRight: Radius.circular(15),
+                                        bottomRight: Radius.circular(15),
+                                      ),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          messageContent,
+                                          style: GoogleFonts.sourceSansPro(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w400,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        Text(
+                                          DateFormat('Hm').format(
+                                            DateTime.parse(messageTime),
+                                          ),
+                                          style: GoogleFonts.sourceSansPro(
+                                            color: Colors.grey,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      messageContent,
-                                      style: GoogleFonts.sourceSansPro(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w400,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
-                                    Text(
-                                      DateFormat('Hm').format(
-                                        DateTime.parse(messageTime),
-                                      ),
-                                      style: GoogleFonts.sourceSansPro(
-                                        color: Colors.grey,
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
                   ],
                 ),
               ),

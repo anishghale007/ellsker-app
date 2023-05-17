@@ -3,8 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:giphy_get/giphy_get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:internship_practice/colors_utils.dart';
@@ -39,6 +41,10 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  final currentUser = FirebaseAuth.instance.currentUser!;
+
+  final String gifApiKey =
+      dotenv.get(Constant.gifApiKey, fallback: 'Not found');
   late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   late TextEditingController _messageController;
@@ -47,6 +53,8 @@ class _ChatScreenState extends State<ChatScreen> {
   double? latitude;
   double? longitude;
   XFile? pickedImage;
+  GiphyGif? gif;
+  late String gifUrl;
 
   @override
   void initState() {
@@ -87,6 +95,30 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  Future getGIF() async {
+    gif = await GiphyGet.getGif(
+      context: context,
+      apiKey: gifApiKey,
+      lang: GiphyLanguage.english,
+      randomID: "abcd",
+      tabColor: Colors.teal,
+      debounceTimeInMilliseconds: 350,
+    ).then((value) {
+      gifUrl = value!.images!.original!.url;
+      log("URL: $gifUrl");
+      _sendMessage(
+        context,
+        currentUser,
+        messageContent: Constant.gifMessageContent,
+        messageType: MessageType.gif.name,
+        gifUrl: value.images!.original!.url,
+      );
+      return value;
+    }, onError: (error) {
+      log(error);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     LocationPermission? locationPermission;
@@ -125,6 +157,14 @@ class _ChatScreenState extends State<ChatScreen> {
                 fontSize: 20,
               ),
             ),
+            actions: [
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(
+                  Icons.phone,
+                ),
+              ),
+            ],
             iconTheme: const IconThemeData(
               color: Colors.white,
             ),
@@ -170,6 +210,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               photoUrl: data.photoUrl!,
                               latitude: data.latitude!,
                               longitude: data.longitude!,
+                              gifUrl: data.gifUrl!,
                             );
                           },
                         );
@@ -281,35 +322,50 @@ class _ChatScreenState extends State<ChatScreen> {
                                 color: ColorUtil.kTertiaryColor,
                               ),
                             )
-                          : IconButton(
-                              onPressed: () async {
-                                locationPermission =
-                                    await Geolocator.requestPermission();
-                                if (locationPermission ==
-                                    LocationPermission.denied) {
-                                  locationPermission =
-                                      await Geolocator.requestPermission();
-                                } else if (locationPermission ==
-                                    LocationPermission.deniedForever) {
-                                  await Geolocator.openAppSettings();
-                                } else if (locationPermission ==
-                                        LocationPermission.always ||
-                                    locationPermission ==
-                                        LocationPermission.whileInUse) {
-                                  final response =
-                                      await Geolocator.getCurrentPosition();
-                                  setState(() {
-                                    longitude = response.longitude;
-                                    latitude = response.latitude;
-                                    log("Longitude: $longitude");
-                                    log("Latitude: $latitude");
-                                  });
-                                }
-                              },
-                              icon: Icon(
-                                Icons.location_on,
-                                color: ColorUtil.kIconColor,
-                              ),
+                          : Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  onPressed: () {
+                                    getGIF();
+                                  },
+                                  icon: Icon(
+                                    Icons.gif_box,
+                                    color: ColorUtil.kIconColor,
+                                  ),
+                                ),
+                                IconButton(
+                                  onPressed: () async {
+                                    locationPermission =
+                                        await Geolocator.requestPermission();
+                                    if (locationPermission ==
+                                        LocationPermission.denied) {
+                                      locationPermission =
+                                          await Geolocator.requestPermission();
+                                    } else if (locationPermission ==
+                                        LocationPermission.deniedForever) {
+                                      await Geolocator.openAppSettings();
+                                    } else if (locationPermission ==
+                                            LocationPermission.always ||
+                                        locationPermission ==
+                                            LocationPermission.whileInUse) {
+                                      final response =
+                                          await Geolocator.getCurrentPosition();
+                                      setState(() {
+                                        longitude = response.longitude;
+                                        latitude = response.latitude;
+                                        log("Longitude: $longitude");
+                                        log("Latitude: $latitude");
+                                      });
+                                    }
+                                  },
+                                  icon: Icon(
+                                    Icons.location_on,
+                                    color: ColorUtil.kIconColor,
+                                  ),
+                                ),
+                              ],
                             ),
                     ),
                   ),
@@ -366,7 +422,6 @@ class _ChatScreenState extends State<ChatScreen> {
                       _form.currentState!.save();
                       FocusScope.of(context).unfocus();
                       if (_form.currentState!.validate()) {
-                        final currentUser = FirebaseAuth.instance.currentUser!;
                         if (pickedImage != null) {
                           // If the user picks an image
                           _sendMessage(
@@ -417,9 +472,10 @@ class _ChatScreenState extends State<ChatScreen> {
   void _sendMessage(
     BuildContext context,
     User currentUser, {
-    required String messageContent,
+    required dynamic messageContent,
     required String messageType,
     XFile? image,
+    String? gifUrl,
     String? latitude,
     String? longitude,
   }) {
@@ -443,7 +499,7 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ),
         );
-    context.read<MessageCubit>().sendMessage(
+    context.read<MessageCubit>().sendTextMessage(
           messageEntity: MessageEntity(
             messageContent: messageContent,
             messageTime: DateTime.now().toString(),
@@ -457,6 +513,7 @@ class _ChatScreenState extends State<ChatScreen> {
             image: image,
             latitude: latitude,
             longitude: longitude,
+            gifUrl: gifUrl,
           ),
         );
     context.read<NotificationCubit>().sendNotification(

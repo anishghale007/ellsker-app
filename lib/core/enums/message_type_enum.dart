@@ -11,6 +11,7 @@ enum MessageType {
   text,
   photo,
   location,
+  gif,
 }
 
 extension MessageTypeExtension on MessageType {
@@ -22,6 +23,8 @@ extension MessageTypeExtension on MessageType {
         return "photo";
       case MessageType.location:
         return "location";
+      case MessageType.gif:
+        return "gif";
       default:
         return "";
     }

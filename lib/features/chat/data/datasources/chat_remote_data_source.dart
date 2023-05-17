@@ -151,14 +151,8 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
     try {
       if (messageEntity.image != null) {
         // IF THE USER SENDS A PHOTO MESSAGE
-        // final imageId =
-        //     "${messageEntity.senderId}:UploadedAt:${DateTime.now().toString()}";
-        // final imageStorage = FirebaseStorage.instance.ref().child(
-        //     '${messageEntity.senderId}-${messageEntity.receiverId}/$imageId');
-        // final imageFile = File(messageEntity.image!.path);
-        // await imageStorage.putFile(imageFile);
-        // final photoUrl = await imageStorage.getDownloadURL();
 
+        // saving the uploaded image to firebase
         final photoUrl = await _storeImageToFirebase(
           file: File(messageEntity.image!.path),
           receiverId: messageEntity.receiverId,
@@ -179,6 +173,24 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
           photoUrl: photoUrl,
           latitude: "",
           longitude: "",
+          gifUrl: "",
+        );
+      } else if (messageEntity.gifUrl != null) {
+        // IF THE USERS SENDS A GIF
+        _saveMessageDataToMessageCollection(
+          messageContent: messageEntity.messageContent,
+          messageTime: messageEntity.messageTime,
+          senderId: messageEntity.senderId,
+          senderName: messageEntity.senderName,
+          senderPhotoUrl: messageEntity.senderPhotoUrl,
+          receiverId: messageEntity.receiverId,
+          receiverName: messageEntity.receiverName,
+          receiverPhotoUrl: messageEntity.receiverPhotoUrl,
+          messageType: messageEntity.messageType,
+          photoUrl: "",
+          latitude: "",
+          longitude: "",
+          gifUrl: messageEntity.gifUrl!,
         );
       } else if (messageEntity.latitude != null ||
           messageEntity.longitude != null) {
@@ -196,10 +208,10 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
           photoUrl: "",
           latitude: messageEntity.latitude!,
           longitude: messageEntity.longitude!,
+          gifUrl: "",
         );
       } else {
         // IF THE USER SENDS A TEXT MESSAGE
-        // saving the data
         _saveMessageDataToMessageCollection(
           messageContent: messageEntity.messageContent,
           messageTime: messageEntity.messageTime,
@@ -213,6 +225,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
           latitude: "",
           longitude: "",
           photoUrl: "",
+          gifUrl: "",
         );
       }
       return Future.value("Success");
@@ -347,6 +360,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
     required String photoUrl,
     required String latitude,
     required String longitude,
+    required String gifUrl,
   }) {
     final senderData = MessageModel(
       messageContent: messageContent,
@@ -361,6 +375,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
       photoUrl: photoUrl,
       latitude: latitude,
       longitude: longitude,
+      gifUrl: gifUrl,
     ).toJson();
     Map<String, dynamic> updateSenderConversationData = {
       "lastMessage": messageContent,

@@ -16,6 +16,7 @@ class MessageModel extends MessageEntity {
     super.longitude,
     super.photoUrl,
     super.image,
+    super.gifUrl,
   });
 
   factory MessageModel.fromSnapshot(DocumentSnapshot snapshot) {
@@ -32,6 +33,7 @@ class MessageModel extends MessageEntity {
       latitude: snapshot['latitude'],
       longitude: snapshot['longitude'],
       photoUrl: snapshot['photoUrl'],
+      gifUrl: snapshot['gifUrl'],
     );
   }
 
@@ -46,6 +48,7 @@ class MessageModel extends MessageEntity {
       "receiverName": receiverName,
       "receiverPhotoUrl": receiverPhotoUrl,
       "photoUrl": photoUrl,
+      "gifUrl": gifUrl,
       "messageType": messageType,
       "latitude": latitude,
       "longitude": longitude,
