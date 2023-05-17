@@ -173,12 +173,15 @@ class _ChatScreenState extends State<ChatScreen> {
                             );
                           },
                         );
-                      } else {
+                      } else if (snapshot.connectionState ==
+                          ConnectionState.waiting) {
                         return const Center(
                           child: CircularProgressIndicator(
                             color: Colors.white,
                           ),
                         );
+                      } else {
+                        return Container();
                       }
                     },
                   ),

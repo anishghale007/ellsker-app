@@ -9,6 +9,7 @@ import 'package:internship_practice/core/utils/strings_manager.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/conversation/conversation_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/widgets/conversation_tile_widget.dart';
 import 'package:internship_practice/ui_pages.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../bloc/conversation/conversation_bloc.dart';
 
@@ -82,10 +83,34 @@ class _ChatListScreenState extends State<ChatListScreen> {
                         context.read<ConversationCubit>().getAllConversations(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                          ),
+                        return ListView.builder(
+                          itemCount: 8,
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            return Shimmer.fromColors(
+                              baseColor: Colors.grey[500]!,
+                              highlightColor: Colors.grey[100]!,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 5,
+                                ),
+                                child: ListTile(
+                                  leading: const CircleAvatar(
+                                    radius: 27,
+                                  ),
+                                  title: Container(
+                                    height: 15,
+                                    color: Colors.grey,
+                                  ),
+                                  subtitle: Container(
+                                    height: 12,
+                                    color: Colors.grey,
+                                    margin: const EdgeInsets.only(right: 180),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
                         );
                       } else if (snapshot.hasData) {
                         return ListView.builder(
