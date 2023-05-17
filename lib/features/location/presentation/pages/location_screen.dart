@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:internship_practice/colors_utils.dart';
-import 'package:internship_practice/features/location/presentation/pages/map_screen.dart';
+import 'package:internship_practice/ui_pages.dart';
 
 class LocationScreen extends StatefulWidget {
   const LocationScreen({super.key});
@@ -25,12 +25,17 @@ class _LocationScreenState extends State<LocationScreen> {
                 child: Center(
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const MapScreen(),
-                        ),
-                      );
+                      Navigator.pushNamed(context, kMapScreenPath, arguments: {
+                        "userLatitude": null,
+                        "userLongitude": null,
+                        "username": null,
+                      });
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) => const MapScreen(),
+                      //   ),
+                      // );
                     },
                     child: const Text("Get Location"),
                   ),

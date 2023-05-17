@@ -141,36 +141,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             if (_form.currentState!.validate()) {
                               if (mounted) {
                                 if (pickedImage != null) {
-                                  context.read<ProfileBloc>().add(
-                                        EditProfileEvent(
-                                          userProfileEntity: UserProfileEntity(
-                                            username:
-                                                _nameController.text.trim(),
-                                            email: currentUserEmail!,
-                                            age: _ageController.text.trim(),
-                                            instagram: _instagramController.text
-                                                .trim(),
-                                            location:
-                                                _locationController.text.trim(),
-                                            image: pickedImage,
-                                          ),
-                                        ),
-                                      );
+                                  _editProfile(
+                                    context,
+                                    currentUserEmail: currentUserEmail!,
+                                    image: pickedImage,
+                                  );
                                 } else {
-                                  context.read<ProfileBloc>().add(
-                                        EditProfileEvent(
-                                          userProfileEntity: UserProfileEntity(
-                                            username:
-                                                _nameController.text.trim(),
-                                            email: currentUserEmail!,
-                                            age: _ageController.text.trim(),
-                                            instagram: _instagramController.text
-                                                .trim(),
-                                            location:
-                                                _locationController.text.trim(),
-                                          ),
-                                        ),
-                                      );
+                                  _editProfile(
+                                    context,
+                                    currentUserEmail: currentUserEmail!,
+                                  );
                                 }
                               }
                             }
@@ -269,5 +249,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ),
       ),
     );
+  }
+
+  void _editProfile(
+    BuildContext context, {
+    required String currentUserEmail,
+    XFile? image,
+  }) {
+    context.read<ProfileBloc>().add(
+          EditProfileEvent(
+            userProfileEntity: UserProfileEntity(
+              username: _nameController.text.trim(),
+              email: currentUserEmail,
+              age: _ageController.text.trim(),
+              instagram: _instagramController.text.trim(),
+              location: _locationController.text.trim(),
+              image: image,
+            ),
+          ),
+        );
   }
 }

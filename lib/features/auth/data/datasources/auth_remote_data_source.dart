@@ -45,17 +45,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           log("Same token");
         }
       } else {
-        final userData = UserModel(
-          userId: userInfo.uid,
-          email: userInfo.email!,
-          photoUrl: userInfo.photoURL!,
-          userName: userInfo.displayName!,
+        _saveDataToUserCollection(
+          userInfo,
           token: token!,
-          age: 18,
-          instagram: "@instagram",
-          location: "Location",
-        ).toJson();
-        dbUser.doc(userInfo.uid).set(userData);
+        );
       }
       return GoogleUserModel(userCredential: userCredential);
     } on FirebaseAuthException catch (e) {
@@ -94,17 +87,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           log("Same token");
         }
       } else {
-        final userData = UserModel(
-          userId: userInfo.uid,
-          email: userInfo.email!,
-          photoUrl: userInfo.photoURL!,
-          userName: userInfo.displayName!,
+        _saveDataToUserCollection(
+          userInfo,
           token: token!,
-          age: 18,
-          instagram: "@instagram",
-          location: "Location",
-        ).toJson();
-        dbUser.doc(userInfo.uid).set(userData);
+        );
       }
       return FacebookUserModel(userCredential: userCredential);
     } on FirebaseAuthException catch (e) {
@@ -140,6 +126,23 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         .where('token', isNotEqualTo: token)
         .get();
     return querySnapshot.docs.isNotEmpty;
+  }
+
+  void _saveDataToUserCollection(
+    User userInfo, {
+    required String token,
+  }) async {
+    final userData = UserModel(
+      userId: userInfo.uid,
+      email: userInfo.email!,
+      photoUrl: userInfo.photoURL!,
+      userName: userInfo.displayName!,
+      token: token,
+      age: 18,
+      instagram: "@instagram",
+      location: "Location",
+    ).toJson();
+    dbUser.doc(userInfo.uid).set(userData);
   }
 
   void _saveNewTokenToCollection({

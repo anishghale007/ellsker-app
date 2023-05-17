@@ -31,7 +31,7 @@ class _MapScreenState extends State<MapScreen> {
   @override
   void initState() {
     super.initState();
-    _permissionRequest();
+    _getCurrentLocation();
   }
 
   Set<Marker> marker = {};
@@ -60,7 +60,7 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
-  _permissionRequest() async {
+  _getCurrentLocation() async {
     locationPermission = await Geolocator.requestPermission();
     if (locationPermission == LocationPermission.denied) {
       locationPermission = await Geolocator.requestPermission();
