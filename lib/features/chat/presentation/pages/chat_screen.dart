@@ -17,6 +17,7 @@ import 'package:internship_practice/features/auth/presentation/bloc/network/netw
 import 'package:internship_practice/features/chat/domain/entities/conversation_entity.dart';
 import 'package:internship_practice/features/chat/domain/entities/message_entity.dart';
 import 'package:internship_practice/features/chat/presentation/widgets/message_send_button_widget.dart';
+import 'package:internship_practice/features/chat/presentation/widgets/user_profile_widget.dart';
 import 'package:internship_practice/features/notification/domain/entities/notification_entity.dart';
 import 'package:internship_practice/features/chat/presentation/bloc/conversation/conversation_bloc.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
@@ -150,12 +151,10 @@ class _ChatScreenState extends State<ChatScreen> {
                 color: Colors.grey,
               ),
             ),
-            title: Text(
-              widget.username,
-              style: GoogleFonts.sourceSansPro(
-                fontWeight: FontWeight.w400,
-                fontSize: 20,
-              ),
+            title: UserProfileWidget(
+              userId: widget.userId,
+              username: widget.username,
+              photoUrl: widget.photoUrl,
             ),
             actions: [
               IconButton(
