@@ -4,12 +4,14 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:internship_practice/constants.dart';
 import 'package:internship_practice/features/chat/data/models/conversation_model.dart';
 import 'package:internship_practice/features/chat/data/models/message_model.dart';
 import 'package:internship_practice/features/chat/data/models/user_model.dart';
 import 'package:internship_practice/features/chat/domain/entities/conversation_entity.dart';
 import 'package:internship_practice/features/chat/domain/entities/message_entity.dart';
 import 'package:internship_practice/features/chat/domain/entities/user_entity.dart';
+import 'package:uuid/uuid.dart';
 
 abstract class ChatRemoteDataSource {
   Stream<List<UserEntity>> getAllUsers();
@@ -19,6 +21,8 @@ abstract class ChatRemoteDataSource {
   Future<String> sendMessage(MessageEntity messageEntity);
   Stream<List<MessageEntity>> getAllChatMessages(String conversationId);
   Future<void> seenMessage(String conversationId);
+  Future<void> unsendMessage(
+      {required String conversationId, required String messageId});
   Future<String> editConversation(
       {required String conversationId, required String newNickname});
 }
@@ -235,6 +239,24 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
   }
 
   @override
+  Future<void> unsendMessage({
+    required String conversationId,
+    required String messageId,
+  }) async {
+    try {
+      final currentUser = FirebaseAuth.instance.currentUser!;
+      _unsendMessageDataFromCollection(
+        senderId: currentUser.uid,
+        senderName: currentUser.displayName!,
+        receiverId: conversationId,
+        messageId: messageId,
+      );
+    } on FirebaseException catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  @override
   Stream<List<MessageEntity>> getAllChatMessages(String conversationId) {
     final currentUser = FirebaseAuth.instance.currentUser!.uid;
     return dbUser
@@ -247,14 +269,36 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
         .map(
       (event) {
         List<MessageEntity> message = [];
-        if (event.size == 0) {
-          message = [];
-          log("Empty collection");
-        } else {
-          message =
-              event.docs.map((e) => MessageModel.fromSnapshot(e)).toList();
-        }
+
+        message = event.docs.map((e) {
+          final json = e.data();
+          return MessageModel(
+            messageId: e.id,
+            messageContent: json['messageContent'],
+            messageTime: json['messageTime'],
+            senderId: json['senderId'],
+            senderName: json['senderName'],
+            senderPhotoUrl: json['senderPhotoUrl'],
+            receiverId: json['receiverId'],
+            receiverName: json['receiverName'],
+            receiverPhotoUrl: json['receiverPhotoUrl'],
+            messageType: json['messageType'],
+            latitude: json['latitude'],
+            longitude: json['longitude'],
+            photoUrl: json['photoUrl'],
+            gifUrl: json['gifUrl'],
+          );
+        }).toList();
         return message;
+        // List<MessageEntity> message = [];
+        // if (event.size == 0) {
+        //   message = [];
+        //   log("Empty collection");
+        // } else {
+        //   message =
+        //       event.docs.map((e) => MessageModel.fromSnapshot(e)).toList();
+        // }
+        // return message;
       },
     );
   }
@@ -310,6 +354,57 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
         .where('receiverId', isEqualTo: currentUser)
         .get();
     return querySnapshot.docs.isNotEmpty;
+  }
+
+  void _unsendMessageDataFromCollection({
+    required String senderId,
+    required String senderName,
+    required String receiverId,
+    required String messageId,
+  }) {
+    // Deleting the message from both of the user collection
+    dbUser
+        .doc(senderId)
+        .collection('conversation')
+        .doc(receiverId)
+        .collection('message')
+        .doc(messageId)
+        .delete();
+    // Updating the current user conversation collection
+    Map<String, dynamic> updateSenderConversationData = {
+      "lastMessage": Constant.unsendMessageContent,
+      "lastMessageSenderName": senderName,
+      "lastMessageSenderId": senderId,
+      "lastMessageTime": DateTime.now().toString(),
+      "isSeen": true,
+      "unSeenMessages": 0,
+    };
+    dbUser
+        .doc(senderId)
+        .collection('conversation')
+        .doc(receiverId)
+        .update(updateSenderConversationData);
+    // Updating the receiver conversation collection
+    dbUser
+        .doc(receiverId)
+        .collection('conversation')
+        .doc(senderId)
+        .collection('message')
+        .doc(messageId)
+        .delete();
+    Map<String, dynamic> updateReceiverConversationData = {
+      "lastMessage": Constant.unsendMessageContent,
+      "lastMessageSenderName": senderName,
+      "lastMessageSenderId": senderId,
+      "lastMessageTime": DateTime.now().toString(),
+      "isSeen": false,
+      "unSeenMessages": FieldValue.increment(1),
+    };
+    dbUser
+        .doc(receiverId)
+        .collection('conversation')
+        .doc(senderId)
+        .update(updateReceiverConversationData);
   }
 
   void _saveDataToConversationCollection({
@@ -382,7 +477,6 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
       "lastMessageSenderName": senderName,
       "lastMessageSenderId": senderId,
       "lastMessageTime": messageTime,
-      "messageType": messageType,
       "isSeen": true,
       "unSeenMessages": 0,
     };
@@ -391,10 +485,11 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
       "lastMessageSenderName": senderName,
       "lastMessageSenderId": senderId,
       "lastMessageTime": messageTime,
-      "messageType": messageType,
       "isSeen": false,
       "unSeenMessages": FieldValue.increment(1),
     };
+    var messageDocId =
+        const Uuid().v1(); // for setting the same doc id for both user
     // sender data
     dbUser
         .doc(senderId)
@@ -406,7 +501,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
         .collection("conversation")
         .doc(receiverId)
         .collection("message")
-        .doc()
+        .doc(messageDocId)
         .set(senderData);
     // receiver data
     dbUser
@@ -419,7 +514,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
         .collection("conversation")
         .doc(senderId)
         .collection("message")
-        .doc()
+        .doc(messageDocId)
         .set(senderData);
   }
 

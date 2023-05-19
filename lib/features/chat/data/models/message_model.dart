@@ -17,6 +17,7 @@ class MessageModel extends MessageEntity {
     super.photoUrl,
     super.image,
     super.gifUrl,
+    super.messageId,
   });
 
   factory MessageModel.fromSnapshot(DocumentSnapshot snapshot) {

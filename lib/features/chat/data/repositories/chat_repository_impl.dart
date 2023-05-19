@@ -58,6 +58,22 @@ class ChatRepositoryImpl implements ChatRepository {
   }
 
   @override
+  Future<Either<Failure, void>> unsendMessage({
+    required conversationId,
+    required messageId,
+  }) async {
+    try {
+      final response = await chatRemoteDataSource.unsendMessage(
+        conversationId: conversationId,
+        messageId: messageId,
+      );
+      return Right(response);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
   Future<Either<Failure, void>> seenMessage(String conversationId) async {
     try {
       final response = await chatRemoteDataSource.seenMessage(conversationId);

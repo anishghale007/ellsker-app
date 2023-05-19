@@ -33,8 +33,7 @@ class UserInfoWidget extends StatelessWidget {
         const SizedBox(
           height: 20,
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        Wrap(
           children: [
             RichText(
               text: TextSpan(

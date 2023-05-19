@@ -3,15 +3,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:internship_practice/features/chat/domain/entities/message_entity.dart';
 import 'package:internship_practice/features/chat/domain/usecases/get_all_chat_message.dart';
 import 'package:internship_practice/features/chat/domain/usecases/send_message_usecase.dart';
+import 'package:internship_practice/features/chat/domain/usecases/unsend_message_usecase.dart';
 
 part 'message_state.dart';
 
 class MessageCubit extends Cubit<MessageState> {
-  final SendMessageUseCase sendTextMessageUseCase;
+  final SendMessageUseCase sendMessageUseCase;
+  final UnsendMessageUseCase unsendMessageUseCase;
   final GetAllChatMessagesUseCase getAllChatMessagesUseCase;
 
   MessageCubit({
-    required this.sendTextMessageUseCase,
+    required this.sendMessageUseCase,
+    required this.unsendMessageUseCase,
     required this.getAllChatMessagesUseCase,
   }) : super(MessageInitial());
 
@@ -20,11 +23,29 @@ class MessageCubit extends Cubit<MessageState> {
   Future<void> sendTextMessage({required MessageEntity messageEntity}) async {
     try {
       emit(MessageLoading());
-      final response = await sendTextMessageUseCase
+      final response = await sendMessageUseCase
           .call(SendMessageParams(messageEntity: messageEntity));
       response.fold(
           (failure) => emit(MessageError(errorMessage: failure.toString())),
           (success) => emit(MessageSuccess()));
+    } catch (e) {
+      emit(MessageError(errorMessage: e.toString()));
+    }
+  }
+
+  Future<void> unsendMessage(
+      {required String conversationId, required String messageId}) async {
+    try {
+      final response = await unsendMessageUseCase.call(
+        UnsendMessageParams(
+          conversationId: conversationId,
+          messageId: messageId,
+        ),
+      );
+      response.fold(
+        (failure) => emit(MessageError(errorMessage: failure.toString())),
+        (success) => emit(MessageSuccess()),
+      );
     } catch (e) {
       emit(MessageError(errorMessage: e.toString()));
     }

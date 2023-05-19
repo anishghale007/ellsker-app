@@ -137,7 +137,7 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
       child: Form(
         key: _form,
-        autovalidateMode: AutovalidateMode.onUserInteraction,
+        // autovalidateMode: AutovalidateMode.always,
         child: Scaffold(
           appBar: AppBar(
             backgroundColor: Colors.transparent,
@@ -198,6 +198,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           itemBuilder: (context, index) {
                             final data = snapshot.data![index];
                             return ChatBoxWidget(
+                              messageId: data.messageId!,
                               messageContent: data.messageContent,
                               messageTime: data.messageTime,
                               receiverId: data.receiverId,
@@ -261,16 +262,24 @@ class _ChatScreenState extends State<ChatScreen> {
                             latitude != null && longitude != null
                         ? true
                         : false,
-                    validator: pickedImage != null
+                    validator: pickedImage != null || latitude != null
                         ? null
-                        : latitude != null
-                            ? null
-                            : (value) {
-                                if (value!.isEmpty) {
-                                  return "";
-                                }
-                                return null;
-                              },
+                        : (value) {
+                            if (value!.isEmpty) {
+                              return "";
+                            }
+                            return null;
+                          },
+                    // pickedImage != null
+                    //     ? null
+                    //     : latitude != null
+                    //         ? null
+                    //         : (value) {
+                    //             if (value!.isEmpty) {
+                    //               return "";
+                    //             }
+                    //             return null;
+                    //           },
                     keyboardAppearance: Brightness.dark,
                     style: GoogleFonts.sourceSansPro(
                       color: Colors.white,
@@ -291,7 +300,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       ),
                       contentPadding: const EdgeInsets.symmetric(
                         vertical: 5,
-                        horizontal: 15,
+                        horizontal: 5,
                       ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(100),
@@ -323,7 +332,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               ),
                             )
                           : Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 IconButton(

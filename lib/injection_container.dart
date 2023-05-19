@@ -23,6 +23,7 @@ import 'package:internship_practice/features/chat/domain/usecases/get_all_conver
 import 'package:internship_practice/features/chat/domain/usecases/get_all_users_usecase.dart';
 import 'package:internship_practice/features/chat/domain/usecases/seen_message_usecase.dart';
 import 'package:internship_practice/features/chat/domain/usecases/send_message_usecase.dart';
+import 'package:internship_practice/features/chat/domain/usecases/unsend_message_usecase.dart';
 import 'package:internship_practice/features/notification/data/datasources/notification_remote_data_source.dart';
 import 'package:internship_practice/features/notification/data/repositories/notification_repository_impl.dart';
 import 'package:internship_practice/features/notification/domain/repositories/notification_repository.dart';
@@ -84,8 +85,9 @@ Future<void> init() async {
 
   sl.registerFactory<MessageCubit>(
     () => MessageCubit(
-      sendTextMessageUseCase: sl(),
+      sendMessageUseCase: sl(),
       getAllChatMessagesUseCase: sl(),
+      unsendMessageUseCase: sl(),
     ),
   );
 
@@ -133,6 +135,10 @@ Future<void> init() async {
 
   sl.registerLazySingleton<SendMessageUseCase>(
     () => SendMessageUseCase(chatRepository: sl()),
+  );
+
+  sl.registerLazySingleton<UnsendMessageUseCase>(
+    () => UnsendMessageUseCase(chatRepository: sl()),
   );
 
   sl.registerLazySingleton<GetAllChatMessagesUseCase>(
