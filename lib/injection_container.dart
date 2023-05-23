@@ -7,11 +7,13 @@ import 'package:internship_practice/features/auth/data/repositories/auth_reposit
 import 'package:internship_practice/features/auth/domain/repositories/auth_repository.dart';
 import 'package:internship_practice/features/auth/domain/usecases/facebook_login_usecase.dart';
 import 'package:internship_practice/features/auth/domain/usecases/google_login_usecase.dart';
+import 'package:internship_practice/features/auth/domain/usecases/set_user_status_usecase.dart';
 import 'package:internship_practice/features/auth/domain/usecases/sign_out_usecase.dart';
 import 'package:internship_practice/features/auth/presentation/bloc/facebook_sign_in/facebook_sign_in_bloc.dart';
 import 'package:internship_practice/features/auth/presentation/bloc/google_sign_in/google_sign_in_bloc.dart';
 import 'package:internship_practice/features/auth/presentation/bloc/network/network_bloc.dart';
-import 'package:internship_practice/features/auth/presentation/cubit/sign_out_cubit.dart';
+import 'package:internship_practice/features/auth/presentation/cubit/sign%20out/sign_out_cubit.dart';
+import 'package:internship_practice/features/auth/presentation/cubit/user%20status/user_status_cubit.dart';
 import 'package:internship_practice/features/chat/data/datasources/chat_remote_data_source.dart';
 import 'package:internship_practice/features/chat/data/repositories/chat_repository_impl.dart';
 import 'package:internship_practice/features/chat/domain/repositories/chat_repository.dart';
@@ -58,6 +60,10 @@ Future<void> init() async {
 
   sl.registerFactory<SignOutCubit>(
     () => SignOutCubit(signOutUseCase: sl()),
+  );
+
+  sl.registerFactory<UserStatusCubit>(
+    () => UserStatusCubit(setUserStatusUseCase: sl()),
   );
 
   // user bloc
@@ -170,6 +176,10 @@ Future<void> init() async {
 
   sl.registerLazySingleton<GetCurrentUserUseCase>(
     () => GetCurrentUserUseCase(profileRepository: sl()),
+  );
+
+  sl.registerLazySingleton<SetUserStatusUseCase>(
+    () => SetUserStatusUseCase(authRepository: sl()),
   );
 
   /// Repository

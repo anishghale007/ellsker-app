@@ -10,7 +10,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:internship_practice/colors_utils.dart';
 import 'package:internship_practice/constants.dart';
 import 'package:internship_practice/features/auth/presentation/bloc/network/network_bloc.dart';
-import 'package:internship_practice/features/auth/presentation/cubit/sign_out_cubit.dart';
+import 'package:internship_practice/features/auth/presentation/cubit/sign%20out/sign_out_cubit.dart';
+import 'package:internship_practice/features/auth/presentation/cubit/user%20status/user_status_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/bloc/conversation/conversation_bloc.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/conversation/conversation_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
@@ -65,6 +66,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider<SignOutCubit>(
           create: (context) => di.sl<SignOutCubit>(),
+        ),
+        BlocProvider<UserStatusCubit>(
+          create: (context) => di.sl<UserStatusCubit>(),
         ),
         BlocProvider<ConversationCubit>(
           create: (context) => di.sl<ConversationCubit>(),

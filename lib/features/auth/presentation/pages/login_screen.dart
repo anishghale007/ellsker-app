@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:internship_practice/common/loading_overlay/loading_overlay.dart';
+import 'package:internship_practice/features/auth/presentation/cubit/user%20status/user_status_cubit.dart';
 import 'package:internship_practice/features/auth/presentation/widgets/login_button_widget.dart';
 import 'package:internship_practice/constants.dart';
 import 'package:internship_practice/core/utils/assets_manager.dart';
@@ -68,6 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     listener: (context, state) {
                       if (state is GoogleSignInSuccess) {
                         _loadingOverlay.hide();
+                        context.read<UserStatusCubit>().setUserState(true);
                         Navigator.of(context).pushReplacement(
                           MaterialPageRoute(
                               builder: (context) => const BottomNavBarScreen()),
@@ -97,7 +99,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     listener: (context, state) {
                       if (state is FacebookSignInSuccess) {
                         _loadingOverlay.hide();
-
+                        context.read<UserStatusCubit>().setUserState(true);
                         Navigator.of(context).pushReplacement(
                           MaterialPageRoute(
                               builder: (context) => const BottomNavBarScreen()),

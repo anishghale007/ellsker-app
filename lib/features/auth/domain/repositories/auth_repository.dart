@@ -7,4 +7,5 @@ abstract class AuthRepository {
   Future<Either<Failure, GoogleUserEntity>> googleSignIn();
   Future<Either<Failure, FacebookUserEntity>> facebookSignIn();
   Future<void> signOut();
+  Future<Either<Failure, void>> setUserStatus(bool isOnline);
 }

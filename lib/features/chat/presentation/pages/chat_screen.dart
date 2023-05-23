@@ -1,10 +1,12 @@
 import 'dart:developer';
+import 'package:agora_uikit/agora_uikit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_sound/flutter_sound.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:giphy_get/giphy_get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -12,6 +14,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:internship_practice/colors_utils.dart';
 import 'package:internship_practice/constants.dart';
 import 'package:internship_practice/core/enums/message_type_enum.dart';
+import 'package:internship_practice/core/functions/app_dialogs.dart';
+import 'package:internship_practice/features/chat/presentation/pages/video_call_screen.dart';
 import 'package:internship_practice/features/chat/presentation/widgets/chat_box_widget.dart';
 import 'package:internship_practice/features/auth/presentation/bloc/network/network_bloc.dart';
 import 'package:internship_practice/features/chat/domain/entities/conversation_entity.dart';
@@ -22,6 +26,7 @@ import 'package:internship_practice/features/notification/domain/entities/notifi
 import 'package:internship_practice/features/chat/presentation/bloc/conversation/conversation_bloc.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
 import 'package:internship_practice/features/notification/presentation/cubit/notification/notification_cubit.dart';
+import 'package:path_provider/path_provider.dart';
 
 class ChatScreen extends StatefulWidget {
   final String username;
@@ -43,6 +48,10 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final currentUser = FirebaseAuth.instance.currentUser!;
+  FlutterSoundRecorder? _soundRecorder;
+  bool isRecordInit = false;
+  bool isShowSendButton = false;
+  bool isRecording = false;
 
   final String gifApiKey =
       dotenv.get(Constant.gifApiKey, fallback: 'Not found');
@@ -61,12 +70,16 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     super.initState();
     _messageController = TextEditingController();
+    _soundRecorder = FlutterSoundRecorder();
     getToken();
+    openAudio();
   }
 
   @override
   void dispose() {
     _messageController.dispose();
+    _soundRecorder!.closeRecorder();
+    isRecordInit = false;
     super.dispose();
   }
 
@@ -81,13 +94,23 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Future<void> getImage() async {
+  Future<void> getImage({
+    required bool isFromGallery,
+    required bool isImage,
+  }) async {
     try {
       final ImagePicker imagePicker = ImagePicker();
-      final image = await imagePicker.pickImage(
-        source: ImageSource.gallery,
-        imageQuality: 50,
-      );
+      final image = isImage == true
+          ? await imagePicker.pickImage(
+              source: isFromGallery == true
+                  ? ImageSource.gallery
+                  : ImageSource.camera,
+              imageQuality: 50,
+            )
+          : await imagePicker.pickVideo(
+              source: ImageSource.gallery,
+              maxDuration: const Duration(minutes: 5),
+            );
       setState(() {
         pickedImage = image;
       });
@@ -118,6 +141,17 @@ class _ChatScreenState extends State<ChatScreen> {
     }, onError: (error) {
       log(error);
     });
+  }
+
+  void openAudio() async {
+    final status = await Permission.microphone.request();
+    if (status != PermissionStatus.granted) {
+      throw RecordingPermissionException(
+          "Microphone permission is not allowed");
+    } else {
+      await _soundRecorder!.openRecorder();
+      isRecordInit = true;
+    }
   }
 
   @override
@@ -157,6 +191,19 @@ class _ChatScreenState extends State<ChatScreen> {
               photoUrl: widget.photoUrl,
             ),
             actions: [
+              IconButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const VideoCallScreen(),
+                    ),
+                  );
+                },
+                icon: const Icon(
+                  Icons.video_call,
+                ),
+              ),
               IconButton(
                 onPressed: () {},
                 icon: const Icon(
@@ -257,6 +304,17 @@ class _ChatScreenState extends State<ChatScreen> {
                     textInputAction: TextInputAction.done,
                     minLines: 1,
                     maxLines: 3,
+                    onChanged: (value) {
+                      if (value.isNotEmpty) {
+                        setState(() {
+                          isShowSendButton = true;
+                        });
+                      } else {
+                        setState(() {
+                          isShowSendButton = false;
+                        });
+                      }
+                    },
                     readOnly: pickedImage != null ||
                             latitude != null && longitude != null
                         ? true
@@ -307,7 +365,26 @@ class _ChatScreenState extends State<ChatScreen> {
                       prefixIcon: latitude == null && longitude == null
                           ? IconButton(
                               onPressed: () {
-                                getImage();
+                                AppDialogs.showImageDialog(
+                                  context: context,
+                                  canPickVideo: true,
+                                  title: const Text("Choose an action"),
+                                  onCameraAction: () {
+                                    Navigator.of(context).pop();
+                                    getImage(
+                                        isFromGallery: false, isImage: true);
+                                  },
+                                  onGalleryVideoAction: () {
+                                    Navigator.of(context).pop();
+                                    getImage(
+                                        isFromGallery: true, isImage: false);
+                                  },
+                                  onGalleryImageAction: () {
+                                    Navigator.of(context).pop();
+                                    getImage(
+                                        isFromGallery: true, isImage: true);
+                                  },
+                                );
                               },
                               icon: Icon(
                                 Icons.image_outlined,
@@ -330,51 +407,54 @@ class _ChatScreenState extends State<ChatScreen> {
                                 color: ColorUtil.kTertiaryColor,
                               ),
                             )
-                          : Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  onPressed: () {
-                                    getGIF();
-                                  },
-                                  icon: Icon(
-                                    Icons.gif_box,
-                                    color: ColorUtil.kIconColor,
-                                  ),
-                                ),
-                                IconButton(
-                                  onPressed: () async {
-                                    locationPermission =
-                                        await Geolocator.requestPermission();
-                                    if (locationPermission ==
-                                        LocationPermission.denied) {
-                                      locationPermission =
-                                          await Geolocator.requestPermission();
-                                    } else if (locationPermission ==
-                                        LocationPermission.deniedForever) {
-                                      await Geolocator.openAppSettings();
-                                    } else if (locationPermission ==
-                                            LocationPermission.always ||
-                                        locationPermission ==
-                                            LocationPermission.whileInUse) {
-                                      final response =
-                                          await Geolocator.getCurrentPosition();
-                                      setState(() {
-                                        longitude = response.longitude;
-                                        latitude = response.latitude;
-                                        log("Longitude: $longitude");
-                                        log("Latitude: $latitude");
-                                      });
-                                    }
-                                  },
-                                  icon: Icon(
-                                    Icons.location_on,
-                                    color: ColorUtil.kIconColor,
-                                  ),
-                                ),
-                              ],
-                            ),
+                          : isShowSendButton == false
+                              ? Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    IconButton(
+                                      onPressed: () {
+                                        getGIF();
+                                      },
+                                      icon: Icon(
+                                        Icons.gif_box,
+                                        color: ColorUtil.kIconColor,
+                                      ),
+                                    ),
+                                    IconButton(
+                                      onPressed: () async {
+                                        locationPermission = await Geolocator
+                                            .requestPermission();
+                                        if (locationPermission ==
+                                            LocationPermission.denied) {
+                                          locationPermission = await Geolocator
+                                              .requestPermission();
+                                        } else if (locationPermission ==
+                                            LocationPermission.deniedForever) {
+                                          await Geolocator.openAppSettings();
+                                        } else if (locationPermission ==
+                                                LocationPermission.always ||
+                                            locationPermission ==
+                                                LocationPermission.whileInUse) {
+                                          final response = await Geolocator
+                                              .getCurrentPosition();
+                                          setState(() {
+                                            longitude = response.longitude;
+                                            latitude = response.latitude;
+                                            log("Longitude: $longitude");
+                                            log("Latitude: $latitude");
+                                          });
+                                        }
+                                      },
+                                      icon: Icon(
+                                        Icons.location_on,
+                                        color: ColorUtil.kIconColor,
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : null,
                     ),
                   ),
                 ),
@@ -426,7 +506,12 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   ],
                   child: MessageSendButtonWidget(
-                    onPress: () {
+                    buttonIcon: isShowSendButton == true
+                        ? Icons.send_outlined
+                        : isRecording == false
+                            ? Icons.mic
+                            : Icons.close,
+                    onPress: () async {
                       _form.currentState!.save();
                       FocusScope.of(context).unfocus();
                       if (_form.currentState!.validate()) {
@@ -455,6 +540,24 @@ class _ChatScreenState extends State<ChatScreen> {
                           setState(() {
                             latitude = null;
                             longitude = null;
+                          });
+                        } else if (!isShowSendButton) {
+                          // If the user sends a voice message
+                          log("recording");
+                          var tempDir = await getTemporaryDirectory();
+                          var path = '${tempDir.path}/flutter_sound.aac';
+                          if (!isRecordInit) {
+                            return;
+                          }
+                          if (!isRecording) {
+                            await _soundRecorder!.stopRecorder();
+                          } else {
+                            await _soundRecorder!.startRecorder(
+                              toFile: path,
+                            );
+                          }
+                          setState(() {
+                            isRecording = !isRecording;
                           });
                         } else {
                           // If the user does not pick an image and sends a text message

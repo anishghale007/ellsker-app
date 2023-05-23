@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 
 class MessageSendButtonWidget extends StatelessWidget {
   final VoidCallback onPress;
+  final IconData buttonIcon;
 
   const MessageSendButtonWidget({
     super.key,
     required this.onPress,
+    required this.buttonIcon,
   });
 
   @override
@@ -29,10 +31,10 @@ class MessageSendButtonWidget extends StatelessWidget {
           shape: const CircleBorder(),
           backgroundColor: Colors.transparent,
           shadowColor: Colors.transparent,
-          padding: const EdgeInsets.only(left: 5),
+          padding: const EdgeInsets.only(right: 0),
         ),
-        child: const Icon(
-          Icons.send_outlined,
+        child: Icon(
+          buttonIcon,
           color: Colors.white,
         ),
       ),

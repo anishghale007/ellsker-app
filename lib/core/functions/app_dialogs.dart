@@ -24,6 +24,56 @@ class AppDialogs {
     );
   }
 
+  static Future<void> showImageDialog({
+    required BuildContext context,
+    required Widget title,
+    required bool canPickVideo,
+    required VoidCallback onGalleryImageAction,
+    required VoidCallback onGalleryVideoAction,
+    required VoidCallback onCameraAction,
+  }) async {
+    return showDialog<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return SimpleDialog(
+            title: title,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(
+                Radius.circular(10),
+              ),
+            ),
+            children: [
+              InkWell(
+                onTap: onGalleryImageAction,
+                child: const Chip(
+                  label: Text("Image"),
+                  avatar: Icon(Icons.photo_album),
+                  padding: EdgeInsets.symmetric(horizontal: 5),
+                ),
+              ),
+              canPickVideo == true
+                  ? InkWell(
+                      onTap: onGalleryVideoAction,
+                      child: const Chip(
+                        label: Text("Video"),
+                        avatar: Icon(Icons.video_call),
+                        padding: EdgeInsets.symmetric(horizontal: 5),
+                      ),
+                    )
+                  : Container(),
+              InkWell(
+                onTap: onCameraAction,
+                child: const Chip(
+                  label: Text("Camera"),
+                  avatar: Icon(Icons.camera_alt_outlined),
+                  padding: EdgeInsets.symmetric(horizontal: 5),
+                ),
+              ),
+            ],
+          );
+        });
+  }
+
   static Future<void> showSimpleDialog({
     required BuildContext context,
     required Widget title,
@@ -37,6 +87,11 @@ class AppDialogs {
       builder: (BuildContext context) {
         return SimpleDialog(
           title: title,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(10),
+            ),
+          ),
           children: [
             canCopy == true
                 ? ElevatedButton.icon(

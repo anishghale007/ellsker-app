@@ -6,6 +6,7 @@ class Constant {
   static const String photoMessageContent = "Sent a Photo.";
   static const String locationMessageContent = "Sent a Location.";
   static const String gifMessageContent = "Sent a GIF.";
+  static const String voiceMessageContent = "Sent a Voice Message.";
   static const String unsendMessageContent = "Unsent a Message.";
   static const String serverFailureMessage = "server failure";
   static const String networkFailureMessage =

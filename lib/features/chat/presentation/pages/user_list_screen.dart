@@ -107,7 +107,9 @@ class _UserListScreenState extends State<UserListScreen> {
                       } else if (state is UserListLoaded) {
                         log("Loaded");
                         return ListView.separated(
-                          separatorBuilder: (context, index) => const Divider(),
+                          separatorBuilder: (context, index) => const Divider(
+                            color: Colors.transparent,
+                          ),
                           shrinkWrap: true,
                           scrollDirection: Axis.vertical,
                           itemCount: state.users.length,

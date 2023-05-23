@@ -19,12 +19,41 @@ class UserProfileWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () => showUserProfile(context),
-      child: Text(
-        username,
-        style: GoogleFonts.sourceSansPro(
-          fontWeight: FontWeight.w400,
-          fontSize: 20,
-        ),
+      child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+        stream: FirebaseFirestore.instance
+            .collection('users')
+            .doc(userId)
+            .snapshots(),
+        builder: (context, snapshot) {
+          var data = snapshot.data?.data();
+          if (snapshot.hasData) {
+            return Column(
+              children: [
+                Text(
+                  username,
+                  style: GoogleFonts.sourceSansPro(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 20,
+                  ),
+                ),
+                Text(
+                  data!['isOnline'] == true ? "Online" : "Offline",
+                  style: const TextStyle(color: Colors.grey, fontSize: 10),
+                ),
+              ],
+            );
+          } else if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(
+                color: Colors.white,
+              ),
+            );
+          } else {
+            return Center(
+              child: Text(snapshot.error.toString()),
+            );
+          }
+        },
       ),
     );
   }
@@ -44,7 +73,7 @@ class UserProfileWidget extends StatelessWidget {
               .doc(userId)
               .snapshots(),
           builder: (context, snapshot) {
-            var data = snapshot.data!.data();
+            var data = snapshot.data?.data();
             if (snapshot.hasData) {
               return SizedBox(
                 height: 450,
@@ -57,6 +86,28 @@ class UserProfileWidget extends StatelessWidget {
                       child: CircleAvatar(
                         radius: 80,
                         backgroundImage: NetworkImage(photoUrl),
+                        child: Stack(
+                          children: [
+                            Align(
+                              alignment: Alignment.bottomRight,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.white,
+                                    width: 3,
+                                  ),
+                                ),
+                                child: CircleAvatar(
+                                  radius: 15,
+                                  backgroundColor: data!['isOnline'] == true
+                                      ? Colors.green
+                                      : Colors.grey,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     const SizedBox(
@@ -71,7 +122,7 @@ class UserProfileWidget extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      data!['email'],
+                      data['email'],
                       style: GoogleFonts.sourceSansPro(
                         color: Colors.grey,
                         fontSize: 17,
@@ -160,9 +211,7 @@ class UserProfileWidget extends StatelessWidget {
                 ),
               );
             } else {
-              return Center(
-                child: Text(snapshot.error.toString()),
-              );
+              return Container();
             }
           },
         );

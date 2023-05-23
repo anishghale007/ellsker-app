@@ -12,6 +12,7 @@ abstract class AuthRemoteDataSource {
   Future<GoogleUserModel> googleSignIn();
   Future<FacebookUserModel> facebookSignIn();
   Future<void> signOut();
+  Future<void> setUserStatus(bool isOnline);
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -102,11 +103,15 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<void> signOut() async {
     try {
+      final currentUser = FirebaseAuth.instance.currentUser!;
       GoogleSignIn googleSignIn = GoogleSignIn();
       FacebookAuth facebookAuth = FacebookAuth.instance;
       await FirebaseAuth.instance.signOut();
       await facebookAuth.logOut();
       await googleSignIn.signOut();
+      dbUser.doc(currentUser.uid).update({
+        "isOnline": false,
+      });
     } on FirebaseAuthException catch (e) {
       throw Exception(e.toString());
     }
@@ -141,6 +146,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       age: 18,
       instagram: "@instagram",
       location: "Location",
+      isOnline: true,
     ).toJson();
     dbUser.doc(userInfo.uid).set(userData);
   }
@@ -173,6 +179,18 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           "receiverToken": token,
         });
       }
+    }
+  }
+
+  @override
+  Future<void> setUserStatus(bool isOnline) async {
+    try {
+      final currentUser = FirebaseAuth.instance.currentUser!;
+      await dbUser.doc(currentUser.uid).update({
+        "isOnline": isOnline,
+      });
+    } on FirebaseException catch (e) {
+      throw Exception(e.toString());
     }
   }
 }

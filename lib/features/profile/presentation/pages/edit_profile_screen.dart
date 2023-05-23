@@ -61,11 +61,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     super.dispose();
   }
 
-  Future<void> getImage() async {
+  Future<void> getImage({required bool isFromGallery}) async {
     try {
       final ImagePicker imagePicker = ImagePicker();
       final image = await imagePicker.pickImage(
-        source: ImageSource.gallery,
+        source:
+            isFromGallery == true ? ImageSource.gallery : ImageSource.camera,
         imageQuality: 60,
       );
       setState(() {
@@ -164,7 +165,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                   ChangeProfilePictureWidget(
                     onPress: () {
-                      getImage();
+                      AppDialogs.showImageDialog(
+                        context: context,
+                        title: const Text("Choose an action"),
+                        canPickVideo: false,
+                        onGalleryImageAction: () {
+                          Navigator.of(context).pop();
+                          getImage(isFromGallery: true);
+                        },
+                        onGalleryVideoAction: () {},
+                        onCameraAction: () {
+                          Navigator.of(context).pop();
+                          getImage(isFromGallery: false);
+                        },
+                      );
                     },
                     backgroundImage: pickedImage == null
                         ? NetworkImage(widget.photoUrl)

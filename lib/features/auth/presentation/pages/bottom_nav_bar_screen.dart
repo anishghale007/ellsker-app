@@ -6,7 +6,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:internship_practice/colors_utils.dart';
 import 'package:internship_practice/core/utils/strings_manager.dart';
-import 'package:internship_practice/features/auth/presentation/cubit/sign_out_cubit.dart';
+import 'package:internship_practice/features/auth/presentation/cubit/sign%20out/sign_out_cubit.dart';
+import 'package:internship_practice/features/auth/presentation/cubit/user%20status/user_status_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/pages/chat_list_screen.dart';
 import 'package:internship_practice/features/auth/presentation/pages/home_screen.dart';
 import 'package:internship_practice/features/chat/presentation/pages/chat_screen.dart';
@@ -23,7 +24,8 @@ class BottomNavBarScreen extends StatefulWidget {
   State<BottomNavBarScreen> createState() => _BottomNavBarScreenState();
 }
 
-class _BottomNavBarScreenState extends State<BottomNavBarScreen> {
+class _BottomNavBarScreenState extends State<BottomNavBarScreen>
+    with WidgetsBindingObserver {
   int _currentIndex = 0;
   late SignOutCubit _bloc;
 
@@ -40,12 +42,30 @@ class _BottomNavBarScreenState extends State<BottomNavBarScreen> {
     requestPermission();
     initInfo();
     _bloc = sl<SignOutCubit>();
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
     _bloc.close();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    switch (state) {
+      case AppLifecycleState.resumed:
+        context.read<UserStatusCubit>().setUserState(true);
+        break;
+      case AppLifecycleState.detached:
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.paused:
+        context.read<UserStatusCubit>().setUserState(false);
+        break;
+      default:
+    }
   }
 
   Future<bool> _showExitPopup() async {
@@ -146,6 +166,9 @@ class _BottomNavBarScreenState extends State<BottomNavBarScreen> {
         styleInformation: bigTextStyleInformation,
         priority: Priority.high,
         playSound: true,
+        enableVibration: true,
+
+        // ongoing: true,
       );
       NotificationDetails notificationDetails = NotificationDetails(
         android: androidNotificationDetails,

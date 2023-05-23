@@ -7,6 +7,7 @@ class UserModel {
   final int age;
   final String instagram;
   final String location;
+  final bool isOnline;
 
   const UserModel({
     required this.userId,
@@ -17,6 +18,7 @@ class UserModel {
     required this.age,
     required this.instagram,
     required this.location,
+    required this.isOnline,
   });
 
   Map<String, dynamic> toJson() {
@@ -29,6 +31,7 @@ class UserModel {
       "age": age,
       "instagram": instagram,
       "location": location,
+      "isOnline": isOnline,
     };
   }
 }

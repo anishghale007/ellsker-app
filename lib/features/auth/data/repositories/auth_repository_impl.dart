@@ -40,4 +40,14 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<void> signOut() async {
     await authRemoteDataSource.signOut();
   }
+
+  @override
+  Future<Either<Failure, void>> setUserStatus(bool isOnline) async {
+    try {
+      final setUserStatus = await authRemoteDataSource.setUserStatus(isOnline);
+      return Right(setUserStatus);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
 }

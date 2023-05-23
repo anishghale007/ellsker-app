@@ -58,6 +58,19 @@ class UserListTileWidget extends StatelessWidget {
               fontSize: 18,
             ),
           ),
+          trailing: data.userId == currentUser
+              ? null
+              : data.isOnline == true
+                  ? const Icon(
+                      Icons.circle,
+                      color: Colors.green,
+                      size: 13,
+                    )
+                  : const Icon(
+                      Icons.circle_outlined,
+                      color: Colors.grey,
+                      size: 13,
+                    ),
         ),
       ),
     );
