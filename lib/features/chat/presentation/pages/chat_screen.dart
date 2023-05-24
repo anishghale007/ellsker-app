@@ -134,7 +134,7 @@ class _ChatScreenState extends State<ChatScreen> {
         context,
         currentUser,
         messageContent: Constant.gifMessageContent,
-        messageType: MessageType.gif.name,
+        messageType: MessageType.gif,
         gifUrl: value.images!.original!.url,
       );
       return value;
@@ -253,7 +253,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               senderId: data.senderId,
                               senderName: data.senderName,
                               senderPhotoUrl: data.senderPhotoUrl,
-                              messageType: data.messageType,
+                              messageType: data.messageType.toString(),
                               photoUrl: data.photoUrl!,
                               latitude: data.latitude!,
                               longitude: data.longitude!,
@@ -521,7 +521,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             context,
                             currentUser,
                             messageContent: Constant.photoMessageContent,
-                            messageType: MessageType.photo.name,
+                            messageType: MessageType.photo,
                             image: pickedImage,
                           );
                           setState(() {
@@ -533,7 +533,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             context,
                             currentUser,
                             messageContent: Constant.locationMessageContent,
-                            messageType: MessageType.location.name,
+                            messageType: MessageType.location,
                             latitude: latitude.toString(),
                             longitude: longitude.toString(),
                           );
@@ -565,7 +565,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             context,
                             currentUser,
                             messageContent: _messageController.text.trim(),
-                            messageType: MessageType.text.name,
+                            messageType: MessageType.text,
                           );
                         }
                       }
@@ -584,7 +584,7 @@ class _ChatScreenState extends State<ChatScreen> {
     BuildContext context,
     User currentUser, {
     required dynamic messageContent,
-    required String messageType,
+    required MessageType messageType,
     XFile? image,
     String? gifUrl,
     String? latitude,

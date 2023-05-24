@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:internship_practice/constants.dart';
+import 'package:internship_practice/core/enums/message_type_enum.dart';
 import 'package:internship_practice/features/chat/data/models/conversation_model.dart';
 import 'package:internship_practice/features/chat/data/models/message_model.dart';
 import 'package:internship_practice/features/chat/data/models/user_model.dart';
@@ -451,7 +452,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
     required String receiverId,
     required String receiverName,
     required String receiverPhotoUrl,
-    required String messageType,
+    required MessageType messageType,
     required String photoUrl,
     required String latitude,
     required String longitude,

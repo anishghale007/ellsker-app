@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:internship_practice/core/enums/message_type_enum.dart';
 
 class MessageEntity extends Equatable {
   final String? messageId;
@@ -11,7 +12,7 @@ class MessageEntity extends Equatable {
   final String receiverId;
   final String receiverName;
   final String receiverPhotoUrl;
-  final String messageType;
+  final MessageType messageType;
   final String? latitude;
   final String? longitude;
   final String? photoUrl;
