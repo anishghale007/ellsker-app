@@ -14,8 +14,7 @@ class MessageModel extends MessageEntity {
     required super.messageType,
     super.latitude,
     super.longitude,
-    super.photoUrl,
-    super.image,
+    super.fileUrl,
     super.gifUrl,
     super.messageId,
   });
@@ -30,10 +29,10 @@ class MessageModel extends MessageEntity {
       receiverId: snapshot['receiverId'],
       receiverName: snapshot['receiverName'],
       receiverPhotoUrl: snapshot['receiverPhotoUrl'],
-      messageType: snapshot['messageType'],
+      messageType: (snapshot['messageType']).toEnum(),
       latitude: snapshot['latitude'],
       longitude: snapshot['longitude'],
-      photoUrl: snapshot['photoUrl'],
+      fileUrl: snapshot['fileUrl'],
       gifUrl: snapshot['gifUrl'],
     );
   }
@@ -48,9 +47,9 @@ class MessageModel extends MessageEntity {
       "receiverId": receiverId,
       "receiverName": receiverName,
       "receiverPhotoUrl": receiverPhotoUrl,
-      "photoUrl": photoUrl,
+      "fileUrl": fileUrl,
       "gifUrl": gifUrl,
-      "messageType": messageType,
+      "messageType": messageType.type,
       "latitude": latitude,
       "longitude": longitude,
     };

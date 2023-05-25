@@ -1,12 +1,10 @@
 import 'dart:developer';
-import 'package:agora_uikit/agora_uikit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_sound/flutter_sound.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:giphy_get/giphy_get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -16,7 +14,7 @@ import 'package:internship_practice/constants.dart';
 import 'package:internship_practice/core/enums/message_type_enum.dart';
 import 'package:internship_practice/core/functions/app_dialogs.dart';
 import 'package:internship_practice/features/chat/presentation/pages/video_call_screen.dart';
-import 'package:internship_practice/features/chat/presentation/widgets/chat_box_widget.dart';
+import 'package:internship_practice/features/chat/presentation/widgets/message%20content/chat_box_widget.dart';
 import 'package:internship_practice/features/auth/presentation/bloc/network/network_bloc.dart';
 import 'package:internship_practice/features/chat/domain/entities/conversation_entity.dart';
 import 'package:internship_practice/features/chat/domain/entities/message_entity.dart';
@@ -26,7 +24,6 @@ import 'package:internship_practice/features/notification/domain/entities/notifi
 import 'package:internship_practice/features/chat/presentation/bloc/conversation/conversation_bloc.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
 import 'package:internship_practice/features/notification/presentation/cubit/notification/notification_cubit.dart';
-import 'package:path_provider/path_provider.dart';
 
 class ChatScreen extends StatefulWidget {
   final String username;
@@ -48,10 +45,7 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final currentUser = FirebaseAuth.instance.currentUser!;
-  FlutterSoundRecorder? _soundRecorder;
-  bool isRecordInit = false;
   bool isShowSendButton = false;
-  bool isRecording = false;
 
   final String gifApiKey =
       dotenv.get(Constant.gifApiKey, fallback: 'Not found');
@@ -63,6 +57,7 @@ class _ChatScreenState extends State<ChatScreen> {
   double? latitude;
   double? longitude;
   XFile? pickedImage;
+  XFile? pickedVideo;
   GiphyGif? gif;
   late String gifUrl;
 
@@ -70,16 +65,12 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     super.initState();
     _messageController = TextEditingController();
-    _soundRecorder = FlutterSoundRecorder();
     getToken();
-    openAudio();
   }
 
   @override
   void dispose() {
     _messageController.dispose();
-    _soundRecorder!.closeRecorder();
-    isRecordInit = false;
     super.dispose();
   }
 
@@ -96,23 +87,31 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Future<void> getImage({
     required bool isFromGallery,
-    required bool isImage,
   }) async {
     try {
       final ImagePicker imagePicker = ImagePicker();
-      final image = isImage == true
-          ? await imagePicker.pickImage(
-              source: isFromGallery == true
-                  ? ImageSource.gallery
-                  : ImageSource.camera,
-              imageQuality: 50,
-            )
-          : await imagePicker.pickVideo(
-              source: ImageSource.gallery,
-              maxDuration: const Duration(minutes: 5),
-            );
+      final image = await imagePicker.pickImage(
+        source:
+            isFromGallery == true ? ImageSource.gallery : ImageSource.camera,
+        imageQuality: 50,
+      );
       setState(() {
         pickedImage = image;
+      });
+    } catch (e) {
+      throw (Exception(e.toString()));
+    }
+  }
+
+  Future<void> getVideo() async {
+    try {
+      final ImagePicker imagePicker = ImagePicker();
+      final video = await imagePicker.pickVideo(
+        maxDuration: const Duration(minutes: 5),
+        source: ImageSource.gallery,
+      );
+      setState(() {
+        pickedVideo = video;
       });
     } catch (e) {
       throw (Exception(e.toString()));
@@ -141,17 +140,6 @@ class _ChatScreenState extends State<ChatScreen> {
     }, onError: (error) {
       log(error);
     });
-  }
-
-  void openAudio() async {
-    final status = await Permission.microphone.request();
-    if (status != PermissionStatus.granted) {
-      throw RecordingPermissionException(
-          "Microphone permission is not allowed");
-    } else {
-      await _soundRecorder!.openRecorder();
-      isRecordInit = true;
-    }
   }
 
   @override
@@ -242,9 +230,9 @@ class _ChatScreenState extends State<ChatScreen> {
                           physics: const NeverScrollableScrollPhysics(),
                           scrollDirection: Axis.vertical,
                           itemBuilder: (context, index) {
-                            final data = snapshot.data![index];
+                            var data = snapshot.data?[index];
                             return ChatBoxWidget(
-                              messageId: data.messageId!,
+                              messageId: data!.messageId!,
                               messageContent: data.messageContent,
                               messageTime: data.messageTime,
                               receiverId: data.receiverId,
@@ -253,8 +241,8 @@ class _ChatScreenState extends State<ChatScreen> {
                               senderId: data.senderId,
                               senderName: data.senderName,
                               senderPhotoUrl: data.senderPhotoUrl,
-                              messageType: data.messageType.toString(),
-                              photoUrl: data.photoUrl!,
+                              messageType: data.messageType,
+                              fileUrl: data.fileUrl!,
                               latitude: data.latitude!,
                               longitude: data.longitude!,
                               gifUrl: data.gifUrl!,
@@ -316,10 +304,13 @@ class _ChatScreenState extends State<ChatScreen> {
                       }
                     },
                     readOnly: pickedImage != null ||
+                            pickedVideo != null ||
                             latitude != null && longitude != null
                         ? true
                         : false,
-                    validator: pickedImage != null || latitude != null
+                    validator: pickedImage != null ||
+                            pickedVideo != null ||
+                            latitude != null
                         ? null
                         : (value) {
                             if (value!.isEmpty) {
@@ -348,9 +339,11 @@ class _ChatScreenState extends State<ChatScreen> {
                       filled: true,
                       hintText: pickedImage != null
                           ? pickedImage!.name
-                          : latitude != null
-                              ? "Lat: $latitude || Long: $longitude"
-                              : "",
+                          : pickedVideo != null
+                              ? pickedVideo!.name
+                              : latitude != null
+                                  ? "Lat: $latitude || Long: $longitude"
+                                  : "",
                       hintStyle: GoogleFonts.sourceSansPro(
                         color: Colors.grey[400],
                         fontSize: 16,
@@ -371,18 +364,15 @@ class _ChatScreenState extends State<ChatScreen> {
                                   title: const Text("Choose an action"),
                                   onCameraAction: () {
                                     Navigator.of(context).pop();
-                                    getImage(
-                                        isFromGallery: false, isImage: true);
+                                    getImage(isFromGallery: false);
                                   },
                                   onGalleryVideoAction: () {
                                     Navigator.of(context).pop();
-                                    getImage(
-                                        isFromGallery: true, isImage: false);
+                                    getVideo();
                                   },
                                   onGalleryImageAction: () {
                                     Navigator.of(context).pop();
-                                    getImage(
-                                        isFromGallery: true, isImage: true);
+                                    getImage(isFromGallery: true);
                                   },
                                 );
                               },
@@ -393,11 +383,13 @@ class _ChatScreenState extends State<ChatScreen> {
                             )
                           : null,
                       suffixIcon: pickedImage != null ||
+                              pickedVideo != null ||
                               latitude != null && longitude != null
                           ? IconButton(
                               onPressed: () {
                                 setState(() {
                                   pickedImage = null;
+                                  pickedVideo = null;
                                   latitude = null;
                                   longitude = null;
                                 });
@@ -506,11 +498,17 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   ],
                   child: MessageSendButtonWidget(
-                    buttonIcon: isShowSendButton == true
+                    // buttonIcon: isShowSendButton == true
+                    //     ? Icons.send_outlined
+                    //     : isRecording == false
+                    //         ? Icons.mic
+                    //         : Icons.close,
+                    buttonIcon: isShowSendButton == true ||
+                            pickedImage != null ||
+                            pickedVideo != null ||
+                            latitude != null
                         ? Icons.send_outlined
-                        : isRecording == false
-                            ? Icons.mic
-                            : Icons.close,
+                        : Icons.mic,
                     onPress: () async {
                       _form.currentState!.save();
                       FocusScope.of(context).unfocus();
@@ -522,10 +520,22 @@ class _ChatScreenState extends State<ChatScreen> {
                             currentUser,
                             messageContent: Constant.photoMessageContent,
                             messageType: MessageType.photo,
-                            image: pickedImage,
+                            file: pickedImage,
                           );
                           setState(() {
                             pickedImage = null;
+                          });
+                        } else if (pickedVideo != null) {
+                          // If the user picks a video
+                          _sendMessage(
+                            context,
+                            currentUser,
+                            messageContent: Constant.videoMessageContent,
+                            messageType: MessageType.video,
+                            file: pickedVideo,
+                          );
+                          setState(() {
+                            pickedVideo = null;
                           });
                         } else if (latitude != null || longitude != null) {
                           // If the user sends a location message
@@ -540,24 +550,6 @@ class _ChatScreenState extends State<ChatScreen> {
                           setState(() {
                             latitude = null;
                             longitude = null;
-                          });
-                        } else if (!isShowSendButton) {
-                          // If the user sends a voice message
-                          log("recording");
-                          var tempDir = await getTemporaryDirectory();
-                          var path = '${tempDir.path}/flutter_sound.aac';
-                          if (!isRecordInit) {
-                            return;
-                          }
-                          if (!isRecording) {
-                            await _soundRecorder!.stopRecorder();
-                          } else {
-                            await _soundRecorder!.startRecorder(
-                              toFile: path,
-                            );
-                          }
-                          setState(() {
-                            isRecording = !isRecording;
                           });
                         } else {
                           // If the user does not pick an image and sends a text message
@@ -585,7 +577,7 @@ class _ChatScreenState extends State<ChatScreen> {
     User currentUser, {
     required dynamic messageContent,
     required MessageType messageType,
-    XFile? image,
+    XFile? file,
     String? gifUrl,
     String? latitude,
     String? longitude,
@@ -610,7 +602,7 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ),
         );
-    context.read<MessageCubit>().sendTextMessage(
+    context.read<MessageCubit>().sendMessage(
           messageEntity: MessageEntity(
             messageContent: messageContent,
             messageTime: DateTime.now().toString(),
@@ -621,7 +613,7 @@ class _ChatScreenState extends State<ChatScreen> {
             receiverName: widget.username,
             receiverPhotoUrl: widget.photoUrl,
             messageType: messageType,
-            image: image,
+            file: file,
             latitude: latitude,
             longitude: longitude,
             gifUrl: gifUrl,

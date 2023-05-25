@@ -5,6 +5,7 @@ class Constant {
   static const String agoraAppId = "AGORA_APP_ID";
   static const String envFileName = ".env";
   static const String photoMessageContent = "Sent a Photo.";
+  static const String videoMessageContent = "Sent a Video.";
   static const String locationMessageContent = "Sent a Location.";
   static const String gifMessageContent = "Sent a GIF.";
   static const String voiceMessageContent = "Sent a Voice Message.";

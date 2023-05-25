@@ -20,7 +20,7 @@ class MessageCubit extends Cubit<MessageState> {
 
   // static MessageCubit get(context) => BlocProvider.of(context);
 
-  Future<void> sendTextMessage({required MessageEntity messageEntity}) async {
+  Future<void> sendMessage({required MessageEntity messageEntity}) async {
     try {
       emit(MessageLoading());
       final response = await sendMessageUseCase

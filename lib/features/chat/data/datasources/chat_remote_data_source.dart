@@ -154,12 +154,12 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
   @override
   Future<String> sendMessage(MessageEntity messageEntity) async {
     try {
-      if (messageEntity.image != null) {
-        // IF THE USER SENDS A PHOTO MESSAGE
+      if (messageEntity.file != null) {
+        // IF THE USER SENDS A PHOTO OR VIDEO MESSAGE
 
         // saving the uploaded image to firebase
-        final photoUrl = await _storeImageToFirebase(
-          file: File(messageEntity.image!.path),
+        final fileUrl = await _storeImageToFirebase(
+          file: File(messageEntity.file!.path),
           receiverId: messageEntity.receiverId,
           senderId: messageEntity.senderId,
         );
@@ -175,7 +175,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
           receiverName: messageEntity.receiverName,
           receiverPhotoUrl: messageEntity.receiverPhotoUrl,
           messageType: messageEntity.messageType,
-          photoUrl: photoUrl,
+          fileUrl: fileUrl,
           latitude: "",
           longitude: "",
           gifUrl: "",
@@ -192,7 +192,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
           receiverName: messageEntity.receiverName,
           receiverPhotoUrl: messageEntity.receiverPhotoUrl,
           messageType: messageEntity.messageType,
-          photoUrl: "",
+          fileUrl: "",
           latitude: "",
           longitude: "",
           gifUrl: messageEntity.gifUrl!,
@@ -210,7 +210,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
           receiverName: messageEntity.receiverName,
           receiverPhotoUrl: messageEntity.receiverPhotoUrl,
           messageType: messageEntity.messageType,
-          photoUrl: "",
+          fileUrl: "",
           latitude: messageEntity.latitude!,
           longitude: messageEntity.longitude!,
           gifUrl: "",
@@ -229,7 +229,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
           messageType: messageEntity.messageType,
           latitude: "",
           longitude: "",
-          photoUrl: "",
+          fileUrl: "",
           gifUrl: "",
         );
       }
@@ -275,19 +275,19 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
           final json = e.data();
           return MessageModel(
             messageId: e.id,
-            messageContent: json['messageContent'],
-            messageTime: json['messageTime'],
-            senderId: json['senderId'],
-            senderName: json['senderName'],
-            senderPhotoUrl: json['senderPhotoUrl'],
-            receiverId: json['receiverId'],
-            receiverName: json['receiverName'],
-            receiverPhotoUrl: json['receiverPhotoUrl'],
-            messageType: json['messageType'],
-            latitude: json['latitude'],
-            longitude: json['longitude'],
-            photoUrl: json['photoUrl'],
-            gifUrl: json['gifUrl'],
+            messageContent: json['messageContent'] ?? '',
+            messageTime: json['messageTime'] ?? '',
+            senderId: json['senderId'] ?? '',
+            senderName: json['senderName'] ?? '',
+            senderPhotoUrl: json['senderPhotoUrl'] ?? '',
+            receiverId: json['receiverId'] ?? '',
+            receiverName: json['receiverName'] ?? '',
+            receiverPhotoUrl: json['receiverPhotoUrl'] ?? '',
+            messageType: (json['messageType'] as String).toEnum(),
+            latitude: json['latitude'] ?? '',
+            longitude: json['longitude'] ?? '',
+            fileUrl: json['fileUrl'] ?? '',
+            gifUrl: json['gifUrl'] ?? '',
           );
         }).toList();
         return message;
@@ -453,7 +453,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
     required String receiverName,
     required String receiverPhotoUrl,
     required MessageType messageType,
-    required String photoUrl,
+    required String fileUrl,
     required String latitude,
     required String longitude,
     required String gifUrl,
@@ -468,7 +468,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
       receiverName: receiverName,
       receiverPhotoUrl: receiverPhotoUrl,
       messageType: messageType,
-      photoUrl: photoUrl,
+      fileUrl: fileUrl,
       latitude: latitude,
       longitude: longitude,
       gifUrl: gifUrl,
@@ -531,7 +531,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
         .child('$senderId-$receiverId/$imageId')
         .putFile(file);
     TaskSnapshot snapshot = await uploadTask;
-    String newPhotoUrl = await snapshot.ref.getDownloadURL();
-    return newPhotoUrl;
+    String newFileUrl = await snapshot.ref.getDownloadURL();
+    return newFileUrl;
   }
 }
