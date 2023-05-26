@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:internship_practice/colors_utils.dart';
 import 'package:internship_practice/ui_pages.dart';
+import 'package:record/record.dart';
 
 class LocationScreen extends StatefulWidget {
   const LocationScreen({super.key});
@@ -10,6 +11,9 @@ class LocationScreen extends StatefulWidget {
 }
 
 class _LocationScreenState extends State<LocationScreen> {
+  bool isRecording = false;
+  final record = Record();
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -30,12 +34,6 @@ class _LocationScreenState extends State<LocationScreen> {
                         "userLongitude": null,
                         "username": null,
                       });
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //     builder: (context) => const MapScreen(),
-                      //   ),
-                      // );
                     },
                     child: const Text("Get Location"),
                   ),

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:equatable/equatable.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:internship_practice/core/enums/message_type_enum.dart';
@@ -18,6 +20,7 @@ class MessageEntity extends Equatable {
   final String? fileUrl;
   final String? gifUrl;
   final XFile? file;
+  final File? audioFile;
 
   const MessageEntity({
     this.messageId,
@@ -34,6 +37,7 @@ class MessageEntity extends Equatable {
     this.longitude,
     this.fileUrl,
     this.file,
+    this.audioFile,
     this.gifUrl,
   });
 
@@ -52,6 +56,7 @@ class MessageEntity extends Equatable {
         longitude,
         fileUrl,
         file,
+        audioFile,
         gifUrl,
       ];
 }

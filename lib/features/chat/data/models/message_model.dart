@@ -15,6 +15,7 @@ class MessageModel extends MessageEntity {
     super.latitude,
     super.longitude,
     super.fileUrl,
+    super.audioFile,
     super.gifUrl,
     super.messageId,
   });

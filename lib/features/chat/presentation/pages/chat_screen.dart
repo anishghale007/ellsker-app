@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +25,7 @@ import 'package:internship_practice/features/notification/domain/entities/notifi
 import 'package:internship_practice/features/chat/presentation/bloc/conversation/conversation_bloc.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
 import 'package:internship_practice/features/notification/presentation/cubit/notification/notification_cubit.dart';
+import 'package:record/record.dart';
 
 class ChatScreen extends StatefulWidget {
   final String username;
@@ -46,7 +48,8 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final currentUser = FirebaseAuth.instance.currentUser!;
   bool isShowSendButton = false;
-
+  bool isRecording = false;
+  final record = Record();
   final String gifApiKey =
       dotenv.get(Constant.gifApiKey, fallback: 'Not found');
   late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -508,60 +511,95 @@ class _ChatScreenState extends State<ChatScreen> {
                             pickedVideo != null ||
                             latitude != null
                         ? Icons.send_outlined
-                        : Icons.mic,
-                    onPress: () async {
-                      _form.currentState!.save();
-                      FocusScope.of(context).unfocus();
-                      if (_form.currentState!.validate()) {
-                        if (pickedImage != null) {
-                          // If the user picks an image
-                          _sendMessage(
-                            context,
-                            currentUser,
-                            messageContent: Constant.photoMessageContent,
-                            messageType: MessageType.photo,
-                            file: pickedImage,
-                          );
-                          setState(() {
-                            pickedImage = null;
-                          });
-                        } else if (pickedVideo != null) {
-                          // If the user picks a video
-                          _sendMessage(
-                            context,
-                            currentUser,
-                            messageContent: Constant.videoMessageContent,
-                            messageType: MessageType.video,
-                            file: pickedVideo,
-                          );
-                          setState(() {
-                            pickedVideo = null;
-                          });
-                        } else if (latitude != null || longitude != null) {
-                          // If the user sends a location message
-                          _sendMessage(
-                            context,
-                            currentUser,
-                            messageContent: Constant.locationMessageContent,
-                            messageType: MessageType.location,
-                            latitude: latitude.toString(),
-                            longitude: longitude.toString(),
-                          );
-                          setState(() {
-                            latitude = null;
-                            longitude = null;
-                          });
-                        } else {
-                          // If the user does not pick an image and sends a text message
-                          _sendMessage(
-                            context,
-                            currentUser,
-                            messageContent: _messageController.text.trim(),
-                            messageType: MessageType.text,
-                          );
-                        }
-                      }
-                    },
+                        : isRecording
+                            ? Icons.stop
+                            : Icons.mic,
+                    onPress: isShowSendButton == true
+                        ? () async {
+                            _form.currentState!.save();
+                            FocusScope.of(context).unfocus();
+                            if (_form.currentState!.validate()) {
+                              if (pickedImage != null) {
+                                // If the user picks an image
+                                _sendMessage(
+                                  context,
+                                  currentUser,
+                                  messageContent: Constant.photoMessageContent,
+                                  messageType: MessageType.photo,
+                                  file: pickedImage,
+                                );
+                                setState(() {
+                                  pickedImage = null;
+                                });
+                              } else if (pickedVideo != null) {
+                                // If the user picks a video
+                                _sendMessage(
+                                  context,
+                                  currentUser,
+                                  messageContent: Constant.videoMessageContent,
+                                  messageType: MessageType.video,
+                                  file: pickedVideo,
+                                );
+                                setState(() {
+                                  pickedVideo = null;
+                                });
+                              } else if (latitude != null ||
+                                  longitude != null) {
+                                // If the user sends a location message
+                                _sendMessage(
+                                  context,
+                                  currentUser,
+                                  messageContent:
+                                      Constant.locationMessageContent,
+                                  messageType: MessageType.location,
+                                  latitude: latitude.toString(),
+                                  longitude: longitude.toString(),
+                                );
+                                setState(() {
+                                  latitude = null;
+                                  longitude = null;
+                                });
+                              } else {
+                                // If the user does not pick an image and sends a text message
+                                _sendMessage(
+                                  context,
+                                  currentUser,
+                                  messageContent:
+                                      _messageController.text.trim(),
+                                  messageType: MessageType.text,
+                                );
+                              }
+                            }
+                          }
+                        : () async {
+                            File file;
+                            String? filePath;
+                            if (await record.hasPermission()) {
+                              if (isRecording) {
+                                setState(() {
+                                  isRecording = !isRecording;
+                                });
+                                filePath = await record.stop();
+                                file = File(filePath!);
+                                log("FilePath: $filePath");
+                                if (mounted) {
+                                  _sendMessage(
+                                    context,
+                                    currentUser,
+                                    messageContent:
+                                        Constant.voiceMessageContent,
+                                    messageType: MessageType.audio,
+                                    audioFile: file,
+                                  );
+                                }
+                              } else {
+                                setState(() {
+                                  isRecording = !isRecording;
+                                });
+                                await record.start();
+                              }
+                            }
+                          },
                   ),
                 ),
               ],
@@ -578,6 +616,7 @@ class _ChatScreenState extends State<ChatScreen> {
     required dynamic messageContent,
     required MessageType messageType,
     XFile? file,
+    File? audioFile,
     String? gifUrl,
     String? latitude,
     String? longitude,
@@ -614,6 +653,7 @@ class _ChatScreenState extends State<ChatScreen> {
             receiverPhotoUrl: widget.photoUrl,
             messageType: messageType,
             file: file,
+            audioFile: audioFile,
             latitude: latitude,
             longitude: longitude,
             gifUrl: gifUrl,

@@ -158,13 +158,36 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
         // IF THE USER SENDS A PHOTO OR VIDEO MESSAGE
 
         // saving the uploaded image to firebase
-        final fileUrl = await _storeImageToFirebase(
+        final fileUrl = await _storeFileToFirebase(
           file: File(messageEntity.file!.path),
           receiverId: messageEntity.receiverId,
           senderId: messageEntity.senderId,
         );
 
         // saving the data
+        _saveMessageDataToMessageCollection(
+          messageContent: messageEntity.messageContent,
+          messageTime: messageEntity.messageTime,
+          senderId: messageEntity.senderId,
+          senderName: messageEntity.senderName,
+          senderPhotoUrl: messageEntity.senderPhotoUrl,
+          receiverId: messageEntity.receiverId,
+          receiverName: messageEntity.receiverName,
+          receiverPhotoUrl: messageEntity.receiverPhotoUrl,
+          messageType: messageEntity.messageType,
+          fileUrl: fileUrl,
+          latitude: "",
+          longitude: "",
+          gifUrl: "",
+        );
+      } else if (messageEntity.audioFile != null) {
+        // IF THE USER SENDS AN AUDIO MESSAGE
+
+        final fileUrl = await _storeFileToFirebase(
+          file: File(messageEntity.audioFile!.path),
+          receiverId: messageEntity.receiverId,
+          senderId: messageEntity.senderId,
+        );
         _saveMessageDataToMessageCollection(
           messageContent: messageEntity.messageContent,
           messageTime: messageEntity.messageTime,
@@ -519,7 +542,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
         .set(senderData);
   }
 
-  Future<String> _storeImageToFirebase({
+  Future<String> _storeFileToFirebase({
     required File file,
     required String receiverId,
     required String senderId,

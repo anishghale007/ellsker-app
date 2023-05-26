@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:internship_practice/core/enums/message_type_enum.dart';
 import 'package:internship_practice/core/functions/app_dialogs.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
+import 'package:internship_practice/features/chat/presentation/widgets/message%20content/audio_message_widget.dart';
 import 'package:internship_practice/features/chat/presentation/widgets/message%20content/gif_message_widget.dart';
 import 'package:internship_practice/features/chat/presentation/widgets/message%20content/location_message_widget.dart';
 import 'package:internship_practice/features/chat/presentation/widgets/message%20content/photo_message_widget.dart';
@@ -110,6 +111,21 @@ class ChatBoxWidget extends StatelessWidget {
           senderName: senderName,
           senderPhotoUrl: senderPhotoUrl,
           videoUrl: fileUrl,
+          messageTime: messageTime,
+          onSenderLongPress: () {
+            _showDialog(
+              context,
+              canCopy: false,
+              canUnsend: true,
+            );
+          },
+        );
+      case MessageType.audio:
+        return AudioMessageWidget(
+          senderId: senderId,
+          senderName: senderName,
+          senderPhotoUrl: senderPhotoUrl,
+          audioUrl: fileUrl,
           messageTime: messageTime,
           onSenderLongPress: () {
             _showDialog(
