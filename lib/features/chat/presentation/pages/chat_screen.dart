@@ -14,6 +14,7 @@ import 'package:internship_practice/colors_utils.dart';
 import 'package:internship_practice/constants.dart';
 import 'package:internship_practice/core/enums/message_type_enum.dart';
 import 'package:internship_practice/core/functions/app_dialogs.dart';
+import 'package:internship_practice/features/chat/presentation/pages/media_files_screen.dart';
 import 'package:internship_practice/features/chat/presentation/pages/video_call_screen.dart';
 import 'package:internship_practice/features/chat/presentation/widgets/message%20content/chat_box_widget.dart';
 import 'package:internship_practice/features/auth/presentation/bloc/network/network_bloc.dart';
@@ -195,11 +196,44 @@ class _ChatScreenState extends State<ChatScreen> {
                   Icons.video_call,
                 ),
               ),
-              IconButton(
-                onPressed: () {},
-                icon: const Icon(
-                  Icons.phone,
-                ),
+              const SizedBox(
+                width: 10,
+              ),
+              PopupMenuButton<int>(
+                offset: const Offset(0, 30),
+                elevation: 2,
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: 1,
+                    child: Row(
+                      children: const [
+                        Icon(
+                          Icons.photo,
+                          color: Colors.black,
+                        ),
+                        SizedBox(
+                          width: 8,
+                        ),
+                        Text("Media and Files"),
+                      ],
+                    ),
+                  ),
+                ],
+                onSelected: (value) {
+                  if (value == 1) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            SharedFilesScreen(receiverId: widget.userId),
+                      ),
+                    );
+                  }
+                },
+                child: const Icon(Icons.more_vert),
+              ),
+              const SizedBox(
+                width: 10,
               ),
             ],
             iconTheme: const IconThemeData(
@@ -514,7 +548,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         : isRecording
                             ? Icons.stop
                             : Icons.mic,
-                    onPress: isShowSendButton == true
+                    onPress: isShowSendButton == false
                         ? () async {
                             _form.currentState!.save();
                             FocusScope.of(context).unfocus();
@@ -526,7 +560,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                   currentUser,
                                   messageContent: Constant.photoMessageContent,
                                   messageType: MessageType.photo,
-                                  file: pickedImage,
+                                  photoFile: pickedImage,
                                 );
                                 setState(() {
                                   pickedImage = null;
@@ -538,7 +572,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                   currentUser,
                                   messageContent: Constant.videoMessageContent,
                                   messageType: MessageType.video,
-                                  file: pickedVideo,
+                                  videoFile: pickedVideo,
                                 );
                                 setState(() {
                                   pickedVideo = null;
@@ -576,9 +610,6 @@ class _ChatScreenState extends State<ChatScreen> {
                             String? filePath;
                             if (await record.hasPermission()) {
                               if (isRecording) {
-                                setState(() {
-                                  isRecording = !isRecording;
-                                });
                                 filePath = await record.stop();
                                 file = File(filePath!);
                                 log("FilePath: $filePath");
@@ -591,12 +622,17 @@ class _ChatScreenState extends State<ChatScreen> {
                                     messageType: MessageType.audio,
                                     audioFile: file,
                                   );
+                                  setState(() {
+                                    isRecording = !isRecording;
+                                  });
                                 }
                               } else {
-                                setState(() {
-                                  isRecording = !isRecording;
-                                });
-                                await record.start();
+                                if (mounted) {
+                                  setState(() {
+                                    isRecording = !isRecording;
+                                  });
+                                  await record.start();
+                                }
                               }
                             }
                           },
@@ -615,7 +651,8 @@ class _ChatScreenState extends State<ChatScreen> {
     User currentUser, {
     required dynamic messageContent,
     required MessageType messageType,
-    XFile? file,
+    XFile? photoFile,
+    XFile? videoFile,
     File? audioFile,
     String? gifUrl,
     String? latitude,
@@ -652,7 +689,8 @@ class _ChatScreenState extends State<ChatScreen> {
             receiverName: widget.username,
             receiverPhotoUrl: widget.photoUrl,
             messageType: messageType,
-            file: file,
+            photoFile: photoFile,
+            videoFile: videoFile,
             audioFile: audioFile,
             latitude: latitude,
             longitude: longitude,

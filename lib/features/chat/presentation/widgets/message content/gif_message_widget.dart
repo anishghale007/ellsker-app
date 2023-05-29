@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internship_practice/features/chat/presentation/widgets/message%20content/receiver_user_message_box.dart';
+import 'package:internship_practice/features/chat/presentation/widgets/message%20content/sender_user_message_box.dart';
 import 'package:intl/intl.dart';
 
 class GifMessageWidget extends StatelessWidget {
@@ -26,49 +27,51 @@ class GifMessageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FirebaseAuth.instance.currentUser!.uid == senderId
-        ? Flexible(
-            child: GestureDetector(
-              onLongPress: onSenderLongPress,
-              child: Container(
-                margin: const EdgeInsets.only(
-                  left: 40,
-                ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 15,
-                  vertical: 15,
-                ),
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(15),
-                    topRight: Radius.circular(15),
-                    bottomLeft: Radius.circular(15),
+        ? SenderUserMessageBox(
+            message: Flexible(
+              child: GestureDetector(
+                onLongPress: onSenderLongPress,
+                child: Container(
+                  margin: const EdgeInsets.only(
+                    left: 40,
                   ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    SizedBox(
-                      height: 250,
-                      child: CachedNetworkImage(
-                        imageUrl: gifUrl,
-                        fit: BoxFit.contain,
-                        errorWidget: (context, url, error) =>
-                            const Icon(Icons.error),
-                      ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 15,
+                    vertical: 15,
+                  ),
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(15),
+                      topRight: Radius.circular(15),
+                      bottomLeft: Radius.circular(15),
                     ),
-                    const SizedBox(
-                      height: 6,
-                    ),
-                    Text(
-                      DateFormat('Hm').format(
-                        DateTime.parse(messageTime),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      SizedBox(
+                        height: 250,
+                        child: CachedNetworkImage(
+                          imageUrl: gifUrl,
+                          fit: BoxFit.contain,
+                          errorWidget: (context, url, error) =>
+                              const Icon(Icons.error),
+                        ),
                       ),
-                      style: GoogleFonts.sourceSansPro(
-                        color: Colors.grey,
-                        fontSize: 12,
+                      const SizedBox(
+                        height: 6,
                       ),
-                    ),
-                  ],
+                      Text(
+                        DateFormat('Hm').format(
+                          DateTime.parse(messageTime),
+                        ),
+                        style: GoogleFonts.sourceSansPro(
+                          color: Colors.grey,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

@@ -21,6 +21,7 @@ abstract class ChatRemoteDataSource {
   Stream<List<ConversationEntity>> getAllConversations();
   Future<String> sendMessage(MessageEntity messageEntity);
   Stream<List<MessageEntity>> getAllChatMessages(String conversationId);
+  Future<List<String>> getAllSharedPhotos(String receiverId);
   Future<void> seenMessage(String conversationId);
   Future<void> unsendMessage(
       {required String conversationId, required String messageId});
@@ -154,14 +155,42 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
   @override
   Future<String> sendMessage(MessageEntity messageEntity) async {
     try {
-      if (messageEntity.file != null) {
-        // IF THE USER SENDS A PHOTO OR VIDEO MESSAGE
+      if (messageEntity.photoFile != null) {
+        // IF THE USER SENDS A PHOTO MESSAGE
 
         // saving the uploaded image to firebase
         final fileUrl = await _storeFileToFirebase(
-          file: File(messageEntity.file!.path),
+          file: File(messageEntity.photoFile!.path),
           receiverId: messageEntity.receiverId,
           senderId: messageEntity.senderId,
+          messageType: messageEntity.messageType,
+        );
+
+        // saving the data
+        _saveMessageDataToMessageCollection(
+          messageContent: messageEntity.messageContent,
+          messageTime: messageEntity.messageTime,
+          senderId: messageEntity.senderId,
+          senderName: messageEntity.senderName,
+          senderPhotoUrl: messageEntity.senderPhotoUrl,
+          receiverId: messageEntity.receiverId,
+          receiverName: messageEntity.receiverName,
+          receiverPhotoUrl: messageEntity.receiverPhotoUrl,
+          messageType: messageEntity.messageType,
+          fileUrl: fileUrl,
+          latitude: "",
+          longitude: "",
+          gifUrl: "",
+        );
+      } else if (messageEntity.videoFile != null) {
+        // IF THE USERS SENDS A VIDEO MESSAGE
+
+        // saving the uploaded image to firebase
+        final fileUrl = await _storeFileToFirebase(
+          file: File(messageEntity.photoFile!.path),
+          receiverId: messageEntity.receiverId,
+          senderId: messageEntity.senderId,
+          messageType: messageEntity.messageType,
         );
 
         // saving the data
@@ -184,10 +213,10 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
         // IF THE USER SENDS AN AUDIO MESSAGE
 
         final fileUrl = await _storeFileToFirebase(
-          file: File(messageEntity.audioFile!.path),
-          receiverId: messageEntity.receiverId,
-          senderId: messageEntity.senderId,
-        );
+            file: File(messageEntity.audioFile!.path),
+            receiverId: messageEntity.receiverId,
+            senderId: messageEntity.senderId,
+            messageType: messageEntity.messageType);
         _saveMessageDataToMessageCollection(
           messageContent: messageEntity.messageContent,
           messageTime: messageEntity.messageTime,
@@ -325,6 +354,22 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
         // return message;
       },
     );
+  }
+
+  @override
+  Future<List<String>> getAllSharedPhotos(String receiverId) async {
+    final currentUser = FirebaseAuth.instance.currentUser!.uid;
+    List<String> photoList = [];
+    final storageRef = FirebaseStorage.instance
+        .ref()
+        .child("$currentUser-$receiverId-photos/");
+    final listResult = await storageRef.listAll();
+    for (Reference ref in listResult.items) {
+      final fileUrl = await ref.getDownloadURL();
+      photoList.add(fileUrl);
+      log("List: $photoList");
+    }
+    return photoList;
   }
 
   @override
@@ -546,15 +591,52 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
     required File file,
     required String receiverId,
     required String senderId,
+    required MessageType messageType,
   }) async {
     final imageId = "$senderId:UploadedAt:${DateTime.now().toString()}";
-
-    UploadTask uploadTask = FirebaseStorage.instance
-        .ref()
-        .child('$senderId-$receiverId/$imageId')
-        .putFile(file);
-    TaskSnapshot snapshot = await uploadTask;
-    String newFileUrl = await snapshot.ref.getDownloadURL();
-    return newFileUrl;
+    switch (messageType) {
+      case MessageType.photo:
+        // sender folder
+        UploadTask uploadTask = FirebaseStorage.instance
+            .ref()
+            .child('$senderId-$receiverId-photos/$imageId')
+            .putFile(file);
+        // receiver folder
+        await FirebaseStorage.instance
+            .ref()
+            .child("$receiverId-$senderId-photos/$imageId")
+            .putFile(file);
+        TaskSnapshot snapshot = await uploadTask;
+        String newFileUrl = await snapshot.ref.getDownloadURL();
+        return newFileUrl;
+      case MessageType.video:
+        // sender folder
+        UploadTask uploadTask = FirebaseStorage.instance
+            .ref()
+            .child('$senderId-$receiverId-video/$imageId')
+            .putFile(file);
+        // receiver folder
+        await FirebaseStorage.instance
+            .ref()
+            .child("$receiverId-$senderId-video/$imageId")
+            .putFile(file);
+        TaskSnapshot snapshot = await uploadTask;
+        String newFileUrl = await snapshot.ref.getDownloadURL();
+        return newFileUrl;
+      default:
+        // sender folder
+        UploadTask uploadTask = FirebaseStorage.instance
+            .ref()
+            .child('$senderId-$receiverId-audio/$imageId')
+            .putFile(file);
+        // receiver folder
+        await FirebaseStorage.instance
+            .ref()
+            .child("$receiverId-$senderId-audio/$imageId")
+            .putFile(file);
+        TaskSnapshot snapshot = await uploadTask;
+        String newFileUrl = await snapshot.ref.getDownloadURL();
+        return newFileUrl;
+    }
   }
 }

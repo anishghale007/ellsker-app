@@ -22,6 +22,15 @@ class MessageLoaded extends MessageState {
   List<Object> get props => [messageList];
 }
 
+class MessagePhotos extends MessageState {
+  final List<String> photoList;
+
+  const MessagePhotos({required this.photoList});
+
+  @override
+  List<Object> get props => [photoList];
+}
+
 class MessageSuccess extends MessageState {}
 
 class MessageError extends MessageState {

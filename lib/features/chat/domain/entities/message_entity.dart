@@ -19,7 +19,8 @@ class MessageEntity extends Equatable {
   final String? longitude;
   final String? fileUrl;
   final String? gifUrl;
-  final XFile? file;
+  final XFile? photoFile;
+  final XFile? videoFile;
   final File? audioFile;
 
   const MessageEntity({
@@ -36,7 +37,8 @@ class MessageEntity extends Equatable {
     this.latitude,
     this.longitude,
     this.fileUrl,
-    this.file,
+    this.photoFile,
+    this.videoFile,
     this.audioFile,
     this.gifUrl,
   });
@@ -55,7 +57,8 @@ class MessageEntity extends Equatable {
         latitude,
         longitude,
         fileUrl,
-        file,
+        photoFile,
+        videoFile,
         audioFile,
         gifUrl,
       ];
