@@ -107,7 +107,9 @@ class _SharedFilesScreenState extends State<SharedFilesScreen>
             SharedPhotosScreen(
               receiverId: widget.receiverId,
             ),
-            const SharedVideosScreen(),
+            SharedVideosScreen(
+              receiverId: widget.receiverId,
+            ),
           ],
         ),
       ),

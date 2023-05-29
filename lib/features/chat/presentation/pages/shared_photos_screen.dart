@@ -48,7 +48,7 @@ class _SharedPhotosScreenState extends State<SharedPhotosScreen> {
               ),
               BlocBuilder<MessageCubit, MessageState>(
                 builder: (context, state) {
-                  if (state is MessagePhotos) {
+                  if (state is SharedPhotosLoaded) {
                     return GridView.builder(
                       shrinkWrap: true,
                       itemCount: state.photoList.length,
@@ -76,6 +76,14 @@ class _SharedPhotosScreenState extends State<SharedPhotosScreen> {
                           ),
                         );
                       },
+                    );
+                  } else if (state is MessageLoading) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else if (state is MessageError) {
+                    return Center(
+                      child: Text(state.errorMessage.toString()),
                     );
                   }
                   return Container();

@@ -22,13 +22,22 @@ class MessageLoaded extends MessageState {
   List<Object> get props => [messageList];
 }
 
-class MessagePhotos extends MessageState {
+class SharedPhotosLoaded extends MessageState {
   final List<String> photoList;
 
-  const MessagePhotos({required this.photoList});
+  const SharedPhotosLoaded({required this.photoList});
 
   @override
   List<Object> get props => [photoList];
+}
+
+class SharedVideosLoaded extends MessageState {
+  final List<String> videoList;
+
+  const SharedVideosLoaded({required this.videoList});
+
+  @override
+  List<Object> get props => [videoList];
 }
 
 class MessageSuccess extends MessageState {}

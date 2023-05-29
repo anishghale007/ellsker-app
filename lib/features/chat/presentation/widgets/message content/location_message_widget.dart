@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internship_practice/colors_utils.dart';
 import 'package:internship_practice/features/chat/presentation/widgets/message%20content/receiver_user_message_box.dart';
+import 'package:internship_practice/features/chat/presentation/widgets/message%20content/sender_user_message_box.dart';
 import 'package:intl/intl.dart';
 
 class LocationMessageWidget extends StatelessWidget {
@@ -30,64 +31,66 @@ class LocationMessageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FirebaseAuth.instance.currentUser!.uid == senderId
-        ? Flexible(
-            child: GestureDetector(
-              onLongPress: onSenderLongPress,
-              onTap: onTap,
-              child: Container(
-                margin: const EdgeInsets.only(
-                  left: 40,
-                ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 15,
-                  vertical: 15,
-                ),
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Color(0xff6E56FF),
-                      Color(0xff4329E5),
+        ? SenderUserMessageBox(
+            message: Flexible(
+              child: GestureDetector(
+                onLongPress: onSenderLongPress,
+                onTap: onTap,
+                child: Container(
+                  margin: const EdgeInsets.only(
+                    left: 40,
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 15,
+                    vertical: 15,
+                  ),
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Color(0xff6E56FF),
+                        Color(0xff4329E5),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(15),
+                      topRight: Radius.circular(15),
+                      bottomLeft: Radius.circular(15),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        "Latitude: $latitude \nLongitude: $longitude ",
+                        style: GoogleFonts.sourceSansPro(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Text(
+                        'Tap on the box to view it in a map',
+                        style: GoogleFonts.sourceSansPro(
+                          color: Colors.grey,
+                          fontSize: 12,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 8,
+                      ),
+                      Text(
+                        DateFormat('Hm').format(
+                          DateTime.parse(messageTime),
+                        ),
+                        style: GoogleFonts.sourceSansPro(
+                          color: Colors.grey,
+                          fontSize: 12,
+                        ),
+                      ),
                     ],
                   ),
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(15),
-                    topRight: Radius.circular(15),
-                    bottomLeft: Radius.circular(15),
-                  ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      "Latitude: $latitude \nLongitude: $longitude ",
-                      style: GoogleFonts.sourceSansPro(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.white,
-                      ),
-                    ),
-                    Text(
-                      'Tap on the box to view it in a map',
-                      style: GoogleFonts.sourceSansPro(
-                        color: Colors.grey,
-                        fontSize: 12,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    Text(
-                      DateFormat('Hm').format(
-                        DateTime.parse(messageTime),
-                      ),
-                      style: GoogleFonts.sourceSansPro(
-                        color: Colors.grey,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
                 ),
               ),
             ),

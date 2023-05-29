@@ -12,6 +12,7 @@ abstract class ChatRepository {
   Future<Either<Failure, String>> sendMessage(MessageEntity messageEntity);
   Stream<List<MessageEntity>> getAllChatMessages(String conversationId);
   Future<Either<Failure, List<String>>> getAllSharedPhotos(String receiverId);
+  Future<Either<Failure, List<String>>> getAllSharedVideos(String receiverId);
   Future<Either<Failure, void>> seenMessage(String conversationId);
   Future<Either<Failure, void>> unsendMessage(
       {required conversationId, required messageId});

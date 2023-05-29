@@ -111,9 +111,20 @@ class ChatRepositoryImpl implements ChatRepository {
   Future<Either<Failure, List<String>>> getAllSharedPhotos(
       String receiverId) async {
     try {
-      final response = await chatRemoteDataSource.getAllSharedPhotos(
-        receiverId,
-      );
+      final response =
+          await chatRemoteDataSource.getAllSharedPhotos(receiverId);
+      return Right(response);
+    } on ServerFailure {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<String>>> getAllSharedVideos(
+      String receiverId) async {
+    try {
+      final response =
+          await chatRemoteDataSource.getAllSharedVideos(receiverId);
       return Right(response);
     } on ServerFailure {
       return Left(ServerFailure());

@@ -340,6 +340,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         });
                       }
                     },
+
                     readOnly: pickedImage != null ||
                             pickedVideo != null ||
                             latitude != null && longitude != null
@@ -548,7 +549,10 @@ class _ChatScreenState extends State<ChatScreen> {
                         : isRecording
                             ? Icons.stop
                             : Icons.mic,
-                    onPress: isShowSendButton == false
+                    onPress: isShowSendButton == true ||
+                            pickedImage != null ||
+                            pickedVideo != null ||
+                            latitude != null
                         ? () async {
                             _form.currentState!.save();
                             FocusScope.of(context).unfocus();

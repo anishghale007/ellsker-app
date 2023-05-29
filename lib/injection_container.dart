@@ -23,6 +23,7 @@ import 'package:internship_practice/features/chat/domain/usecases/edit_conversat
 import 'package:internship_practice/features/chat/domain/usecases/get_all_chat_message.dart';
 import 'package:internship_practice/features/chat/domain/usecases/get_all_conversation_usecase.dart';
 import 'package:internship_practice/features/chat/domain/usecases/get_all_shared_photos_usecase.dart';
+import 'package:internship_practice/features/chat/domain/usecases/get_all_shared_videos_usecase.dart';
 import 'package:internship_practice/features/chat/domain/usecases/get_all_users_usecase.dart';
 import 'package:internship_practice/features/chat/domain/usecases/seen_message_usecase.dart';
 import 'package:internship_practice/features/chat/domain/usecases/send_message_usecase.dart';
@@ -96,6 +97,7 @@ Future<void> init() async {
       getAllChatMessagesUseCase: sl(),
       unsendMessageUseCase: sl(),
       getAllSharedPhotosUseCase: sl(),
+      getAllSharedVideosUseCase: sl(),
     ),
   );
 
@@ -159,6 +161,10 @@ Future<void> init() async {
 
   sl.registerLazySingleton<GetAllSharedPhotosUseCase>(
     () => GetAllSharedPhotosUseCase(chatRepository: sl()),
+  );
+
+  sl.registerLazySingleton<GetAllSharedVideosUseCase>(
+    () => GetAllSharedVideosUseCase(chatRepository: sl()),
   );
 
   sl.registerLazySingleton<SeenMessageUsecase>(

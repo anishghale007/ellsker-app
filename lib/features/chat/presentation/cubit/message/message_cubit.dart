@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:internship_practice/features/chat/domain/entities/message_entity.dart';
 import 'package:internship_practice/features/chat/domain/usecases/get_all_chat_message.dart';
 import 'package:internship_practice/features/chat/domain/usecases/get_all_shared_photos_usecase.dart';
+import 'package:internship_practice/features/chat/domain/usecases/get_all_shared_videos_usecase.dart';
 import 'package:internship_practice/features/chat/domain/usecases/send_message_usecase.dart';
 import 'package:internship_practice/features/chat/domain/usecases/unsend_message_usecase.dart';
 
@@ -13,12 +14,14 @@ class MessageCubit extends Cubit<MessageState> {
   final UnsendMessageUseCase unsendMessageUseCase;
   final GetAllChatMessagesUseCase getAllChatMessagesUseCase;
   final GetAllSharedPhotosUseCase getAllSharedPhotosUseCase;
+  final GetAllSharedVideosUseCase getAllSharedVideosUseCase;
 
   MessageCubit({
     required this.sendMessageUseCase,
     required this.unsendMessageUseCase,
     required this.getAllChatMessagesUseCase,
     required this.getAllSharedPhotosUseCase,
+    required this.getAllSharedVideosUseCase,
   }) : super(MessageInitial());
 
   // static MessageCubit get(context) => BlocProvider.of(context);
@@ -56,6 +59,7 @@ class MessageCubit extends Cubit<MessageState> {
 
   Future<List<String>> getAllSharedPhotos({required String receiverId}) async {
     try {
+      emit(MessageLoading());
       final response = await getAllSharedPhotosUseCase.call(
         GetAllSharedPhotosParams(
           receiverId: receiverId,
@@ -65,10 +69,32 @@ class MessageCubit extends Cubit<MessageState> {
       response.fold(
           (failure) => emit(MessageError(errorMessage: failure.toString())),
           (success) {
-        emit(MessagePhotos(photoList: success));
+        emit(SharedPhotosLoaded(photoList: success));
         photoList = success;
       });
       return photoList;
+    } catch (e) {
+      emit(MessageError(errorMessage: e.toString()));
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<List<String>> getAllSharedVideos({required String receiverId}) async {
+    try {
+      emit(MessageLoading());
+      final response = await getAllSharedVideosUseCase.call(
+        GetAllSharedVideosParams(
+          receiverId: receiverId,
+        ),
+      );
+      List<String> videoList = [];
+      response.fold(
+          (failure) => emit(MessageError(errorMessage: failure.toString())),
+          (success) {
+        emit(SharedVideosLoaded(videoList: success));
+        videoList = success;
+      });
+      return videoList;
     } catch (e) {
       emit(MessageError(errorMessage: e.toString()));
       throw Exception(e.toString());

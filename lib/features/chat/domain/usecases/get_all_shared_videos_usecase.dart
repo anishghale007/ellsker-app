@@ -4,23 +4,23 @@ import 'package:internship_practice/core/error/failure.dart';
 import 'package:internship_practice/core/usecases/usecase.dart';
 import 'package:internship_practice/features/chat/domain/repositories/chat_repository.dart';
 
-class GetAllSharedPhotosUseCase
-    extends UseCase<List<String>, GetAllSharedPhotosParams> {
+class GetAllSharedVideosUseCase
+    extends UseCase<List<String>, GetAllSharedVideosParams> {
   final ChatRepository chatRepository;
 
-  GetAllSharedPhotosUseCase({required this.chatRepository});
+  GetAllSharedVideosUseCase({required this.chatRepository});
 
   @override
   Future<Either<Failure, List<String>>> call(
-      GetAllSharedPhotosParams params) async {
-    return await chatRepository.getAllSharedVideos(params.receiverId);
+      GetAllSharedVideosParams params) async {
+    return await chatRepository.getAllSharedPhotos(params.receiverId);
   }
 }
 
-class GetAllSharedPhotosParams extends Equatable {
+class GetAllSharedVideosParams extends Equatable {
   final String receiverId;
 
-  const GetAllSharedPhotosParams({
+  const GetAllSharedVideosParams({
     required this.receiverId,
   });
 

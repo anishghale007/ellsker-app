@@ -31,9 +31,12 @@ class AudioMessageWidget extends StatefulWidget {
 
 class _AudioMessageWidgetState extends State<AudioMessageWidget> {
   late AudioPlayer audioPlayer;
-  bool isPlaying = false;
-  Duration duration = Duration.zero;
-  Duration position = Duration.zero;
+  bool isReceiverPlaying = false;
+  bool isSenderPlaying = false;
+  Duration receiverDuration = Duration.zero;
+  Duration receiverPosition = Duration.zero;
+  Duration senderDuration = Duration.zero;
+  Duration senderPosition = Duration.zero;
 
   @override
   void initState() {
@@ -42,21 +45,24 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
     // Listen to states: playing, paused, stopped
     audioPlayer.onPlayerStateChanged.listen((state) {
       setState(() {
-        isPlaying = state == PlayerState.playing;
+        isReceiverPlaying = state == PlayerState.playing;
+        isSenderPlaying = state == PlayerState.playing;
       });
     });
     // Listen to audio duration
     startAudio();
     audioPlayer.onDurationChanged.listen((newDuration) {
       setState(() {
-        duration = newDuration;
+        receiverDuration = newDuration;
+        senderDuration = newDuration;
         pauseAudio();
       });
     });
     // Listen to audio position
     audioPlayer.onPositionChanged.listen((newPosition) {
       setState(() {
-        position = newPosition;
+        receiverPosition = newPosition;
+        senderPosition = newPosition;
       });
     });
   }
@@ -124,7 +130,7 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
                       children: [
                         IconButton(
                           onPressed: () async {
-                            if (isPlaying) {
+                            if (isSenderPlaying) {
                               await audioPlayer.pause();
                             } else {
                               startAudio();
@@ -133,7 +139,7 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
                               await audioPlayer.resume();
                             }
                           },
-                          icon: isPlaying
+                          icon: isSenderPlaying
                               ? const Icon(
                                   Icons.pause,
                                   color: Colors.white,
@@ -152,9 +158,9 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
                           ),
                           child: Slider(
                             min: 0,
-                            max: duration.inSeconds.toDouble(),
+                            max: senderDuration.inSeconds.toDouble(),
                             inactiveColor: Colors.grey,
-                            value: position.inSeconds.toDouble(),
+                            value: senderPosition.inSeconds.toDouble(),
                             onChanged: (value) async {
                               final position = Duration(seconds: value.toInt());
                               await audioPlayer.seek(position);
@@ -162,7 +168,7 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
                           ),
                         ),
                         Text(
-                          formatTime(duration - position),
+                          formatTime(senderDuration - senderPosition),
                           style: GoogleFonts.sourceSansPro(
                             color: Colors.grey,
                             fontSize: 12,
@@ -213,7 +219,7 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
                     children: [
                       IconButton(
                         onPressed: () async {
-                          if (isPlaying) {
+                          if (isReceiverPlaying) {
                             await audioPlayer.pause();
                           } else {
                             startAudio();
@@ -221,7 +227,7 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
                             await audioPlayer.resume();
                           }
                         },
-                        icon: isPlaying
+                        icon: isReceiverPlaying
                             ? const Icon(
                                 Icons.pause,
                                 color: Colors.white,
@@ -240,9 +246,9 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
                         ),
                         child: Slider(
                           min: 0,
-                          max: duration.inSeconds.toDouble(),
+                          max: receiverDuration.inSeconds.toDouble(),
                           inactiveColor: Colors.grey,
-                          value: position.inSeconds.toDouble(),
+                          value: receiverPosition.inSeconds.toDouble(),
                           onChanged: (value) async {
                             final position = Duration(seconds: value.toInt());
                             await audioPlayer.seek(position);
@@ -250,7 +256,7 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
                         ),
                       ),
                       Text(
-                        formatTime(duration - position),
+                        formatTime(receiverDuration - receiverPosition),
                         style: GoogleFonts.sourceSansPro(
                           color: Colors.grey,
                           fontSize: 12,

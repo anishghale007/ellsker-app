@@ -22,6 +22,7 @@ abstract class ChatRemoteDataSource {
   Future<String> sendMessage(MessageEntity messageEntity);
   Stream<List<MessageEntity>> getAllChatMessages(String conversationId);
   Future<List<String>> getAllSharedPhotos(String receiverId);
+  Future<List<String>> getAllSharedVideos(String receiverId);
   Future<void> seenMessage(String conversationId);
   Future<void> unsendMessage(
       {required String conversationId, required String messageId});
@@ -363,6 +364,22 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
     final storageRef = FirebaseStorage.instance
         .ref()
         .child("$currentUser-$receiverId-photos/");
+    final listResult = await storageRef.listAll();
+    for (Reference ref in listResult.items) {
+      final fileUrl = await ref.getDownloadURL();
+      photoList.add(fileUrl);
+      log("List: $photoList");
+    }
+    return photoList;
+  }
+
+  @override
+  Future<List<String>> getAllSharedVideos(String receiverId) async {
+    final currentUser = FirebaseAuth.instance.currentUser!.uid;
+    List<String> photoList = [];
+    final storageRef = FirebaseStorage.instance
+        .ref()
+        .child("$currentUser-$receiverId-videos/");
     final listResult = await storageRef.listAll();
     for (Reference ref in listResult.items) {
       final fileUrl = await ref.getDownloadURL();
