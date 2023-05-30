@@ -15,6 +15,7 @@ class AppStrings {
   static const String delete = "Delete";
   static const String usersList = "Users List";
   static const String searchByEventOrTour = "Search by event or tour";
+  static const String searchByUsername = "Search by username";
   static const String name = "Name";
   static const String age = "Age";
   static const String instagram = "Instagram";

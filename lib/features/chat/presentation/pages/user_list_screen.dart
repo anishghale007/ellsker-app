@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:internship_practice/common/widgets/search_bar_widget.dart';
 import 'package:internship_practice/core/utils/strings_manager.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/user_list/user_list_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/widgets/user_list_tile_widget.dart';
@@ -17,16 +18,20 @@ class UserListScreen extends StatefulWidget {
 
 class _UserListScreenState extends State<UserListScreen> {
   late UserListCubit _bloc;
+  late TextEditingController _searchController;
+  String name = "";
 
   @override
   void initState() {
     super.initState();
     _bloc = sl<UserListCubit>()..getAllUsers();
+    _searchController = TextEditingController();
   }
 
   @override
   void dispose() {
     _bloc.close();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -96,6 +101,23 @@ class _UserListScreenState extends State<UserListScreen> {
                   const SizedBox(
                     height: 30,
                   ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                    ),
+                    child: SearchBarWidget(
+                      hintText: AppStrings.searchByUsername,
+                      controller: _searchController,
+                      onChanged: (value) {
+                        setState(() {
+                          name = value;
+                        });
+                      },
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 30,
+                  ),
                   BlocBuilder<UserListCubit, UserListState>(
                     builder: (context, state) {
                       if (state is UserListLoading) {
@@ -115,10 +137,25 @@ class _UserListScreenState extends State<UserListScreen> {
                           itemCount: state.users.length,
                           itemBuilder: (context, index) {
                             final data = state.users[index];
-                            return UserListTileWidget(
-                              data: data,
-                              currentUser: currentUser,
-                            );
+                            if (data.userName
+                                    .toString()
+                                    .toLowerCase()
+                                    .startsWith(name.toLowerCase()) ||
+                                data.email
+                                    .toString()
+                                    .toLowerCase()
+                                    .startsWith(name.toLowerCase())) {
+                              return UserListTileWidget(
+                                data: data,
+                                currentUser: currentUser,
+                              );
+                            } else if (name.isEmpty) {
+                              return UserListTileWidget(
+                                data: data,
+                                currentUser: currentUser,
+                              );
+                            }
+                            return Container();
                           },
                         );
                       } else if (state is UserListFailure) {

@@ -5,8 +5,27 @@ import 'package:internship_practice/features/auth/data/models/card_model.dart';
 import 'package:internship_practice/features/auth/presentation/widgets/card_widget.dart';
 import 'package:internship_practice/features/auth/presentation/widgets/header_widget.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  late TextEditingController _searchController;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +54,11 @@ class HomeScreen extends StatelessWidget {
                   const SizedBox(
                     height: 40,
                   ),
-                  const SearchBarWidget(),
+                  SearchBarWidget(
+                    hintText: AppStrings.searchByEventOrTour,
+                    controller: _searchController,
+                    onChanged: (value) {},
+                  ),
                   const SizedBox(
                     height: 40,
                   ),

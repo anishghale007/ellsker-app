@@ -58,6 +58,13 @@ class UserListTileWidget extends StatelessWidget {
               fontSize: 18,
             ),
           ),
+          subtitle: Text(
+            data.email,
+            style: const TextStyle(
+              color: Colors.grey,
+              fontSize: 12,
+            ),
+          ),
           trailing: data.userId == currentUser
               ? null
               : data.isOnline == true

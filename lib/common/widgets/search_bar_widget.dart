@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internship_practice/colors_utils.dart';
-import 'package:internship_practice/core/utils/strings_manager.dart';
 
 class SearchBarWidget extends StatelessWidget {
-  const SearchBarWidget({super.key});
+  final String hintText;
+  final TextEditingController controller;
+  final Function(String)? onChanged;
+
+  const SearchBarWidget({
+    super.key,
+    required this.hintText,
+    required this.controller,
+    required this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +25,9 @@ class SearchBarWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(100),
       ),
       child: TextField(
+        controller: controller,
         textInputAction: TextInputAction.search,
+        onChanged: onChanged,
         style: GoogleFonts.sourceSansPro(
           color: Colors.white,
           fontSize: 16,
@@ -32,7 +42,7 @@ class SearchBarWidget extends StatelessWidget {
             vertical: 10,
           ),
           isDense: true,
-          hintText: AppStrings.searchByEventOrTour,
+          hintText: hintText,
           border: InputBorder.none,
           hintStyle: GoogleFonts.sourceSansPro(
             color: ColorUtil.kTertiaryColor,
