@@ -116,6 +116,7 @@ class _ChatScreenState extends State<ChatScreen> {
       );
       setState(() {
         pickedVideo = video;
+        _messageController.text = video!.path;
       });
     } catch (e) {
       throw (Exception(e.toString()));
@@ -340,7 +341,6 @@ class _ChatScreenState extends State<ChatScreen> {
                         });
                       }
                     },
-
                     readOnly: pickedImage != null ||
                             pickedVideo != null ||
                             latitude != null && longitude != null
@@ -375,13 +375,6 @@ class _ChatScreenState extends State<ChatScreen> {
                       errorStyle: const TextStyle(fontSize: 0.01),
                       fillColor: Colors.grey[800],
                       filled: true,
-                      hintText: pickedImage != null
-                          ? pickedImage!.name
-                          : pickedVideo != null
-                              ? pickedVideo!.name
-                              : latitude != null
-                                  ? "Lat: $latitude || Long: $longitude"
-                                  : "",
                       hintStyle: GoogleFonts.sourceSansPro(
                         color: Colors.grey[400],
                         fontSize: 16,
@@ -420,71 +413,116 @@ class _ChatScreenState extends State<ChatScreen> {
                               ),
                             )
                           : null,
-                      suffixIcon: pickedImage != null ||
-                              pickedVideo != null ||
-                              latitude != null && longitude != null
-                          ? IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  pickedImage = null;
-                                  pickedVideo = null;
-                                  latitude = null;
-                                  longitude = null;
-                                });
-                              },
-                              icon: Icon(
-                                Icons.highlight_remove_outlined,
-                                color: ColorUtil.kTertiaryColor,
-                              ),
+                      suffixIcon: pickedImage != null
+                          ? Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const SizedBox(
+                                  width: 2,
+                                ),
+                                Container(
+                                  height: 60,
+                                  width: 50,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: Colors.white,
+                                  ),
+                                  margin: const EdgeInsets.only(
+                                    right: 20,
+                                    top: 7,
+                                    bottom: 7,
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: Image.file(
+                                      File(pickedImage!.path),
+                                    ),
+                                  ),
+                                ),
+                                IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      pickedImage = null;
+                                    });
+                                  },
+                                  icon: Icon(
+                                    Icons.highlight_remove_outlined,
+                                    color: ColorUtil.kTertiaryColor,
+                                  ),
+                                ),
+                              ],
                             )
-                          : isShowSendButton == false
-                              ? Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    IconButton(
-                                      onPressed: () {
-                                        getGIF();
-                                      },
-                                      icon: Icon(
-                                        Icons.gif_box,
-                                        color: ColorUtil.kIconColor,
-                                      ),
-                                    ),
-                                    IconButton(
-                                      onPressed: () async {
-                                        locationPermission = await Geolocator
-                                            .requestPermission();
-                                        if (locationPermission ==
-                                            LocationPermission.denied) {
-                                          locationPermission = await Geolocator
-                                              .requestPermission();
-                                        } else if (locationPermission ==
-                                            LocationPermission.deniedForever) {
-                                          await Geolocator.openAppSettings();
-                                        } else if (locationPermission ==
-                                                LocationPermission.always ||
-                                            locationPermission ==
-                                                LocationPermission.whileInUse) {
-                                          final response = await Geolocator
-                                              .getCurrentPosition();
-                                          setState(() {
-                                            longitude = response.longitude;
-                                            latitude = response.latitude;
-                                            log("Longitude: $longitude");
-                                            log("Latitude: $latitude");
-                                          });
-                                        }
-                                      },
-                                      icon: Icon(
-                                        Icons.location_on,
-                                        color: ColorUtil.kIconColor,
-                                      ),
-                                    ),
-                                  ],
+                          : pickedVideo != null ||
+                                  latitude != null && longitude != null
+                              ? IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      pickedVideo = null;
+                                      latitude = null;
+                                      longitude = null;
+                                      _messageController.clear();
+                                    });
+                                  },
+                                  icon: Icon(
+                                    Icons.highlight_remove_outlined,
+                                    color: ColorUtil.kTertiaryColor,
+                                  ),
                                 )
-                              : null,
+                              : isShowSendButton == false
+                                  ? Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        IconButton(
+                                          onPressed: () {
+                                            getGIF();
+                                          },
+                                          icon: Icon(
+                                            Icons.gif_box,
+                                            color: ColorUtil.kIconColor,
+                                          ),
+                                        ),
+                                        IconButton(
+                                          onPressed: () async {
+                                            locationPermission =
+                                                await Geolocator
+                                                    .requestPermission();
+                                            if (locationPermission ==
+                                                LocationPermission.denied) {
+                                              locationPermission =
+                                                  await Geolocator
+                                                      .requestPermission();
+                                            } else if (locationPermission ==
+                                                LocationPermission
+                                                    .deniedForever) {
+                                              await Geolocator
+                                                  .openAppSettings();
+                                            } else if (locationPermission ==
+                                                    LocationPermission.always ||
+                                                locationPermission ==
+                                                    LocationPermission
+                                                        .whileInUse) {
+                                              final response = await Geolocator
+                                                  .getCurrentPosition();
+                                              setState(() {
+                                                longitude = response.longitude;
+                                                latitude = response.latitude;
+                                                _messageController.text =
+                                                    "Lat: $latitude || Long: $longitude";
+                                                log("Longitude: $longitude");
+                                                log("Latitude: $latitude");
+                                              });
+                                            }
+                                          },
+                                          icon: Icon(
+                                            Icons.location_on,
+                                            color: ColorUtil.kIconColor,
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  : null,
                     ),
                   ),
                 ),

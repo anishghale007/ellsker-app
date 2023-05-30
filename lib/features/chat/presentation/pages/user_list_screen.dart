@@ -19,7 +19,7 @@ class UserListScreen extends StatefulWidget {
 class _UserListScreenState extends State<UserListScreen> {
   late UserListCubit _bloc;
   late TextEditingController _searchController;
-  String name = "";
+  String searchText = "";
 
   @override
   void initState() {
@@ -106,11 +106,11 @@ class _UserListScreenState extends State<UserListScreen> {
                       horizontal: 10,
                     ),
                     child: SearchBarWidget(
-                      hintText: AppStrings.searchByUsername,
+                      hintText: AppStrings.searchByUsernameOrEmail,
                       controller: _searchController,
                       onChanged: (value) {
                         setState(() {
-                          name = value;
+                          searchText = value;
                         });
                       },
                     ),
@@ -140,16 +140,16 @@ class _UserListScreenState extends State<UserListScreen> {
                             if (data.userName
                                     .toString()
                                     .toLowerCase()
-                                    .startsWith(name.toLowerCase()) ||
+                                    .startsWith(searchText.toLowerCase()) ||
                                 data.email
                                     .toString()
                                     .toLowerCase()
-                                    .startsWith(name.toLowerCase())) {
+                                    .startsWith(searchText.toLowerCase())) {
                               return UserListTileWidget(
                                 data: data,
                                 currentUser: currentUser,
                               );
-                            } else if (name.isEmpty) {
+                            } else if (searchText.isEmpty) {
                               return UserListTileWidget(
                                 data: data,
                                 currentUser: currentUser,
