@@ -196,7 +196,7 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
     final newImageId = "$email:UploadedAt:${DateTime.now().toString()}";
     UploadTask uploadTask = FirebaseStorage.instance
         .ref()
-        .child('$email\'s profile/$newImageId')
+        .child('profile-picture/$email/$newImageId')
         .putFile(file);
     TaskSnapshot snapshot = await uploadTask;
     String newPhotoUrl = await snapshot.ref.getDownloadURL();

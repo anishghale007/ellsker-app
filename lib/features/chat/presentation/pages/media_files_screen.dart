@@ -2,8 +2,11 @@ import 'dart:developer';
 
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/pages/shared_photos_screen.dart';
 import 'package:internship_practice/features/chat/presentation/pages/shared_videos_screen.dart';
+import 'package:internship_practice/injection_container.dart';
 
 class SharedFilesScreen extends StatefulWidget {
   final String receiverId;
@@ -20,15 +23,20 @@ class SharedFilesScreen extends StatefulWidget {
 class _SharedFilesScreenState extends State<SharedFilesScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  late MessageCubit bloc;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    bloc = sl<MessageCubit>()
+      ..getAllSharedPhotos(receiverId: widget.receiverId)
+      ..getAllSharedVideos(receiverId: widget.receiverId);
   }
 
   @override
   void dispose() {
+    bloc.close();
     _tabController.dispose();
     super.dispose();
   }
@@ -78,6 +86,21 @@ class _SharedFilesScreenState extends State<SharedFilesScreen>
               child: TabBar(
                 controller: _tabController,
                 labelColor: Colors.black,
+                onTap: (value) {
+                  switch (value) {
+                    case 0:
+                      context
+                          .read<MessageCubit>()
+                          .getAllSharedPhotos(receiverId: widget.receiverId);
+                      break;
+                    case 1:
+                      context
+                          .read<MessageCubit>()
+                          .getAllSharedVideos(receiverId: widget.receiverId);
+                      break;
+                    default:
+                  }
+                },
                 labelStyle: const TextStyle(
                   fontWeight: FontWeight.bold,
                 ),
@@ -101,16 +124,19 @@ class _SharedFilesScreenState extends State<SharedFilesScreen>
             ),
           ),
         ),
-        body: TabBarView(
-          controller: _tabController,
-          children: [
-            SharedPhotosScreen(
-              receiverId: widget.receiverId,
-            ),
-            SharedVideosScreen(
-              receiverId: widget.receiverId,
-            ),
-          ],
+        body: BlocProvider(
+          create: (context) => bloc,
+          child: TabBarView(
+            controller: _tabController,
+            children: [
+              SharedPhotosScreen(
+                receiverId: widget.receiverId,
+              ),
+              SharedVideosScreen(
+                receiverId: widget.receiverId,
+              ),
+            ],
+          ),
         ),
       ),
     );

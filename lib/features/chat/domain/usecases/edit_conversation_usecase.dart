@@ -11,10 +11,7 @@ class EditConversationUsecase
   const EditConversationUsecase({required this.chatRepository});
   @override
   Future<Either<Failure, String>> call(EditConversationParams params) async {
-    return await chatRepository.editConversation(
-      conversationId: params.conversationId,
-      newNickname: params.newNickname,
-    );
+    return await chatRepository.editConversation(params);
   }
 }
 

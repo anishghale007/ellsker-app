@@ -13,7 +13,7 @@ class GetAllSharedPhotosUseCase
   @override
   Future<Either<Failure, List<String>>> call(
       GetAllSharedPhotosParams params) async {
-    return await chatRepository.getAllSharedVideos(params.receiverId);
+    return await chatRepository.getAllSharedPhotos(params.receiverId);
   }
 }
 

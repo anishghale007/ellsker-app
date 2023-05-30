@@ -1,10 +1,11 @@
-import 'package:cached_video_player/cached_video_player.dart';
+import 'package:chewie/chewie.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internship_practice/colors_utils.dart';
 import 'package:internship_practice/features/chat/presentation/widgets/message%20content/receiver_user_message_box.dart';
 import 'package:intl/intl.dart';
+import 'package:video_player/video_player.dart';
 
 class VideoPlayerWidget extends StatefulWidget {
   final String senderId;
@@ -29,22 +30,28 @@ class VideoPlayerWidget extends StatefulWidget {
 }
 
 class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
-  late CachedVideoPlayerController videoPlayerController;
-  bool isPlay = false;
+  late VideoPlayerController videoPlayerController;
+  late ChewieController chewieController;
 
   @override
   void initState() {
     super.initState();
-    videoPlayerController = CachedVideoPlayerController.network(widget.videoUrl)
-      ..initialize().then((value) {
-        videoPlayerController.setVolume(1);
-        videoPlayerController.setLooping(true);
-      });
+    videoPlayerController = VideoPlayerController.network(widget.videoUrl)
+      ..initialize();
+    // ..initialize().then((value) {
+    //   videoPlayerController.setVolume(1);
+    //   videoPlayerController.setLooping(true);
+    // });
+    chewieController = ChewieController(
+      videoPlayerController: videoPlayerController,
+      zoomAndPan: true,
+    );
   }
 
   @override
   void dispose() {
     videoPlayerController.dispose();
+    chewieController.dispose();
     super.dispose();
   }
 
@@ -53,6 +60,9 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     return FirebaseAuth.instance.currentUser!.uid == widget.senderId
         ? GestureDetector(
             onLongPress: widget.onSenderLongPress,
+            // onTap: () {
+            //   chewieController.enterFullScreen();
+            // },
             child: Container(
               margin: const EdgeInsets.only(
                 left: 40,
@@ -81,33 +91,39 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                 children: [
                   AspectRatio(
                     aspectRatio: 12 / 10,
-                    child: Stack(
-                      children: [
-                        CachedVideoPlayer(videoPlayerController),
-                        Align(
-                          alignment: Alignment.center,
-                          child: IconButton(
-                            onPressed: () {
-                              if (isPlay) {
-                                videoPlayerController.pause();
-                              } else {
-                                videoPlayerController.play();
-                              }
-
-                              setState(() {
-                                isPlay = !isPlay;
-                              });
-                            },
-                            icon: Icon(
-                              isPlay ? Icons.pause_circle : Icons.play_circle,
-                              size: 40,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                        ),
-                      ],
+                    child: Chewie(
+                      controller: chewieController,
                     ),
                   ),
+                  // AspectRatio(
+                  //   aspectRatio: 12 / 10,
+                  //   child: Stack(
+                  //     children: [
+                  //       VideoPlayer(videoPlayerController),
+                  //       Align(
+                  //         alignment: Alignment.center,
+                  //         child: IconButton(
+                  //           onPressed: () {
+                  //             if (isPlay) {
+                  //               videoPlayerController.pause();
+                  //             } else {
+                  //               videoPlayerController.play();
+                  //             }
+
+                  //             setState(() {
+                  //               isPlay = !isPlay;
+                  //             });
+                  //           },
+                  //           icon: Icon(
+                  //             isPlay ? Icons.pause_circle : Icons.play_circle,
+                  //             size: 40,
+                  //             color: Colors.grey[600],
+                  //           ),
+                  //         ),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
                   const SizedBox(
                     height: 6,
                   ),
@@ -148,31 +164,8 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                 children: [
                   AspectRatio(
                     aspectRatio: 12 / 10,
-                    child: Stack(
-                      children: [
-                        CachedVideoPlayer(videoPlayerController),
-                        Align(
-                          alignment: Alignment.center,
-                          child: IconButton(
-                            onPressed: () {
-                              if (isPlay) {
-                                videoPlayerController.pause();
-                              } else {
-                                videoPlayerController.play();
-                              }
-
-                              setState(() {
-                                isPlay = !isPlay;
-                              });
-                            },
-                            icon: Icon(
-                              isPlay ? Icons.pause_circle : Icons.play_circle,
-                              size: 40,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                        ),
-                      ],
+                    child: Chewie(
+                      controller: chewieController,
                     ),
                   ),
                   const SizedBox(

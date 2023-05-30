@@ -61,6 +61,9 @@ class ChatBoxWidget extends StatelessWidget {
               context,
               canCopy: false,
               canUnsend: true,
+              messageType: messageType,
+              receiverId: receiverId,
+              senderId: senderId,
             );
           },
         );
@@ -77,6 +80,9 @@ class ChatBoxWidget extends StatelessWidget {
               context,
               canCopy: false,
               canUnsend: true,
+              messageType: messageType,
+              receiverId: receiverId,
+              senderId: senderId,
             );
           },
           onTap: () {
@@ -102,6 +108,9 @@ class ChatBoxWidget extends StatelessWidget {
               context,
               canCopy: false,
               canUnsend: true,
+              messageType: messageType,
+              receiverId: receiverId,
+              senderId: senderId,
             );
           },
         );
@@ -117,6 +126,9 @@ class ChatBoxWidget extends StatelessWidget {
               context,
               canCopy: false,
               canUnsend: true,
+              messageType: messageType,
+              receiverId: receiverId,
+              senderId: senderId,
             );
           },
         );
@@ -132,6 +144,9 @@ class ChatBoxWidget extends StatelessWidget {
               context,
               canCopy: false,
               canUnsend: true,
+              messageType: messageType,
+              receiverId: receiverId,
+              senderId: senderId,
             );
           },
         );
@@ -161,6 +176,9 @@ class ChatBoxWidget extends StatelessWidget {
               context,
               canCopy: true,
               canUnsend: true,
+              messageType: messageType,
+              receiverId: receiverId,
+              senderId: senderId,
             );
           },
           onReceiverLongPress: () {
@@ -168,6 +186,9 @@ class ChatBoxWidget extends StatelessWidget {
               context,
               canCopy: true,
               canUnsend: false,
+              messageType: messageType,
+              receiverId: receiverId,
+              senderId: senderId,
             );
           },
         );
@@ -178,6 +199,9 @@ class ChatBoxWidget extends StatelessWidget {
     BuildContext context, {
     required bool canCopy,
     required bool canUnsend,
+    required MessageType messageType,
+    required String receiverId,
+    required String senderId,
   }) {
     AppDialogs.showSimpleDialog(
       context: context,
@@ -198,6 +222,9 @@ class ChatBoxWidget extends StatelessWidget {
         context.read<MessageCubit>().unsendMessage(
               conversationId: receiverId,
               messageId: messageId,
+              messageType: messageType,
+              receiverId: receiverId,
+              senderId: senderId,
             );
         Navigator.of(context).pop();
       },

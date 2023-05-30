@@ -3,6 +3,8 @@ import 'package:internship_practice/core/error/failure.dart';
 import 'package:internship_practice/features/chat/domain/entities/conversation_entity.dart';
 import 'package:internship_practice/features/chat/domain/entities/message_entity.dart';
 import 'package:internship_practice/features/chat/domain/entities/user_entity.dart';
+import 'package:internship_practice/features/chat/domain/usecases/edit_conversation_usecase.dart';
+import 'package:internship_practice/features/chat/domain/usecases/unsend_message_usecase.dart';
 
 abstract class ChatRepository {
   Future<Either<Failure, Stream<List<UserEntity>>>> getAllUsers();
@@ -14,9 +16,8 @@ abstract class ChatRepository {
   Future<Either<Failure, List<String>>> getAllSharedPhotos(String receiverId);
   Future<Either<Failure, List<String>>> getAllSharedVideos(String receiverId);
   Future<Either<Failure, void>> seenMessage(String conversationId);
-  Future<Either<Failure, void>> unsendMessage(
-      {required conversationId, required messageId});
+  Future<Either<Failure, void>> unsendMessage(UnsendMessageParams params);
   Future<Either<Failure, String>> deleteConversation(String conversationId);
   Future<Either<Failure, String>> editConversation(
-      {required conversationId, required newNickname});
+      EditConversationParams params);
 }

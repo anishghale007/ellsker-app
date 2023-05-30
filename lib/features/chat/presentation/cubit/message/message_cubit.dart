@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:internship_practice/core/enums/message_type_enum.dart';
 import 'package:internship_practice/features/chat/domain/entities/message_entity.dart';
 import 'package:internship_practice/features/chat/domain/usecases/get_all_chat_message.dart';
 import 'package:internship_practice/features/chat/domain/usecases/get_all_shared_photos_usecase.dart';
@@ -39,13 +40,21 @@ class MessageCubit extends Cubit<MessageState> {
     }
   }
 
-  Future<void> unsendMessage(
-      {required String conversationId, required String messageId}) async {
+  Future<void> unsendMessage({
+    required String conversationId,
+    required String messageId,
+    required MessageType messageType,
+    required String receiverId,
+    required String senderId,
+  }) async {
     try {
       final response = await unsendMessageUseCase.call(
         UnsendMessageParams(
           conversationId: conversationId,
           messageId: messageId,
+          messageType: messageType,
+          receiverId: receiverId,
+          senderId: senderId,
         ),
       );
       response.fold(

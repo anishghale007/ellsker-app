@@ -6,6 +6,8 @@ import 'package:internship_practice/features/chat/domain/entities/conversation_e
 import 'package:internship_practice/features/chat/domain/entities/message_entity.dart';
 import 'package:internship_practice/features/chat/domain/entities/user_entity.dart';
 import 'package:internship_practice/features/chat/domain/repositories/chat_repository.dart';
+import 'package:internship_practice/features/chat/domain/usecases/edit_conversation_usecase.dart';
+import 'package:internship_practice/features/chat/domain/usecases/unsend_message_usecase.dart';
 
 class ChatRepositoryImpl implements ChatRepository {
   final ChatRemoteDataSource chatRemoteDataSource;
@@ -58,15 +60,10 @@ class ChatRepositoryImpl implements ChatRepository {
   }
 
   @override
-  Future<Either<Failure, void>> unsendMessage({
-    required conversationId,
-    required messageId,
-  }) async {
+  Future<Either<Failure, void>> unsendMessage(
+      UnsendMessageParams params) async {
     try {
-      final response = await chatRemoteDataSource.unsendMessage(
-        conversationId: conversationId,
-        messageId: messageId,
-      );
+      final response = await chatRemoteDataSource.unsendMessage(params);
       return Right(response);
     } on ServerException {
       return Left(ServerFailure());
@@ -95,12 +92,9 @@ class ChatRepositoryImpl implements ChatRepository {
 
   @override
   Future<Either<Failure, String>> editConversation(
-      {required conversationId, required newNickname}) async {
+      EditConversationParams params) async {
     try {
-      final response = await chatRemoteDataSource.editConversation(
-        conversationId: conversationId,
-        newNickname: newNickname,
-      );
+      final response = await chatRemoteDataSource.editConversation(params);
       return Right(response);
     } on ServerFailure {
       return Left(ServerFailure());

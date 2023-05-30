@@ -12,6 +12,8 @@ import 'package:internship_practice/features/chat/data/models/user_model.dart';
 import 'package:internship_practice/features/chat/domain/entities/conversation_entity.dart';
 import 'package:internship_practice/features/chat/domain/entities/message_entity.dart';
 import 'package:internship_practice/features/chat/domain/entities/user_entity.dart';
+import 'package:internship_practice/features/chat/domain/usecases/edit_conversation_usecase.dart';
+import 'package:internship_practice/features/chat/domain/usecases/unsend_message_usecase.dart';
 import 'package:uuid/uuid.dart';
 
 abstract class ChatRemoteDataSource {
@@ -24,10 +26,8 @@ abstract class ChatRemoteDataSource {
   Future<List<String>> getAllSharedPhotos(String receiverId);
   Future<List<String>> getAllSharedVideos(String receiverId);
   Future<void> seenMessage(String conversationId);
-  Future<void> unsendMessage(
-      {required String conversationId, required String messageId});
-  Future<String> editConversation(
-      {required String conversationId, required String newNickname});
+  Future<void> unsendMessage(UnsendMessageParams params);
+  Future<String> editConversation(EditConversationParams params);
 }
 
 class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
@@ -127,25 +127,24 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
   }
 
   @override
-  Future<String> editConversation(
-      {required String conversationId, required String newNickname}) {
+  Future<String> editConversation(EditConversationParams params) {
     try {
       final currentUser = FirebaseAuth.instance.currentUser!.uid;
       // updating the conversation collection of the current user
       dbUser
           .doc(currentUser)
           .collection('conversation')
-          .doc(conversationId)
+          .doc(params.conversationId)
           .update({
-        "receiverName": newNickname,
+        "receiverName": params.newNickname,
       });
       // updating the conversation collection of the other user
       dbUser
-          .doc(conversationId)
+          .doc(params.conversationId)
           .collection('conversation')
           .doc(currentUser)
           .update({
-        "senderName": newNickname,
+        "senderName": params.newNickname,
       });
       return Future.value("Success");
     } on FirebaseException catch (e) {
@@ -156,6 +155,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
   @override
   Future<String> sendMessage(MessageEntity messageEntity) async {
     try {
+      String messageId = const Uuid().v1();
       if (messageEntity.photoFile != null) {
         // IF THE USER SENDS A PHOTO MESSAGE
 
@@ -165,6 +165,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
           receiverId: messageEntity.receiverId,
           senderId: messageEntity.senderId,
           messageType: messageEntity.messageType,
+          fileId: messageId,
         );
 
         // saving the data
@@ -179,6 +180,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
           receiverPhotoUrl: messageEntity.receiverPhotoUrl,
           messageType: messageEntity.messageType,
           fileUrl: fileUrl,
+          messageDocId: messageId,
           latitude: "",
           longitude: "",
           gifUrl: "",
@@ -188,10 +190,11 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
 
         // saving the uploaded image to firebase
         final fileUrl = await _storeFileToFirebase(
-          file: File(messageEntity.photoFile!.path),
+          file: File(messageEntity.videoFile!.path),
           receiverId: messageEntity.receiverId,
           senderId: messageEntity.senderId,
           messageType: messageEntity.messageType,
+          fileId: messageId,
         );
 
         // saving the data
@@ -206,6 +209,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
           receiverPhotoUrl: messageEntity.receiverPhotoUrl,
           messageType: messageEntity.messageType,
           fileUrl: fileUrl,
+          messageDocId: messageId,
           latitude: "",
           longitude: "",
           gifUrl: "",
@@ -214,10 +218,12 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
         // IF THE USER SENDS AN AUDIO MESSAGE
 
         final fileUrl = await _storeFileToFirebase(
-            file: File(messageEntity.audioFile!.path),
-            receiverId: messageEntity.receiverId,
-            senderId: messageEntity.senderId,
-            messageType: messageEntity.messageType);
+          file: File(messageEntity.audioFile!.path),
+          receiverId: messageEntity.receiverId,
+          senderId: messageEntity.senderId,
+          messageType: messageEntity.messageType,
+          fileId: messageId,
+        );
         _saveMessageDataToMessageCollection(
           messageContent: messageEntity.messageContent,
           messageTime: messageEntity.messageTime,
@@ -229,6 +235,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
           receiverPhotoUrl: messageEntity.receiverPhotoUrl,
           messageType: messageEntity.messageType,
           fileUrl: fileUrl,
+          messageDocId: messageId,
           latitude: "",
           longitude: "",
           gifUrl: "",
@@ -245,6 +252,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
           receiverName: messageEntity.receiverName,
           receiverPhotoUrl: messageEntity.receiverPhotoUrl,
           messageType: messageEntity.messageType,
+          messageDocId: messageId,
           fileUrl: "",
           latitude: "",
           longitude: "",
@@ -263,6 +271,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
           receiverName: messageEntity.receiverName,
           receiverPhotoUrl: messageEntity.receiverPhotoUrl,
           messageType: messageEntity.messageType,
+          messageDocId: messageId,
           fileUrl: "",
           latitude: messageEntity.latitude!,
           longitude: messageEntity.longitude!,
@@ -280,6 +289,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
           receiverName: messageEntity.receiverName,
           receiverPhotoUrl: messageEntity.receiverPhotoUrl,
           messageType: messageEntity.messageType,
+          messageDocId: messageId,
           latitude: "",
           longitude: "",
           fileUrl: "",
@@ -293,17 +303,20 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
   }
 
   @override
-  Future<void> unsendMessage({
-    required String conversationId,
-    required String messageId,
-  }) async {
+  Future<void> unsendMessage(UnsendMessageParams params) async {
     try {
       final currentUser = FirebaseAuth.instance.currentUser!;
       _unsendMessageDataFromCollection(
         senderId: currentUser.uid,
         senderName: currentUser.displayName!,
-        receiverId: conversationId,
-        messageId: messageId,
+        receiverId: params.conversationId,
+        messageId: params.messageId,
+      );
+      _deleteFileFromFirbease(
+        receiverId: params.receiverId,
+        senderId: params.senderId,
+        messageType: params.messageType,
+        messageId: params.messageId,
       );
     } on FirebaseException catch (e) {
       throw Exception(e.toString());
@@ -363,12 +376,12 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
     List<String> photoList = [];
     final storageRef = FirebaseStorage.instance
         .ref()
-        .child("$currentUser-$receiverId-photos/");
+        .child("chat/photos/$currentUser-$receiverId");
     final listResult = await storageRef.listAll();
     for (Reference ref in listResult.items) {
       final fileUrl = await ref.getDownloadURL();
       photoList.add(fileUrl);
-      log("List: $photoList");
+      log("Photo List: $photoList");
     }
     return photoList;
   }
@@ -376,17 +389,17 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
   @override
   Future<List<String>> getAllSharedVideos(String receiverId) async {
     final currentUser = FirebaseAuth.instance.currentUser!.uid;
-    List<String> photoList = [];
+    List<String> videoList = [];
     final storageRef = FirebaseStorage.instance
         .ref()
-        .child("$currentUser-$receiverId-videos/");
+        .child("chat/videos/$currentUser-$receiverId");
     final listResult = await storageRef.listAll();
     for (Reference ref in listResult.items) {
       final fileUrl = await ref.getDownloadURL();
-      photoList.add(fileUrl);
-      log("List: $photoList");
+      videoList.add(fileUrl);
+      log("Video List: $videoList");
     }
-    return photoList;
+    return videoList;
   }
 
   @override
@@ -542,6 +555,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
     required String latitude,
     required String longitude,
     required String gifUrl,
+    required String messageDocId,
   }) {
     final senderData = MessageModel(
       messageContent: messageContent,
@@ -574,8 +588,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
       "isSeen": false,
       "unSeenMessages": FieldValue.increment(1),
     };
-    var messageDocId =
-        const Uuid().v1(); // for setting the same doc id for both user
+    // var messageDocId = const Uuid().v1(); // for setting the same doc id for both user
     // sender data
     dbUser
         .doc(senderId)
@@ -604,24 +617,73 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
         .set(senderData);
   }
 
+  Future<void> _deleteFileFromFirbease({
+    required String receiverId,
+    required String senderId,
+    required MessageType messageType,
+    required String messageId,
+  }) async {
+    switch (messageType) {
+      case MessageType.photo:
+        // sender folder
+        final senderFile = FirebaseStorage.instance
+            .ref()
+            .child('chat/photos/$senderId-$receiverId/$messageId');
+        await senderFile.delete();
+        // receiver folder
+        final receiverFile = FirebaseStorage.instance
+            .ref()
+            .child('chat/photos/$receiverId-$senderId/$messageId');
+        await receiverFile.delete();
+        break;
+      case MessageType.video:
+        // sender folder
+        final senderFile = FirebaseStorage.instance
+            .ref()
+            .child('chat/videos/$senderId-$receiverId/$messageId');
+        await senderFile.delete();
+        // receiver folder
+        final receiverFile = FirebaseStorage.instance
+            .ref()
+            .child('chat/videos/$receiverId-$senderId/$messageId');
+        await receiverFile.delete();
+        break;
+      case MessageType.audio:
+        // sender folder
+        final senderFile = FirebaseStorage.instance
+            .ref()
+            .child('chat/audio/$senderId-$receiverId/$messageId');
+        await senderFile.delete();
+        // receiver folder
+        final receiverFile = FirebaseStorage.instance
+            .ref()
+            .child('chat/audio/$receiverId-$senderId/$messageId');
+        await receiverFile.delete();
+        break;
+      default:
+        null;
+    }
+  }
+
   Future<String> _storeFileToFirebase({
     required File file,
     required String receiverId,
     required String senderId,
     required MessageType messageType,
+    required String fileId,
   }) async {
-    final imageId = "$senderId:UploadedAt:${DateTime.now().toString()}";
+    // final imageId = "$senderId:UploadedAt:${DateTime.now().toString()}";
     switch (messageType) {
       case MessageType.photo:
         // sender folder
         UploadTask uploadTask = FirebaseStorage.instance
             .ref()
-            .child('$senderId-$receiverId-photos/$imageId')
+            .child('chat/photos/$senderId-$receiverId/$fileId')
             .putFile(file);
         // receiver folder
         await FirebaseStorage.instance
             .ref()
-            .child("$receiverId-$senderId-photos/$imageId")
+            .child("chat/photos/$receiverId-$senderId/$fileId")
             .putFile(file);
         TaskSnapshot snapshot = await uploadTask;
         String newFileUrl = await snapshot.ref.getDownloadURL();
@@ -630,12 +692,12 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
         // sender folder
         UploadTask uploadTask = FirebaseStorage.instance
             .ref()
-            .child('$senderId-$receiverId-video/$imageId')
+            .child('chat/videos/$senderId-$receiverId/$fileId')
             .putFile(file);
         // receiver folder
         await FirebaseStorage.instance
             .ref()
-            .child("$receiverId-$senderId-video/$imageId")
+            .child("chat/videos/$receiverId-$senderId/$fileId")
             .putFile(file);
         TaskSnapshot snapshot = await uploadTask;
         String newFileUrl = await snapshot.ref.getDownloadURL();
@@ -644,12 +706,12 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
         // sender folder
         UploadTask uploadTask = FirebaseStorage.instance
             .ref()
-            .child('$senderId-$receiverId-audio/$imageId')
+            .child('chat/audio/$senderId-$receiverId/$fileId')
             .putFile(file);
         // receiver folder
         await FirebaseStorage.instance
             .ref()
-            .child("$receiverId-$senderId-audio/$imageId")
+            .child("chat/audio/$receiverId-$senderId/$fileId")
             .putFile(file);
         TaskSnapshot snapshot = await uploadTask;
         String newFileUrl = await snapshot.ref.getDownloadURL();
