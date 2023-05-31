@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -18,8 +17,7 @@ import 'package:internship_practice/features/chat/presentation/cubit/message/mes
 import 'package:internship_practice/features/notification/presentation/cubit/notification/notification_cubit.dart';
 import 'package:internship_practice/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:internship_practice/injection_container.dart' as di;
-import 'package:internship_practice/router.dart';
-import 'package:internship_practice/ui_pages.dart';
+import 'package:internship_practice/routes/router.gr.dart';
 import 'features/auth/presentation/bloc/facebook_sign_in/facebook_sign_in_bloc.dart';
 import 'features/auth/presentation/bloc/google_sign_in/google_sign_in_bloc.dart';
 import 'features/notification/presentation/bloc/notification/notification_bloc.dart';
@@ -38,7 +36,7 @@ void main() async {
   );
   await FirebaseMessaging.instance.getInitialMessage();
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 @pragma('vm:entry-point')
@@ -52,7 +50,9 @@ Future<void> firebaseMessagingBackgroundHandler(
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final _appRouter = AppRouter();
+
+  MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -96,11 +96,23 @@ class MyApp extends StatelessWidget {
         stream: FirebaseAuth.instance.userChanges(),
         initialData: FirebaseAuth.instance.currentUser,
         builder: (context, snapshot) {
-          return MaterialApp(
+          return MaterialApp.router(
             debugShowCheckedModeBanner: false,
-            onGenerateRoute: Routers.generateRoute,
-            initialRoute:
-                snapshot.data == null ? kLoginScreenPath : kBottomNavBarPath,
+            routerDelegate: _appRouter.delegate(
+              initialRoutes: snapshot.data == null
+                  ? [const LoginRoute()]
+                  : [const HomeRoute()],
+            ),
+            // routerDelegate: AutoRouterDelegate.declarative(
+            //   _appRouter,
+            //   routes: (_) => [
+            //     if (snapshot.data == null)
+            //       const LoginRoute()
+            //     else
+            //       const HomeRoute()
+            //   ],
+            // ),
+            routeInformationParser: _appRouter.defaultRouteParser(),
             theme: ThemeData(
               inputDecorationTheme: InputDecorationTheme(
                 border: InputBorder.none,

@@ -4,7 +4,7 @@ import 'package:internship_practice/features/chat/presentation/pages/chat_list_s
 import 'package:internship_practice/features/location/presentation/pages/location_screen.dart';
 import 'package:internship_practice/features/location/presentation/pages/map_screen.dart';
 import 'package:internship_practice/features/profile/presentation/pages/edit_profile_screen.dart';
-import 'package:internship_practice/features/auth/presentation/pages/home_screen.dart';
+import 'package:internship_practice/features/auth/presentation/pages/festival_screen.dart';
 import 'package:internship_practice/features/auth/presentation/pages/login_screen.dart';
 import 'package:internship_practice/features/profile/presentation/pages/profile_screen.dart';
 import 'package:internship_practice/features/chat/presentation/pages/chat_screen.dart';
@@ -19,7 +19,7 @@ class Routers {
       case kBottomNavBarPath:
         return MaterialPageRoute(builder: (_) => const BottomNavBarScreen());
       case kHomeScreenPath:
-        return MaterialPageRoute(builder: (_) => const HomeScreen());
+        return MaterialPageRoute(builder: (_) => const FestivalScreen());
       case kChatListScreenPath:
         return MaterialPageRoute(builder: (_) => const ChatListScreen());
       case kProfileScreenPath:

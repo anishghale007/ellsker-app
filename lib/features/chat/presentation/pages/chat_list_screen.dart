@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -8,7 +9,7 @@ import 'package:internship_practice/core/functions/app_dialogs.dart';
 import 'package:internship_practice/core/utils/strings_manager.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/conversation/conversation_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/widgets/conversation_tile_widget.dart';
-import 'package:internship_practice/ui_pages.dart';
+import 'package:internship_practice/routes/router.gr.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../bloc/conversation/conversation_bloc.dart';
@@ -138,14 +139,13 @@ class _ChatListScreenState extends State<ChatListScreen> {
                                         SeenConversationEvent(
                                             conversationId: data.receiverId),
                                       );
-                                  Navigator.of(context).pushNamed(
-                                    kChatScreenPath,
-                                    arguments: {
-                                      "username": data.receiverName,
-                                      "userId": data.receiverId,
-                                      "photoUrl": data.receiverPhotoUrl,
-                                      "token": data.receiverToken,
-                                    },
+                                  context.router.push(
+                                    ChatRoute(
+                                      username: data.receiverName,
+                                      userId: data.receiverId,
+                                      photoUrl: data.receiverPhotoUrl,
+                                      token: data.receiverToken,
+                                    ),
                                   );
                                 },
                                 receiverId: data.receiverId,
@@ -222,7 +222,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
           floatingActionButton: FloatingActionButton(
             backgroundColor: ColorUtil.kMessageAlertColor,
             onPressed: () {
-              Navigator.pushNamed(context, kUserListScreenPath);
+              // Navigator.pushNamed(context, kUserListScreenPath);
+              context.router.push(const UserListRoute());
             },
             child: const Icon(Icons.message),
           ),

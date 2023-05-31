@@ -1,6 +1,7 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:internship_practice/colors_utils.dart';
-import 'package:internship_practice/ui_pages.dart';
+import 'package:internship_practice/routes/router.gr.dart';
 import 'package:record/record.dart';
 
 class LocationScreen extends StatefulWidget {
@@ -29,11 +30,13 @@ class _LocationScreenState extends State<LocationScreen> {
                 child: Center(
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, kMapScreenPath, arguments: {
-                        "userLatitude": null,
-                        "userLongitude": null,
-                        "username": null,
-                      });
+                      context.router.push(
+                        MapRoute(
+                          userLatitude: null,
+                          userLongitude: null,
+                          username: null,
+                        ),
+                      );
                     },
                     child: const Text("Get Location"),
                   ),

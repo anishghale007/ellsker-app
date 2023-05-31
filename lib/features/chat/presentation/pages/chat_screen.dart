@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
+import 'package:auto_route/auto_route.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,6 @@ import 'package:internship_practice/colors_utils.dart';
 import 'package:internship_practice/constants.dart';
 import 'package:internship_practice/core/enums/message_type_enum.dart';
 import 'package:internship_practice/core/functions/app_dialogs.dart';
-import 'package:internship_practice/features/chat/presentation/pages/media_files_screen.dart';
 import 'package:internship_practice/features/chat/presentation/pages/video_call_screen.dart';
 import 'package:internship_practice/features/chat/presentation/widgets/message%20content/chat_box_widget.dart';
 import 'package:internship_practice/features/auth/presentation/bloc/network/network_bloc.dart';
@@ -26,6 +26,7 @@ import 'package:internship_practice/features/notification/domain/entities/notifi
 import 'package:internship_practice/features/chat/presentation/bloc/conversation/conversation_bloc.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
 import 'package:internship_practice/features/notification/presentation/cubit/notification/notification_cubit.dart';
+import 'package:internship_practice/routes/router.gr.dart';
 import 'package:record/record.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -222,11 +223,9 @@ class _ChatScreenState extends State<ChatScreen> {
                 ],
                 onSelected: (value) {
                   if (value == 1) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            SharedFilesScreen(receiverId: widget.userId),
+                    context.router.push(
+                      SharedFilesRoute(
+                        receiverId: widget.userId,
                       ),
                     );
                   }

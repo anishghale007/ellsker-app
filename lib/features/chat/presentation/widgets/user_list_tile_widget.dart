@@ -1,9 +1,10 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:internship_practice/features/chat/domain/entities/user_entity.dart';
 import 'package:internship_practice/features/chat/presentation/bloc/conversation/conversation_bloc.dart';
-import 'package:internship_practice/ui_pages.dart';
+import 'package:internship_practice/routes/router.gr.dart';
 
 class UserListTileWidget extends StatelessWidget {
   const UserListTileWidget({
@@ -22,14 +23,13 @@ class UserListTileWidget extends StatelessWidget {
         context.read<ConversationBloc>().add(
               SeenConversationEvent(conversationId: data.userId),
             );
-        Navigator.of(context).pushNamed(
-          kChatScreenPath,
-          arguments: {
-            "username": data.userName,
-            "userId": data.userId,
-            "photoUrl": data.photoUrl,
-            "token": data.token,
-          },
+        context.router.push(
+          ChatRoute(
+            username: data.userName,
+            userId: data.userId,
+            photoUrl: data.photoUrl,
+            token: data.token,
+          ),
         );
       },
       child: SizedBox(

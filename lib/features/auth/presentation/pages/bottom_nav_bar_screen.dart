@@ -9,7 +9,7 @@ import 'package:internship_practice/core/utils/strings_manager.dart';
 import 'package:internship_practice/features/auth/presentation/cubit/sign%20out/sign_out_cubit.dart';
 import 'package:internship_practice/features/auth/presentation/cubit/user%20status/user_status_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/pages/chat_list_screen.dart';
-import 'package:internship_practice/features/auth/presentation/pages/home_screen.dart';
+import 'package:internship_practice/features/auth/presentation/pages/festival_screen.dart';
 import 'package:internship_practice/features/chat/presentation/pages/chat_screen.dart';
 import 'package:internship_practice/features/location/presentation/pages/location_screen.dart';
 import 'package:internship_practice/features/notification/firebase_messaging/notifications_config.dart';
@@ -30,7 +30,7 @@ class _BottomNavBarScreenState extends State<BottomNavBarScreen>
   late SignOutCubit _bloc;
 
   List<Widget> pages = [
-    const HomeScreen(),
+    const FestivalScreen(),
     const ChatListScreen(),
     const LocationScreen(),
     const ProfileScreen(),

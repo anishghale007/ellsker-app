@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -11,8 +12,8 @@ import 'package:internship_practice/core/utils/assets_manager.dart';
 import 'package:internship_practice/core/utils/strings_manager.dart';
 import 'package:internship_practice/features/auth/presentation/bloc/google_sign_in/google_sign_in_bloc.dart';
 import 'package:internship_practice/features/auth/presentation/bloc/network/network_bloc.dart';
-import 'package:internship_practice/features/auth/presentation/pages/bottom_nav_bar_screen.dart';
 import 'package:internship_practice/features/auth/presentation/widgets/login_logo_widget.dart';
+import 'package:internship_practice/routes/router.gr.dart';
 import '../bloc/facebook_sign_in/facebook_sign_in_bloc.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -70,10 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       if (state is GoogleSignInSuccess) {
                         _loadingOverlay.hide();
                         context.read<UserStatusCubit>().setUserState(true);
-                        Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(
-                              builder: (context) => const BottomNavBarScreen()),
-                        );
+                        context.router.replace(const HomeRoute());
                       } else if (state is GoogleSignInFailure) {
                         _loadingOverlay.hide();
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -100,10 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       if (state is FacebookSignInSuccess) {
                         _loadingOverlay.hide();
                         context.read<UserStatusCubit>().setUserState(true);
-                        Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(
-                              builder: (context) => const BottomNavBarScreen()),
-                        );
+                        context.router.replace(const HomeRoute());
                       } else if (state is FacebookSignInFailure) {
                         _loadingOverlay.hide();
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(

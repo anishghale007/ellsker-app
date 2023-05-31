@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +7,7 @@ import 'package:internship_practice/features/profile/presentation/widgets/profil
 import 'package:internship_practice/core/utils/strings_manager.dart';
 import 'package:internship_practice/features/profile/presentation/widgets/profile_picture_widget.dart';
 import 'package:internship_practice/features/profile/presentation/widgets/user_info_widget.dart';
-import 'package:internship_practice/ui_pages.dart';
+import 'package:internship_practice/routes/router.gr.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -37,15 +38,14 @@ class ProfileScreen extends StatelessWidget {
                       child: ProfileHeader(
                         buttonText: AppStrings.edit,
                         onPress: () {
-                          Navigator.of(context).pushNamed(
-                            kEditProfileScreenPath,
-                            arguments: {
-                              "username": data!['username'],
-                              "photoUrl": data['photoUrl'],
-                              "instagram": data['instagram'],
-                              "location": data['location'],
-                              "age": data['age'].toString(),
-                            },
+                          context.router.push(
+                            EditProfileRoute(
+                              photoUrl: data!['photoUrl'],
+                              username: data['username'],
+                              instagram: data['instagram'],
+                              location: data['location'],
+                              age: data['age'].toString(),
+                            ),
                           );
                         },
                       ),
