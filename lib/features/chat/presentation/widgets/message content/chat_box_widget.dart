@@ -11,7 +11,6 @@ import 'package:internship_practice/features/chat/presentation/widgets/message%2
 import 'package:internship_practice/features/chat/presentation/widgets/message%20content/photo_message_widget.dart';
 import 'package:internship_practice/features/chat/presentation/widgets/message%20content/text_message_widget.dart';
 import 'package:internship_practice/features/chat/presentation/widgets/message%20content/video_player_widget.dart';
-import 'package:internship_practice/routes/router.gr.dart';
 
 class ChatBoxWidget extends StatelessWidget {
   final String messageId;
@@ -87,12 +86,13 @@ class ChatBoxWidget extends StatelessWidget {
             );
           },
           onTap: () {
-            context.router.push(
-              MapRoute(
-                userLatitude: double.parse(latitude),
-                userLongitude: double.parse(longitude),
-                username: senderName,
-              ),
+            context.router.pushNamed(
+              '/map',
+              // MapRoute(
+              //   userLatitude: double.parse(latitude),
+              //   userLongitude: double.parse(longitude),
+              //   username: senderName,
+              // ),
             );
           },
         );

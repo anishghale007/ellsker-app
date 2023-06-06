@@ -14,7 +14,16 @@ import 'package:internship_practice/features/profile/presentation/pages/profile_
 @MaterialAutoRouter(
   replaceInRouteName: 'Screen,Route',
   routes: [
-    // Nested Routing
+    // Authentication Routing
+    AutoRoute(
+      path: '/login',
+      initial: true,
+      page: LoginScreen,
+      children: [
+        RedirectRoute(path: '*', redirectTo: ''),
+      ],
+    ),
+    // Bottom Nav Bar Nested Routing
     AutoRoute(
       path: '/',
       page: HomeScreen,
@@ -22,7 +31,13 @@ import 'package:internship_practice/features/profile/presentation/pages/profile_
         AutoRoute(
           path: 'festival',
           name: 'FestivalRouter',
-          page: FestivalScreen,
+          page: EmptyRouterPage,
+          children: [
+            AutoRoute(
+              path: '',
+              page: FestivalScreen,
+            ),
+          ],
         ),
         AutoRoute(
           path: 'chatList',
@@ -62,10 +77,7 @@ import 'package:internship_practice/features/profile/presentation/pages/profile_
       ],
     ),
     // Non-nested Routing
-    AutoRoute(
-      path: '/login',
-      page: LoginScreen,
-    ),
+
     AutoRoute(
       path: '/chat',
       page: ChatScreen,

@@ -1,5 +1,7 @@
 class Constant {
   static const String notificationUrl = 'https://fcm.googleapis.com/fcm/send';
+  static const String renderBaseUrl =
+      'https://ellsker-token-generator.onrender.com';
   static const String serveyKey = "SERVER_KEY";
   static const String gifApiKey = "GIF_API_KEY";
   static const String agoraAppId = "AGORA_APP_ID";

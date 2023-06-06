@@ -11,6 +11,7 @@ import 'package:internship_practice/constants.dart';
 import 'package:internship_practice/features/auth/presentation/bloc/network/network_bloc.dart';
 import 'package:internship_practice/features/auth/presentation/cubit/sign%20out/sign_out_cubit.dart';
 import 'package:internship_practice/features/auth/presentation/cubit/user%20status/user_status_cubit.dart';
+import 'package:internship_practice/features/call/presentation/bloc/call_bloc.dart';
 import 'package:internship_practice/features/chat/presentation/bloc/conversation/conversation_bloc.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/conversation/conversation_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
@@ -90,7 +91,10 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider<NetworkBloc>(
           create: (context) => di.sl<NetworkBloc>()..add(NetworkObserveEvent()),
-        )
+        ),
+        BlocProvider<CallBloc>(
+          create: (context) => di.sl<CallBloc>(),
+        ),
       ],
       child: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.userChanges(),

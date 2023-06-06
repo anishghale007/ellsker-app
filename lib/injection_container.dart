@@ -14,6 +14,11 @@ import 'package:internship_practice/features/auth/presentation/bloc/google_sign_
 import 'package:internship_practice/features/auth/presentation/bloc/network/network_bloc.dart';
 import 'package:internship_practice/features/auth/presentation/cubit/sign%20out/sign_out_cubit.dart';
 import 'package:internship_practice/features/auth/presentation/cubit/user%20status/user_status_cubit.dart';
+import 'package:internship_practice/features/call/data/datasources/call_remote_data_source.dart';
+import 'package:internship_practice/features/call/data/repositories/call_repository_impl.dart';
+import 'package:internship_practice/features/call/domain/repositories/call_repository.dart';
+import 'package:internship_practice/features/call/domain/usecases/get_rtc_token_usecase.dart';
+import 'package:internship_practice/features/call/presentation/bloc/call_bloc.dart';
 import 'package:internship_practice/features/chat/data/datasources/chat_remote_data_source.dart';
 import 'package:internship_practice/features/chat/data/repositories/chat_repository_impl.dart';
 import 'package:internship_practice/features/chat/domain/repositories/chat_repository.dart';
@@ -45,6 +50,7 @@ import 'package:internship_practice/features/profile/domain/usecases/edit_profil
 import 'package:internship_practice/features/profile/domain/usecases/get_current_user_usecase.dart';
 import 'package:internship_practice/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 final sl = GetIt.instance;
 
@@ -107,6 +113,11 @@ Future<void> init() async {
 
   sl.registerFactory<NotificationCubit>(
     () => NotificationCubit(sendNotificationUseCase: sl()),
+  );
+
+  // call bloc
+  sl.registerFactory<CallBloc>(
+    () => CallBloc(getRtcTokenUsecase: sl()),
   );
 
   // profile bloc
@@ -195,6 +206,10 @@ Future<void> init() async {
     () => SetUserStatusUseCase(authRepository: sl()),
   );
 
+  sl.registerLazySingleton<GetRtcTokenUsecase>(
+    () => GetRtcTokenUsecase(callRepository: sl()),
+  );
+
   /// Repository
   sl.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(
@@ -205,6 +220,13 @@ Future<void> init() async {
 
   sl.registerLazySingleton<ChatRepository>(
     () => ChatRepositoryImpl(chatRemoteDataSource: sl()),
+  );
+
+  sl.registerLazySingleton<CallRepository>(
+    () => CallRepositoryImpl(
+      callRemoteDataSource: sl(),
+      networkInfo: sl(),
+    ),
   );
 
   sl.registerLazySingleton<ProfileRepository>(
@@ -226,6 +248,10 @@ Future<void> init() async {
   sl.registerLazySingleton<ChatRemoteDataSource>(
       () => ChatRemoteDataSourceImpl());
 
+  sl.registerLazySingleton<CallRemoteDataSource>(
+    () => CallRemoteDataSourceImpl(client: sl()),
+  );
+
   sl.registerLazySingleton<ProfileRemoteDataSource>(
       () => ProfileRemoteDataSourceImpl());
 
@@ -238,5 +264,6 @@ Future<void> init() async {
   //!! External
   final sharedPreferences = await SharedPreferences.getInstance();
   sl.registerLazySingleton(() => sharedPreferences);
+  sl.registerLazySingleton(() => http.Client());
   sl.registerLazySingleton(() => InternetConnectionChecker());
 }

@@ -11,43 +11,43 @@
 // ignore_for_file: type=lint
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:auto_route/auto_route.dart' as _i7;
+import 'package:auto_route/auto_route.dart' as _i6;
 import 'package:flutter/material.dart' as _i13;
 
-import '../features/auth/presentation/pages/festival_screen.dart' as _i6;
-import '../features/auth/presentation/pages/home_screen.dart' as _i1;
-import '../features/auth/presentation/pages/login_screen.dart' as _i2;
+import '../features/auth/presentation/pages/festival_screen.dart' as _i8;
+import '../features/auth/presentation/pages/home_screen.dart' as _i2;
+import '../features/auth/presentation/pages/login_screen.dart' as _i1;
 import '../features/chat/presentation/pages/chat_list_screen.dart' as _i9;
 import '../features/chat/presentation/pages/chat_screen.dart' as _i3;
 import '../features/chat/presentation/pages/media_files_screen.dart' as _i5;
 import '../features/chat/presentation/pages/user_list_screen.dart' as _i10;
-import '../features/location/presentation/pages/location_screen.dart' as _i8;
+import '../features/location/presentation/pages/location_screen.dart' as _i7;
 import '../features/location/presentation/pages/map_screen.dart' as _i4;
 import '../features/profile/presentation/pages/edit_profile_screen.dart'
     as _i12;
 import '../features/profile/presentation/pages/profile_screen.dart' as _i11;
 
-class AppRouter extends _i7.RootStackRouter {
+class AppRouter extends _i6.RootStackRouter {
   AppRouter([_i13.GlobalKey<_i13.NavigatorState>? navigatorKey])
       : super(navigatorKey);
 
   @override
-  final Map<String, _i7.PageFactory> pagesMap = {
-    HomeRoute.name: (routeData) {
-      return _i7.MaterialPageX<dynamic>(
+  final Map<String, _i6.PageFactory> pagesMap = {
+    LoginRoute.name: (routeData) {
+      return _i6.MaterialPageX<dynamic>(
         routeData: routeData,
-        child: const _i1.HomeScreen(),
+        child: const _i1.LoginScreen(),
       );
     },
-    LoginRoute.name: (routeData) {
-      return _i7.MaterialPageX<dynamic>(
+    HomeRoute.name: (routeData) {
+      return _i6.MaterialPageX<dynamic>(
         routeData: routeData,
-        child: const _i2.LoginScreen(),
+        child: const _i2.HomeScreen(),
       );
     },
     ChatRoute.name: (routeData) {
       final args = routeData.argsAs<ChatRouteArgs>();
-      return _i7.MaterialPageX<dynamic>(
+      return _i6.MaterialPageX<dynamic>(
         routeData: routeData,
         child: _i3.ChatScreen(
           username: args.username,
@@ -61,7 +61,7 @@ class AppRouter extends _i7.RootStackRouter {
     MapRoute.name: (routeData) {
       final args =
           routeData.argsAs<MapRouteArgs>(orElse: () => const MapRouteArgs());
-      return _i7.MaterialPageX<dynamic>(
+      return _i6.MaterialPageX<dynamic>(
         routeData: routeData,
         child: _i4.MapScreen(
           key: args.key,
@@ -73,7 +73,7 @@ class AppRouter extends _i7.RootStackRouter {
     },
     SharedFilesRoute.name: (routeData) {
       final args = routeData.argsAs<SharedFilesRouteArgs>();
-      return _i7.MaterialPageX<dynamic>(
+      return _i6.MaterialPageX<dynamic>(
         routeData: routeData,
         child: _i5.SharedFilesScreen(
           key: args.key,
@@ -82,50 +82,56 @@ class AppRouter extends _i7.RootStackRouter {
       );
     },
     FestivalRouter.name: (routeData) {
-      return _i7.MaterialPageX<dynamic>(
+      return _i6.MaterialPageX<dynamic>(
         routeData: routeData,
-        child: const _i6.FestivalScreen(),
+        child: const _i6.EmptyRouterPage(),
       );
     },
     ChatListRouter.name: (routeData) {
-      return _i7.MaterialPageX<dynamic>(
+      return _i6.MaterialPageX<dynamic>(
         routeData: routeData,
-        child: const _i7.EmptyRouterPage(),
+        child: const _i6.EmptyRouterPage(),
       );
     },
     LocationRouter.name: (routeData) {
-      return _i7.MaterialPageX<dynamic>(
+      return _i6.MaterialPageX<dynamic>(
         routeData: routeData,
-        child: const _i8.LocationScreen(),
+        child: const _i7.LocationScreen(),
       );
     },
     ProfileRouter.name: (routeData) {
-      return _i7.MaterialPageX<dynamic>(
+      return _i6.MaterialPageX<dynamic>(
         routeData: routeData,
-        child: const _i7.EmptyRouterPage(),
+        child: const _i6.EmptyRouterPage(),
+      );
+    },
+    FestivalRoute.name: (routeData) {
+      return _i6.MaterialPageX<dynamic>(
+        routeData: routeData,
+        child: const _i8.FestivalScreen(),
       );
     },
     ChatListRoute.name: (routeData) {
-      return _i7.MaterialPageX<dynamic>(
+      return _i6.MaterialPageX<dynamic>(
         routeData: routeData,
         child: const _i9.ChatListScreen(),
       );
     },
     UserListRoute.name: (routeData) {
-      return _i7.MaterialPageX<dynamic>(
+      return _i6.MaterialPageX<dynamic>(
         routeData: routeData,
         child: const _i10.UserListScreen(),
       );
     },
     ProfileRoute.name: (routeData) {
-      return _i7.MaterialPageX<dynamic>(
+      return _i6.MaterialPageX<dynamic>(
         routeData: routeData,
         child: const _i11.ProfileScreen(),
       );
     },
     EditProfileRoute.name: (routeData) {
       final args = routeData.argsAs<EditProfileRouteArgs>();
-      return _i7.MaterialPageX<dynamic>(
+      return _i6.MaterialPageX<dynamic>(
         routeData: routeData,
         child: _i12.EditProfileScreen(
           key: args.key,
@@ -140,49 +146,69 @@ class AppRouter extends _i7.RootStackRouter {
   };
 
   @override
-  List<_i7.RouteConfig> get routes => [
-        _i7.RouteConfig(
+  List<_i6.RouteConfig> get routes => [
+        _i6.RouteConfig(
+          LoginRoute.name,
+          path: '/login',
+          children: [
+            _i6.RouteConfig(
+              '*#redirect',
+              path: '*',
+              parent: LoginRoute.name,
+              redirectTo: '',
+              fullMatch: true,
+            )
+          ],
+        ),
+        _i6.RouteConfig(
           HomeRoute.name,
           path: '/',
           children: [
-            _i7.RouteConfig(
+            _i6.RouteConfig(
               FestivalRouter.name,
               path: 'festival',
               parent: HomeRoute.name,
+              children: [
+                _i6.RouteConfig(
+                  FestivalRoute.name,
+                  path: '',
+                  parent: FestivalRouter.name,
+                )
+              ],
             ),
-            _i7.RouteConfig(
+            _i6.RouteConfig(
               ChatListRouter.name,
               path: 'chatList',
               parent: HomeRoute.name,
               children: [
-                _i7.RouteConfig(
+                _i6.RouteConfig(
                   ChatListRoute.name,
                   path: '',
                   parent: ChatListRouter.name,
                 ),
-                _i7.RouteConfig(
+                _i6.RouteConfig(
                   UserListRoute.name,
                   path: 'userList',
                   parent: ChatListRouter.name,
                 ),
               ],
             ),
-            _i7.RouteConfig(
+            _i6.RouteConfig(
               LocationRouter.name,
               path: 'location',
               parent: HomeRoute.name,
             ),
-            _i7.RouteConfig(
+            _i6.RouteConfig(
               ProfileRouter.name,
               path: 'profile',
               parent: HomeRoute.name,
               children: [
-                _i7.RouteConfig(
+                _i6.RouteConfig(
                   ProfileRoute.name,
                   path: '',
                   parent: ProfileRouter.name,
                 ),
-                _i7.RouteConfig(
+                _i6.RouteConfig(
                   EditProfileRoute.name,
                   path: 'editProfile',
                   parent: ProfileRouter.name,
@@ -191,19 +217,15 @@ class AppRouter extends _i7.RootStackRouter {
             ),
           ],
         ),
-        _i7.RouteConfig(
-          LoginRoute.name,
-          path: '/login',
-        ),
-        _i7.RouteConfig(
+        _i6.RouteConfig(
           ChatRoute.name,
           path: '/chat',
         ),
-        _i7.RouteConfig(
+        _i6.RouteConfig(
           MapRoute.name,
           path: '/map',
         ),
-        _i7.RouteConfig(
+        _i6.RouteConfig(
           SharedFilesRoute.name,
           path: '/sharedFiles',
         ),
@@ -211,9 +233,22 @@ class AppRouter extends _i7.RootStackRouter {
 }
 
 /// generated route for
-/// [_i1.HomeScreen]
-class HomeRoute extends _i7.PageRouteInfo<void> {
-  const HomeRoute({List<_i7.PageRouteInfo>? children})
+/// [_i1.LoginScreen]
+class LoginRoute extends _i6.PageRouteInfo<void> {
+  const LoginRoute({List<_i6.PageRouteInfo>? children})
+      : super(
+          LoginRoute.name,
+          path: '/login',
+          initialChildren: children,
+        );
+
+  static const String name = 'LoginRoute';
+}
+
+/// generated route for
+/// [_i2.HomeScreen]
+class HomeRoute extends _i6.PageRouteInfo<void> {
+  const HomeRoute({List<_i6.PageRouteInfo>? children})
       : super(
           HomeRoute.name,
           path: '/',
@@ -224,20 +259,8 @@ class HomeRoute extends _i7.PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [_i2.LoginScreen]
-class LoginRoute extends _i7.PageRouteInfo<void> {
-  const LoginRoute()
-      : super(
-          LoginRoute.name,
-          path: '/login',
-        );
-
-  static const String name = 'LoginRoute';
-}
-
-/// generated route for
 /// [_i3.ChatScreen]
-class ChatRoute extends _i7.PageRouteInfo<ChatRouteArgs> {
+class ChatRoute extends _i6.PageRouteInfo<ChatRouteArgs> {
   ChatRoute({
     required String username,
     required String userId,
@@ -286,7 +309,7 @@ class ChatRouteArgs {
 
 /// generated route for
 /// [_i4.MapScreen]
-class MapRoute extends _i7.PageRouteInfo<MapRouteArgs> {
+class MapRoute extends _i6.PageRouteInfo<MapRouteArgs> {
   MapRoute({
     _i13.Key? key,
     String? username,
@@ -330,7 +353,7 @@ class MapRouteArgs {
 
 /// generated route for
 /// [_i5.SharedFilesScreen]
-class SharedFilesRoute extends _i7.PageRouteInfo<SharedFilesRouteArgs> {
+class SharedFilesRoute extends _i6.PageRouteInfo<SharedFilesRouteArgs> {
   SharedFilesRoute({
     _i13.Key? key,
     required String receiverId,
@@ -363,21 +386,22 @@ class SharedFilesRouteArgs {
 }
 
 /// generated route for
-/// [_i6.FestivalScreen]
-class FestivalRouter extends _i7.PageRouteInfo<void> {
-  const FestivalRouter()
+/// [_i6.EmptyRouterPage]
+class FestivalRouter extends _i6.PageRouteInfo<void> {
+  const FestivalRouter({List<_i6.PageRouteInfo>? children})
       : super(
           FestivalRouter.name,
           path: 'festival',
+          initialChildren: children,
         );
 
   static const String name = 'FestivalRouter';
 }
 
 /// generated route for
-/// [_i7.EmptyRouterPage]
-class ChatListRouter extends _i7.PageRouteInfo<void> {
-  const ChatListRouter({List<_i7.PageRouteInfo>? children})
+/// [_i6.EmptyRouterPage]
+class ChatListRouter extends _i6.PageRouteInfo<void> {
+  const ChatListRouter({List<_i6.PageRouteInfo>? children})
       : super(
           ChatListRouter.name,
           path: 'chatList',
@@ -388,8 +412,8 @@ class ChatListRouter extends _i7.PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [_i8.LocationScreen]
-class LocationRouter extends _i7.PageRouteInfo<void> {
+/// [_i7.LocationScreen]
+class LocationRouter extends _i6.PageRouteInfo<void> {
   const LocationRouter()
       : super(
           LocationRouter.name,
@@ -400,9 +424,9 @@ class LocationRouter extends _i7.PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [_i7.EmptyRouterPage]
-class ProfileRouter extends _i7.PageRouteInfo<void> {
-  const ProfileRouter({List<_i7.PageRouteInfo>? children})
+/// [_i6.EmptyRouterPage]
+class ProfileRouter extends _i6.PageRouteInfo<void> {
+  const ProfileRouter({List<_i6.PageRouteInfo>? children})
       : super(
           ProfileRouter.name,
           path: 'profile',
@@ -413,8 +437,20 @@ class ProfileRouter extends _i7.PageRouteInfo<void> {
 }
 
 /// generated route for
+/// [_i8.FestivalScreen]
+class FestivalRoute extends _i6.PageRouteInfo<void> {
+  const FestivalRoute()
+      : super(
+          FestivalRoute.name,
+          path: '',
+        );
+
+  static const String name = 'FestivalRoute';
+}
+
+/// generated route for
 /// [_i9.ChatListScreen]
-class ChatListRoute extends _i7.PageRouteInfo<void> {
+class ChatListRoute extends _i6.PageRouteInfo<void> {
   const ChatListRoute()
       : super(
           ChatListRoute.name,
@@ -426,7 +462,7 @@ class ChatListRoute extends _i7.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i10.UserListScreen]
-class UserListRoute extends _i7.PageRouteInfo<void> {
+class UserListRoute extends _i6.PageRouteInfo<void> {
   const UserListRoute()
       : super(
           UserListRoute.name,
@@ -438,7 +474,7 @@ class UserListRoute extends _i7.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i11.ProfileScreen]
-class ProfileRoute extends _i7.PageRouteInfo<void> {
+class ProfileRoute extends _i6.PageRouteInfo<void> {
   const ProfileRoute()
       : super(
           ProfileRoute.name,
@@ -450,7 +486,7 @@ class ProfileRoute extends _i7.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i12.EditProfileScreen]
-class EditProfileRoute extends _i7.PageRouteInfo<EditProfileRouteArgs> {
+class EditProfileRoute extends _i6.PageRouteInfo<EditProfileRouteArgs> {
   EditProfileRoute({
     _i13.Key? key,
     required String photoUrl,
