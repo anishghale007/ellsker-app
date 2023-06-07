@@ -1,9 +1,9 @@
 import 'package:equatable/equatable.dart';
 
-class VideoCallEntity extends Equatable {
+class RtcTokenEntity extends Equatable {
   final String rtcToken;
 
-  const VideoCallEntity({
+  const RtcTokenEntity({
     required this.rtcToken,
   });
 

@@ -1,9 +1,15 @@
+import 'dart:developer';
+
 import 'package:auto_route/auto_route.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:internship_practice/colors_utils.dart';
 import 'package:internship_practice/core/utils/strings_manager.dart';
 import 'package:internship_practice/features/auth/presentation/cubit/sign%20out/sign_out_cubit.dart';
+import 'package:internship_practice/features/auth/presentation/cubit/user%20status/user_status_cubit.dart';
+import 'package:internship_practice/features/notification/firebase_messaging/notifications_config.dart';
 import 'package:internship_practice/injection_container.dart';
 import 'package:internship_practice/routes/router.gr.dart';
 
@@ -14,7 +20,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   late SignOutCubit _bloc;
 
   Future<bool> _showExitPopup() async {
@@ -70,13 +76,136 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    requestPermission();
+    initInfo();
     _bloc = sl<SignOutCubit>();
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
     _bloc.close();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    switch (state) {
+      case AppLifecycleState.resumed:
+        context.read<UserStatusCubit>().setUserState(true);
+        break;
+      case AppLifecycleState.detached:
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.paused:
+        context.read<UserStatusCubit>().setUserState(false);
+        break;
+      default:
+    }
+  }
+
+  void requestPermission() async {
+    FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
+
+    NotificationSettings notificationSettings =
+        await firebaseMessaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+
+    if (notificationSettings.authorizationStatus ==
+        AuthorizationStatus.authorized) {
+      log("User granted permission");
+    } else if (notificationSettings.authorizationStatus ==
+        AuthorizationStatus.provisional) {
+      log("User granted provisional permission");
+    } else {
+      log("User declined or has not granted persmission");
+    }
+  }
+
+  initInfo() {
+    var androidInitialize =
+        const AndroidInitializationSettings('@mipmap/ic_launcher');
+    var iOSInitialize = const DarwinInitializationSettings();
+    var initializationSettings =
+        InitializationSettings(android: androidInitialize, iOS: iOSInitialize);
+    flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage remoteMessage) async {
+      BigTextStyleInformation bigTextStyleInformation = BigTextStyleInformation(
+        remoteMessage.notification!.body.toString(),
+        htmlFormatBigText: true,
+        contentTitle: remoteMessage.notification!.title.toString(),
+        htmlFormatContentTitle: true,
+      );
+      AndroidNotificationDetails androidNotificationDetails =
+          AndroidNotificationDetails(
+        'ellsker_app',
+        'ellsker_app',
+        importance: Importance.high,
+        styleInformation: bigTextStyleInformation,
+        priority: Priority.high,
+        playSound: true,
+        enableVibration: true,
+
+        // ongoing: true,
+      );
+      NotificationDetails notificationDetails = NotificationDetails(
+        android: androidNotificationDetails,
+        iOS: const DarwinNotificationDetails(),
+      );
+      await flutterLocalNotificationsPlugin.show(
+        0,
+        remoteMessage.notification?.title,
+        remoteMessage.notification?.body,
+        notificationDetails,
+        payload: remoteMessage.data['body'],
+      );
+      // checkRoute(remoteMessage);
+    });
+
+    // If the app is open in background (Not termainated)
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      checkRoute(message);
+    });
+  }
+
+  checkRoute(RemoteMessage message) async {
+    var notificationDetails =
+        await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
+    if (notificationDetails!.didNotificationLaunchApp ||
+        notificationDetails.notificationResponse == null) {
+      if (message.data['conversationId'] != null) {
+        if (mounted) {
+          context.router.push(
+            ChatRoute(
+              username: message.data['username'],
+              userId: message.data['conversationId'],
+              photoUrl: message.data['photoUrl'],
+              token: message.data['token'],
+            ),
+          );
+          // Navigator.push(
+          //   context,
+          //   MaterialPageRoute(
+          //     builder: (context) => ChatScreen(
+          //       username: message.data['username'],
+          //       userId: message.data['conversationId'],
+          //       photoUrl: message.data['photoUrl'],
+          //       token: message.data['token'],
+          //     ),
+          //   ),
+          // );
+        }
+      }
+    }
   }
 
   @override

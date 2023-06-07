@@ -1,13 +1,13 @@
-part of 'call_bloc.dart';
+part of 'token_bloc.dart';
 
-abstract class CallEvent extends Equatable {
-  const CallEvent();
+abstract class TokenEvent extends Equatable {
+  const TokenEvent();
 
   @override
   List<Object> get props => [];
 }
 
-class GetRtcTokenEvent extends CallEvent {
+class GetRtcTokenEvent extends TokenEvent {
   final String channelName;
   final String role;
   final String tokenType;

@@ -2,9 +2,9 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:internship_practice/core/error/exceptions.dart';
 import 'package:internship_practice/core/error/failure.dart';
-import 'package:internship_practice/features/call/data/models/video_call_model.dart';
+import 'package:internship_practice/features/call/data/models/rtc_token_model.dart';
 import 'package:internship_practice/features/call/data/repositories/call_repository_impl.dart';
-import 'package:internship_practice/features/call/domain/entities/video_call_entity.dart';
+import 'package:internship_practice/features/call/domain/entities/rtc_token_entity.dart';
 import 'package:internship_practice/features/call/domain/usecases/get_rtc_token_usecase.dart';
 import 'package:mockito/mockito.dart';
 
@@ -34,8 +34,8 @@ void main() {
   }
 
   group('get RTC token', () {
-    const tVideoCallModel = VideoCallModel(rtcToken: "asasd");
-    const VideoCallEntity tVideoCallEntity = tVideoCallModel;
+    const tVideoCallModel = RtcTokenModel(rtcToken: "asasd");
+    const RtcTokenEntity tVideoCallEntity = tVideoCallModel;
     const tGetRtcTokenParams = GetRtcTokenParams(
       channelName: "test",
       role: "publisher",

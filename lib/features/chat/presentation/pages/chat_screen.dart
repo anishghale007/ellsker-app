@@ -12,10 +12,11 @@ import 'package:giphy_get/giphy_get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:internship_practice/colors_utils.dart';
+import 'package:internship_practice/common/widgets/loader_widget.dart';
 import 'package:internship_practice/constants.dart';
 import 'package:internship_practice/core/enums/message_type_enum.dart';
 import 'package:internship_practice/core/functions/app_dialogs.dart';
-import 'package:internship_practice/features/chat/presentation/pages/video_call_screen.dart';
+import 'package:internship_practice/features/call/presentation/bloc/token/token_bloc.dart';
 import 'package:internship_practice/features/chat/presentation/widgets/message%20content/chat_box_widget.dart';
 import 'package:internship_practice/features/auth/presentation/bloc/network/network_bloc.dart';
 import 'package:internship_practice/features/chat/domain/entities/conversation_entity.dart';
@@ -185,17 +186,35 @@ class _ChatScreenState extends State<ChatScreen> {
               photoUrl: widget.photoUrl,
             ),
             actions: [
-              IconButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const VideoCallScreen(),
-                    ),
-                  );
+              BlocListener<TokenBloc, TokenState>(
+                listener: (context, state) {
+                  if (state is CallSuccess) {
+                    log("Token: ${state.videoCallEntity.rtcToken}");
+                  } else if (state is CallError) {
+                    log("Error");
+                  }
                 },
-                icon: const Icon(
-                  Icons.video_call,
+                child: IconButton(
+                  onPressed: () {
+                    context.router.push(
+                      IncomingCallRoute(
+                        receiverId: widget.userId,
+                        receiverName: widget.username,
+                        receiverPhotoUrl: widget.photoUrl,
+                      ),
+                    );
+                    context.read<TokenBloc>().add(
+                          const GetRtcTokenEvent(
+                            channelName: "test",
+                            role: "publisher",
+                            tokenType: "userAccount",
+                            uid: "10",
+                          ),
+                        );
+                  },
+                  icon: const Icon(
+                    Icons.video_call,
+                  ),
                 ),
               ),
               const SizedBox(
@@ -217,6 +236,21 @@ class _ChatScreenState extends State<ChatScreen> {
                           width: 8,
                         ),
                         Text("Media and Files"),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 2,
+                    child: Row(
+                      children: const [
+                        Icon(
+                          Icons.call,
+                          color: Colors.black,
+                        ),
+                        SizedBox(
+                          width: 8,
+                        ),
+                        Text("Call History"),
                       ],
                     ),
                   ),
@@ -257,7 +291,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         .read<MessageCubit>()
                         .getAllChatMessages(conversationId: widget.userId),
                     builder: (context, snapshot) {
-                      if (snapshot.hasData) {
+                      if (snapshot.hasData && snapshot.data != null) {
                         return ListView.separated(
                           separatorBuilder: (context, index) => const Divider(
                             height: 50,
@@ -288,11 +322,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         );
                       } else if (snapshot.connectionState ==
                           ConnectionState.waiting) {
-                        return const Center(
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                          ),
-                        );
+                        return const LoadingWidget();
                       } else {
                         return Container();
                       }

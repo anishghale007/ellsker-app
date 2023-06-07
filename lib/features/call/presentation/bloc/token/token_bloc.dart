@@ -1,15 +1,15 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:internship_practice/features/call/domain/entities/video_call_entity.dart';
+import 'package:internship_practice/features/call/domain/entities/rtc_token_entity.dart';
 import 'package:internship_practice/features/call/domain/usecases/get_rtc_token_usecase.dart';
 
-part 'call_event.dart';
-part 'call_state.dart';
+part 'token_event.dart';
+part 'token_state.dart';
 
-class CallBloc extends Bloc<CallEvent, CallState> {
+class TokenBloc extends Bloc<TokenEvent, TokenState> {
   final GetRtcTokenUsecase getRtcTokenUsecase;
 
-  CallBloc({
+  TokenBloc({
     required this.getRtcTokenUsecase,
   }) : super(CallInitial()) {
     on<GetRtcTokenEvent>(

@@ -4,25 +4,27 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i7;
-import 'dart:convert' as _i13;
-import 'dart:typed_data' as _i14;
+import 'dart:convert' as _i14;
+import 'dart:typed_data' as _i15;
 
 import 'package:dartz/dartz.dart' as _i2;
 import 'package:http/http.dart' as _i6;
 import 'package:internet_connection_checker/internet_connection_checker.dart'
     as _i5;
 import 'package:internship_practice/core/error/failure.dart' as _i8;
-import 'package:internship_practice/core/network/network_info.dart' as _i12;
+import 'package:internship_practice/core/network/network_info.dart' as _i13;
 import 'package:internship_practice/features/call/data/datasources/call_remote_data_source.dart'
-    as _i11;
-import 'package:internship_practice/features/call/data/models/video_call_model.dart'
+    as _i12;
+import 'package:internship_practice/features/call/data/models/rtc_token_model.dart'
     as _i3;
-import 'package:internship_practice/features/call/domain/entities/video_call_entity.dart'
+import 'package:internship_practice/features/call/domain/entities/rtc_token_entity.dart'
     as _i9;
 import 'package:internship_practice/features/call/domain/repositories/call_repository.dart'
     as _i4;
 import 'package:internship_practice/features/call/domain/usecases/get_rtc_token_usecase.dart'
     as _i10;
+import 'package:internship_practice/features/call/domain/usecases/make_call_usecase.dart'
+    as _i11;
 import 'package:mockito/mockito.dart' as _i1;
 
 // ignore_for_file: type=lint
@@ -46,9 +48,8 @@ class _FakeEither_0<L, R> extends _i1.SmartFake implements _i2.Either<L, R> {
         );
 }
 
-class _FakeVideoCallModel_1 extends _i1.SmartFake
-    implements _i3.VideoCallModel {
-  _FakeVideoCallModel_1(
+class _FakeRtcTokenModel_1 extends _i1.SmartFake implements _i3.RtcTokenModel {
+  _FakeRtcTokenModel_1(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -119,7 +120,7 @@ class MockCallRepository extends _i1.Mock implements _i4.CallRepository {
   }
 
   @override
-  _i7.Future<_i2.Either<_i8.Failure, _i9.VideoCallEntity>> getRtcToken(
+  _i7.Future<_i2.Either<_i8.Failure, _i9.RtcTokenEntity>> getRtcToken(
           _i10.GetRtcTokenParams? params) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -127,41 +128,67 @@ class MockCallRepository extends _i1.Mock implements _i4.CallRepository {
           [params],
         ),
         returnValue:
-            _i7.Future<_i2.Either<_i8.Failure, _i9.VideoCallEntity>>.value(
-                _FakeEither_0<_i8.Failure, _i9.VideoCallEntity>(
+            _i7.Future<_i2.Either<_i8.Failure, _i9.RtcTokenEntity>>.value(
+                _FakeEither_0<_i8.Failure, _i9.RtcTokenEntity>(
           this,
           Invocation.method(
             #getRtcToken,
             [params],
           ),
         )),
-      ) as _i7.Future<_i2.Either<_i8.Failure, _i9.VideoCallEntity>>);
+      ) as _i7.Future<_i2.Either<_i8.Failure, _i9.RtcTokenEntity>>);
+  @override
+  _i7.Future<_i2.Either<_i8.Failure, void>> makeCall(
+          _i11.MakeCallParams? params) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #makeCall,
+          [params],
+        ),
+        returnValue: _i7.Future<_i2.Either<_i8.Failure, void>>.value(
+            _FakeEither_0<_i8.Failure, void>(
+          this,
+          Invocation.method(
+            #makeCall,
+            [params],
+          ),
+        )),
+      ) as _i7.Future<_i2.Either<_i8.Failure, void>>);
 }
 
 /// A class which mocks [CallRemoteDataSource].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockCallRemoteDataSource extends _i1.Mock
-    implements _i11.CallRemoteDataSource {
+    implements _i12.CallRemoteDataSource {
   MockCallRemoteDataSource() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i7.Future<_i3.VideoCallModel> getRtcToken(_i10.GetRtcTokenParams? params) =>
+  _i7.Future<_i3.RtcTokenModel> getRtcToken(_i10.GetRtcTokenParams? params) =>
       (super.noSuchMethod(
         Invocation.method(
           #getRtcToken,
           [params],
         ),
-        returnValue: _i7.Future<_i3.VideoCallModel>.value(_FakeVideoCallModel_1(
+        returnValue: _i7.Future<_i3.RtcTokenModel>.value(_FakeRtcTokenModel_1(
           this,
           Invocation.method(
             #getRtcToken,
             [params],
           ),
         )),
-      ) as _i7.Future<_i3.VideoCallModel>);
+      ) as _i7.Future<_i3.RtcTokenModel>);
+  @override
+  _i7.Future<void> makeCall(_i11.MakeCallParams? params) => (super.noSuchMethod(
+        Invocation.method(
+          #makeCall,
+          [params],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 }
 
 /// A class which mocks [GetRtcTokenUsecase].
@@ -182,7 +209,7 @@ class MockGetRtcTokenUsecase extends _i1.Mock
         ),
       ) as _i4.CallRepository);
   @override
-  _i7.Future<_i2.Either<_i8.Failure, _i9.VideoCallEntity>> call(
+  _i7.Future<_i2.Either<_i8.Failure, _i9.RtcTokenEntity>> call(
           _i10.GetRtcTokenParams? params) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -190,15 +217,15 @@ class MockGetRtcTokenUsecase extends _i1.Mock
           [params],
         ),
         returnValue:
-            _i7.Future<_i2.Either<_i8.Failure, _i9.VideoCallEntity>>.value(
-                _FakeEither_0<_i8.Failure, _i9.VideoCallEntity>(
+            _i7.Future<_i2.Either<_i8.Failure, _i9.RtcTokenEntity>>.value(
+                _FakeEither_0<_i8.Failure, _i9.RtcTokenEntity>(
           this,
           Invocation.method(
             #call,
             [params],
           ),
         )),
-      ) as _i7.Future<_i2.Either<_i8.Failure, _i9.VideoCallEntity>>);
+      ) as _i7.Future<_i2.Either<_i8.Failure, _i9.RtcTokenEntity>>);
 }
 
 /// A class which mocks [InternetConnectionChecker].
@@ -289,7 +316,7 @@ class MockInternetConnectionChecker extends _i1.Mock
 /// A class which mocks [NetworkInfo].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockNetworkInfo extends _i1.Mock implements _i12.NetworkInfo {
+class MockNetworkInfo extends _i1.Mock implements _i13.NetworkInfo {
   MockNetworkInfo() {
     _i1.throwOnMissingStub(this);
   }
@@ -354,7 +381,7 @@ class MockHttpClient extends _i1.Mock implements _i6.Client {
     Uri? url, {
     Map<String, String>? headers,
     Object? body,
-    _i13.Encoding? encoding,
+    _i14.Encoding? encoding,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -384,7 +411,7 @@ class MockHttpClient extends _i1.Mock implements _i6.Client {
     Uri? url, {
     Map<String, String>? headers,
     Object? body,
-    _i13.Encoding? encoding,
+    _i14.Encoding? encoding,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -414,7 +441,7 @@ class MockHttpClient extends _i1.Mock implements _i6.Client {
     Uri? url, {
     Map<String, String>? headers,
     Object? body,
-    _i13.Encoding? encoding,
+    _i14.Encoding? encoding,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -444,7 +471,7 @@ class MockHttpClient extends _i1.Mock implements _i6.Client {
     Uri? url, {
     Map<String, String>? headers,
     Object? body,
-    _i13.Encoding? encoding,
+    _i14.Encoding? encoding,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -483,7 +510,7 @@ class MockHttpClient extends _i1.Mock implements _i6.Client {
         returnValue: _i7.Future<String>.value(''),
       ) as _i7.Future<String>);
   @override
-  _i7.Future<_i14.Uint8List> readBytes(
+  _i7.Future<_i15.Uint8List> readBytes(
     Uri? url, {
     Map<String, String>? headers,
   }) =>
@@ -493,8 +520,8 @@ class MockHttpClient extends _i1.Mock implements _i6.Client {
           [url],
           {#headers: headers},
         ),
-        returnValue: _i7.Future<_i14.Uint8List>.value(_i14.Uint8List(0)),
-      ) as _i7.Future<_i14.Uint8List>);
+        returnValue: _i7.Future<_i15.Uint8List>.value(_i15.Uint8List(0)),
+      ) as _i7.Future<_i15.Uint8List>);
   @override
   _i7.Future<_i6.StreamedResponse> send(_i6.BaseRequest? request) =>
       (super.noSuchMethod(

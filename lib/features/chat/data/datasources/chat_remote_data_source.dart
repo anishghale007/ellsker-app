@@ -460,9 +460,9 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
     required String senderName,
     required String receiverId,
     required String messageId,
-  }) {
+  }) async {
     // Deleting the message from both of the user collection
-    dbUser
+    await dbUser
         .doc(senderId)
         .collection('conversation')
         .doc(receiverId)
@@ -478,13 +478,13 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
       "isSeen": true,
       "unSeenMessages": 0,
     };
-    dbUser
+    await dbUser
         .doc(senderId)
         .collection('conversation')
         .doc(receiverId)
         .update(updateSenderConversationData);
     // Updating the receiver conversation collection
-    dbUser
+    await dbUser
         .doc(receiverId)
         .collection('conversation')
         .doc(senderId)
@@ -499,7 +499,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
       "isSeen": false,
       "unSeenMessages": FieldValue.increment(1),
     };
-    dbUser
+    await dbUser
         .doc(receiverId)
         .collection('conversation')
         .doc(senderId)
@@ -521,7 +521,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
     required int unSeenMessages,
     required String senderToken,
     required String receiverToken,
-  }) {
+  }) async {
     final data = ConversationModel(
       receiverId: receiverId,
       receiverName: receiverName,
@@ -538,7 +538,11 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
       senderToken: senderToken,
       receiverToken: receiverToken,
     ).toJson();
-    dbUser.doc(senderId).collection('conversation').doc(receiverId).set(data);
+    await dbUser
+        .doc(senderId)
+        .collection('conversation')
+        .doc(receiverId)
+        .set(data);
   }
 
   void _saveMessageDataToMessageCollection({
@@ -556,7 +560,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
     required String longitude,
     required String gifUrl,
     required String messageDocId,
-  }) {
+  }) async {
     final senderData = MessageModel(
       messageContent: messageContent,
       messageTime: messageTime,
@@ -588,14 +592,13 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
       "isSeen": false,
       "unSeenMessages": FieldValue.increment(1),
     };
-    // var messageDocId = const Uuid().v1(); // for setting the same doc id for both user
     // sender data
-    dbUser
+    await dbUser
         .doc(senderId)
         .collection("conversation")
         .doc(receiverId)
         .update(updateSenderConversationData);
-    dbUser
+    await dbUser
         .doc(senderId)
         .collection("conversation")
         .doc(receiverId)
@@ -603,12 +606,12 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
         .doc(messageDocId)
         .set(senderData);
     // receiver data
-    dbUser
+    await dbUser
         .doc(receiverId)
         .collection("conversation")
         .doc(senderId)
         .update(updateReceiverConversationData);
-    dbUser
+    await dbUser
         .doc(receiverId)
         .collection("conversation")
         .doc(senderId)

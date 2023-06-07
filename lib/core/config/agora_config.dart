@@ -6,5 +6,6 @@ final String agoraAppId =
 
 class AgoraConfig {
   static String appId = agoraAppId;
+  static String appCertificate = "3abe9b55b37643c1b73ddbc9a1d4fd19";
   static String token = "";
 }

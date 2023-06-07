@@ -9,17 +9,6 @@ abstract class CallState extends Equatable {
 
 class CallInitial extends CallState {}
 
-class CallLoading extends CallState {}
-
-class CallSuccess extends CallState {
-  final VideoCallEntity videoCallEntity;
-
-  const CallSuccess({required this.videoCallEntity});
-
-  @override
-  List<Object> get props => [videoCallEntity];
-}
-
 class CallError extends CallState {
   final String errorMessage;
 

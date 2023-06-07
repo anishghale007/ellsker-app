@@ -18,7 +18,7 @@ import 'package:internship_practice/features/call/data/datasources/call_remote_d
 import 'package:internship_practice/features/call/data/repositories/call_repository_impl.dart';
 import 'package:internship_practice/features/call/domain/repositories/call_repository.dart';
 import 'package:internship_practice/features/call/domain/usecases/get_rtc_token_usecase.dart';
-import 'package:internship_practice/features/call/presentation/bloc/call_bloc.dart';
+import 'package:internship_practice/features/call/presentation/bloc/token/token_bloc.dart';
 import 'package:internship_practice/features/chat/data/datasources/chat_remote_data_source.dart';
 import 'package:internship_practice/features/chat/data/repositories/chat_repository_impl.dart';
 import 'package:internship_practice/features/chat/domain/repositories/chat_repository.dart';
@@ -116,8 +116,8 @@ Future<void> init() async {
   );
 
   // call bloc
-  sl.registerFactory<CallBloc>(
-    () => CallBloc(getRtcTokenUsecase: sl()),
+  sl.registerFactory<TokenBloc>(
+    () => TokenBloc(getRtcTokenUsecase: sl()),
   );
 
   // profile bloc

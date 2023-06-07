@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:internship_practice/features/call/domain/entities/video_call_entity.dart';
+import 'package:internship_practice/features/call/domain/entities/rtc_token_entity.dart';
 import 'package:internship_practice/features/call/domain/usecases/get_rtc_token_usecase.dart';
 import 'package:mockito/mockito.dart';
 
@@ -23,7 +23,7 @@ void main() {
         tokenType: "userAccount",
         uid: "10",
       );
-      const tVideoCallEntity = VideoCallEntity(rtcToken: "asdadasdasd");
+      const tVideoCallEntity = RtcTokenEntity(rtcToken: "asdadasdasd");
       // arrange
       when(mockCallRepository.getRtcToken(tGetRtcTokenParams))
           .thenAnswer((_) async => const Right(tVideoCallEntity));

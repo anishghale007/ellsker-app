@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:internship_practice/constants.dart';
 import 'package:internship_practice/core/error/exceptions.dart';
 import 'package:internship_practice/features/call/data/datasources/call_remote_data_source.dart';
-import 'package:internship_practice/features/call/data/models/video_call_model.dart';
+import 'package:internship_practice/features/call/data/models/rtc_token_model.dart';
 import 'package:internship_practice/features/call/domain/usecases/get_rtc_token_usecase.dart';
 import 'package:mockito/mockito.dart';
 import 'package:http/http.dart' as http;
@@ -38,7 +38,7 @@ void main() {
       uid: "10",
     );
     final tVideoCallModel =
-        VideoCallModel.fromJson(json.decode(fixture('token.json')));
+        RtcTokenModel.fromJson(json.decode(fixture('token.json')));
     test('should perform a GET request on a URL', () async {
       // arrange
       setUpMockHttpClientSuccess200();
@@ -48,7 +48,7 @@ void main() {
       verify(
         mockHttpClient.get(
           Uri.parse(
-              '${Constant.renderBaseUrl}/rtc/${tGetRtcTokenParams.channelName}/${tGetRtcTokenParams.role}/${tGetRtcTokenParams.tokenType}/${tGetRtcTokenParams.uid}'),
+              '${Constant.tokenBaseUrl}/rtc/${tGetRtcTokenParams.channelName}/${tGetRtcTokenParams.role}/${tGetRtcTokenParams.tokenType}/${tGetRtcTokenParams.uid}'),
           headers: {
             'Content-Type': 'application/json',
           },
