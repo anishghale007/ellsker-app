@@ -17,7 +17,7 @@ class CallModel extends CallEntity {
   Map<String, dynamic> toJson() {
     return {
       'callId': callId,
-      'callerId': callId,
+      'callerId': callerId,
       'callerName': callerName,
       'callerPhotoUrl': callerPhotoUrl,
       'receiverId': receiverId,

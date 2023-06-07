@@ -9,6 +9,8 @@ abstract class CallState extends Equatable {
 
 class CallInitial extends CallState {}
 
+class CallLoading extends CallState {}
+
 class CallError extends CallState {
   final String errorMessage;
 
@@ -17,3 +19,5 @@ class CallError extends CallState {
   @override
   List<Object> get props => [errorMessage];
 }
+
+class CallSuccess extends CallState {}

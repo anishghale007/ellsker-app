@@ -11,6 +11,26 @@ class CallBloc extends Bloc<CallEvent, CallState> {
   CallBloc({
     required this.makeCallUsecase,
   }) : super(CallInitial()) {
-    on<CallEvent>((event, emit) {});
+    on<MakeCallEvent>(_makeCall);
+  }
+
+  Future<void> _makeCall(MakeCallEvent event, Emitter<CallState> emit) async {
+    emit(CallLoading());
+    final response = await makeCallUsecase.call(
+      MakeCallParams(
+        callerId: event.callerId,
+        callerName: event.callerName,
+        callerPhotoUrl: event.callerPhotoUrl,
+        receiverId: event.receiverId,
+        receiverName: event.receiverName,
+        receiverPhotoUrl: event.receiverPhotoUrl,
+        callStartTime: event.callStartTime,
+        callEndTime: event.callEndTime,
+      ),
+    );
+    response.fold(
+      (failure) => emit(CallError(errorMessage: failure.toString())),
+      (success) => emit(CallSuccess()),
+    );
   }
 }

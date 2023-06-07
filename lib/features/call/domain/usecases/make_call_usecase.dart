@@ -16,7 +16,6 @@ class MakeCallUsecase implements UseCase<void, MakeCallParams> {
 }
 
 class MakeCallParams extends Equatable {
-  final String callId;
   final String callerId;
   final String callerName;
   final String callerPhotoUrl;
@@ -27,7 +26,6 @@ class MakeCallParams extends Equatable {
   final String callEndTime;
 
   const MakeCallParams({
-    required this.callId,
     required this.callerId,
     required this.callerName,
     required this.callerPhotoUrl,
@@ -40,7 +38,6 @@ class MakeCallParams extends Equatable {
 
   @override
   List<Object?> get props => [
-        callId,
         callerId,
         callerName,
         callerPhotoUrl,

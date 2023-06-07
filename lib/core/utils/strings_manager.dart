@@ -14,7 +14,7 @@ class AppStrings {
   static const String update = "Update";
   static const String delete = "Delete";
   static const String usersList = "Users List";
-  static const String calling = "Calling";
+  static const String incomingCall = "Incoming Call";
   static const String callHistory = "Call History";
   static const String searchByEventOrTour = "Search by event or tour";
   static const String searchByUsernameOrEmail = "Search by username or email";

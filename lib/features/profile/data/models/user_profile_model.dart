@@ -18,7 +18,6 @@ class UserProfileModel extends UserProfileEntity {
       age: snapshot['age'],
       instagram: snapshot['instagram'],
       location: snapshot['location'],
-      image: snapshot['image'],
     );
   }
 
@@ -29,7 +28,6 @@ class UserProfileModel extends UserProfileEntity {
       age: json['age'],
       instagram: json['instagram'],
       location: json['location'],
-      image: json['image'],
     );
   }
 }

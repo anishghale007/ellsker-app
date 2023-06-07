@@ -102,9 +102,7 @@ class AppRouter extends _i9.RootStackRouter {
         routeData: routeData,
         child: _i8.IncomingCallScreen(
           key: args.key,
-          receiverId: args.receiverId,
-          receiverName: args.receiverName,
-          receiverPhotoUrl: args.receiverPhotoUrl,
+          scaffold: args.scaffold,
         ),
       );
     },
@@ -453,17 +451,13 @@ class CallHistoryRoute extends _i9.PageRouteInfo<void> {
 class IncomingCallRoute extends _i9.PageRouteInfo<IncomingCallRouteArgs> {
   IncomingCallRoute({
     _i16.Key? key,
-    required String receiverId,
-    required String receiverName,
-    required String receiverPhotoUrl,
+    required _i16.Widget scaffold,
   }) : super(
           IncomingCallRoute.name,
           path: '/incomingCall',
           args: IncomingCallRouteArgs(
             key: key,
-            receiverId: receiverId,
-            receiverName: receiverName,
-            receiverPhotoUrl: receiverPhotoUrl,
+            scaffold: scaffold,
           ),
         );
 
@@ -473,22 +467,16 @@ class IncomingCallRoute extends _i9.PageRouteInfo<IncomingCallRouteArgs> {
 class IncomingCallRouteArgs {
   const IncomingCallRouteArgs({
     this.key,
-    required this.receiverId,
-    required this.receiverName,
-    required this.receiverPhotoUrl,
+    required this.scaffold,
   });
 
   final _i16.Key? key;
 
-  final String receiverId;
-
-  final String receiverName;
-
-  final String receiverPhotoUrl;
+  final _i16.Widget scaffold;
 
   @override
   String toString() {
-    return 'IncomingCallRouteArgs{key: $key, receiverId: $receiverId, receiverName: $receiverName, receiverPhotoUrl: $receiverPhotoUrl}';
+    return 'IncomingCallRouteArgs{key: $key, scaffold: $scaffold}';
   }
 }
 

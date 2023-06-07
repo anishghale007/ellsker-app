@@ -18,6 +18,8 @@ import 'package:internship_practice/features/call/data/datasources/call_remote_d
 import 'package:internship_practice/features/call/data/repositories/call_repository_impl.dart';
 import 'package:internship_practice/features/call/domain/repositories/call_repository.dart';
 import 'package:internship_practice/features/call/domain/usecases/get_rtc_token_usecase.dart';
+import 'package:internship_practice/features/call/domain/usecases/make_call_usecase.dart';
+import 'package:internship_practice/features/call/presentation/bloc/call/call_bloc.dart';
 import 'package:internship_practice/features/call/presentation/bloc/token/token_bloc.dart';
 import 'package:internship_practice/features/chat/data/datasources/chat_remote_data_source.dart';
 import 'package:internship_practice/features/chat/data/repositories/chat_repository_impl.dart';
@@ -120,6 +122,10 @@ Future<void> init() async {
     () => TokenBloc(getRtcTokenUsecase: sl()),
   );
 
+  sl.registerFactory<CallBloc>(
+    () => CallBloc(makeCallUsecase: sl()),
+  );
+
   // profile bloc
   sl.registerFactory<ProfileBloc>(
     () => ProfileBloc(
@@ -208,6 +214,10 @@ Future<void> init() async {
 
   sl.registerLazySingleton<GetRtcTokenUsecase>(
     () => GetRtcTokenUsecase(callRepository: sl()),
+  );
+
+  sl.registerLazySingleton<MakeCallUsecase>(
+    () => MakeCallUsecase(callRepository: sl()),
   );
 
   /// Repository
