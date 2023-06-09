@@ -9,16 +9,32 @@ import 'package:internship_practice/core/functions/app_dialogs.dart';
 import 'package:internship_practice/core/utils/strings_manager.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/conversation/conversation_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/widgets/conversation_tile_widget.dart';
+import 'package:internship_practice/injection_container.dart';
 import 'package:internship_practice/routes/router.gr.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../bloc/conversation/conversation_bloc.dart';
 
-class ChatListScreen extends StatefulWidget {
+class ChatListScreen extends StatefulWidget implements AutoRouteWrapper {
   const ChatListScreen({Key? key}) : super(key: key);
 
   @override
   State<ChatListScreen> createState() => _ChatListScreenState();
+
+  @override
+  Widget wrappedRoute(BuildContext context) {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => sl<ConversationBloc>(),
+        ),
+        BlocProvider(
+          create: (context) => sl<ConversationCubit>(),
+        ),
+      ],
+      child: this,
+    );
+  }
 }
 
 class _ChatListScreenState extends State<ChatListScreen> {

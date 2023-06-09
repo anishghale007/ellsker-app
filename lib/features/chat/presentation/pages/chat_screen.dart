@@ -12,12 +12,10 @@ import 'package:giphy_get/giphy_get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:internship_practice/colors_utils.dart';
-import 'package:internship_practice/common/widgets/loader_widget.dart';
 import 'package:internship_practice/constants.dart';
 import 'package:internship_practice/core/enums/message_type_enum.dart';
 import 'package:internship_practice/core/functions/app_dialogs.dart';
 import 'package:internship_practice/features/call/presentation/pages/incoming_call_screen.dart';
-import 'package:internship_practice/features/chat/presentation/widgets/message%20content/chat_box_widget.dart';
 import 'package:internship_practice/features/auth/presentation/bloc/network/network_bloc.dart';
 import 'package:internship_practice/features/chat/domain/entities/conversation_entity.dart';
 import 'package:internship_practice/features/chat/domain/entities/message_entity.dart';
@@ -27,10 +25,13 @@ import 'package:internship_practice/features/notification/domain/entities/notifi
 import 'package:internship_practice/features/chat/presentation/bloc/conversation/conversation_bloc.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
 import 'package:internship_practice/features/notification/presentation/cubit/notification/notification_cubit.dart';
+import 'package:internship_practice/injection_container.dart';
 import 'package:internship_practice/routes/router.gr.dart';
 import 'package:record/record.dart';
 
-class ChatScreen extends StatefulWidget {
+import '../widgets/message content/chat_message_widget.dart';
+
+class ChatScreen extends StatefulWidget implements AutoRouteWrapper {
   final String username;
   final String userId;
   final String photoUrl;
@@ -46,6 +47,24 @@ class ChatScreen extends StatefulWidget {
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
+
+  @override
+  Widget wrappedRoute(BuildContext context) {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => sl<ConversationBloc>(),
+        ),
+        BlocProvider(
+          create: (context) => sl<NotificationCubit>(),
+        ),
+        BlocProvider(
+          create: (context) => sl<MessageCubit>(),
+        ),
+      ],
+      child: this,
+    );
+  }
 }
 
 class _ChatScreenState extends State<ChatScreen> {
@@ -287,48 +306,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     const SizedBox(
                       height: 50,
                     ),
-                    StreamBuilder<List<MessageEntity>>(
-                      stream: context
-                          .read<MessageCubit>()
-                          .getAllChatMessages(conversationId: widget.userId),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData && snapshot.data != null) {
-                          return ListView.separated(
-                            separatorBuilder: (context, index) => const Divider(
-                              height: 50,
-                            ),
-                            itemCount: snapshot.data!.length,
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            scrollDirection: Axis.vertical,
-                            itemBuilder: (context, index) {
-                              var data = snapshot.data?[index];
-                              return ChatBoxWidget(
-                                messageId: data!.messageId!,
-                                messageContent: data.messageContent,
-                                messageTime: data.messageTime,
-                                receiverId: data.receiverId,
-                                receiverName: data.receiverName,
-                                receiverPhotoUrl: data.receiverPhotoUrl,
-                                senderId: data.senderId,
-                                senderName: data.senderName,
-                                senderPhotoUrl: data.senderPhotoUrl,
-                                messageType: data.messageType,
-                                fileUrl: data.fileUrl!,
-                                latitude: data.latitude!,
-                                longitude: data.longitude!,
-                                gifUrl: data.gifUrl!,
-                              );
-                            },
-                          );
-                        } else if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const LoadingWidget();
-                        } else {
-                          return Container();
-                        }
-                      },
-                    ),
+                    ChatMessageWidget(widget: widget),
                     const SizedBox(
                       height: 80,
                     ),

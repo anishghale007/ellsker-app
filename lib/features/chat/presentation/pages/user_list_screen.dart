@@ -17,20 +17,20 @@ class UserListScreen extends StatefulWidget {
 }
 
 class _UserListScreenState extends State<UserListScreen> {
-  late UserListCubit _bloc;
+  late UserListCubit _userListCubit;
   late TextEditingController _searchController;
   String searchText = "";
 
   @override
   void initState() {
     super.initState();
-    _bloc = sl<UserListCubit>()..getAllUsers();
+    _userListCubit = sl<UserListCubit>()..getAllUsers();
     _searchController = TextEditingController();
   }
 
   @override
   void dispose() {
-    _bloc.close();
+    _userListCubit.close();
     _searchController.dispose();
     super.dispose();
   }
@@ -76,7 +76,7 @@ class _UserListScreenState extends State<UserListScreen> {
           ),
         ),
         body: BlocProvider(
-          create: (context) => _bloc,
+          create: (context) => _userListCubit,
           child: SafeArea(
             child: SingleChildScrollView(
               child: Column(

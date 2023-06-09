@@ -12,15 +12,10 @@ import 'package:internship_practice/features/auth/presentation/cubit/sign%20out/
 import 'package:internship_practice/features/auth/presentation/cubit/user%20status/user_status_cubit.dart';
 import 'package:internship_practice/features/call/presentation/bloc/call/call_bloc.dart';
 import 'package:internship_practice/features/call/presentation/bloc/token/token_bloc.dart';
-import 'package:internship_practice/features/chat/presentation/bloc/conversation/conversation_bloc.dart';
-import 'package:internship_practice/features/chat/presentation/cubit/conversation/conversation_cubit.dart';
-import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
-import 'package:internship_practice/features/notification/presentation/cubit/notification/notification_cubit.dart';
 import 'package:internship_practice/injection_container.dart' as di;
 import 'package:internship_practice/routes/router.gr.dart';
 import 'features/auth/presentation/bloc/facebook_sign_in/facebook_sign_in_bloc.dart';
 import 'features/auth/presentation/bloc/google_sign_in/google_sign_in_bloc.dart';
-import 'features/notification/presentation/bloc/notification/notification_bloc.dart';
 import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -70,21 +65,21 @@ class MyApp extends StatelessWidget {
         BlocProvider<UserStatusCubit>(
           create: (context) => di.sl<UserStatusCubit>(),
         ),
-        BlocProvider<ConversationCubit>(
-          create: (context) => di.sl<ConversationCubit>(),
-        ),
-        BlocProvider<ConversationBloc>(
-          create: (context) => di.sl<ConversationBloc>(),
-        ),
-        BlocProvider<MessageCubit>(
-          create: (context) => di.sl<MessageCubit>(),
-        ),
-        BlocProvider<NotificationBloc>(
-          create: (context) => di.sl<NotificationBloc>(),
-        ),
-        BlocProvider<NotificationCubit>(
-          create: (context) => di.sl<NotificationCubit>(),
-        ),
+        // BlocProvider<ConversationCubit>(
+        //   create: (context) => di.sl<ConversationCubit>(),
+        // ),
+        // BlocProvider<ConversationBloc>(
+        //   create: (context) => di.sl<ConversationBloc>(),
+        // ),
+        // BlocProvider<MessageCubit>(
+        //   create: (context) => di.sl<MessageCubit>(),
+        // ),
+        // BlocProvider<NotificationBloc>(
+        //   create: (context) => di.sl<NotificationBloc>(),
+        // ),
+        // BlocProvider<NotificationCubit>(
+        //   create: (context) => di.sl<NotificationCubit>(),
+        // ),
         BlocProvider<NetworkBloc>(
           create: (context) => di.sl<NetworkBloc>()..add(NetworkObserveEvent()),
         ),
