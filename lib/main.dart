@@ -5,9 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:internship_practice/colors_utils.dart';
 import 'package:internship_practice/constants.dart';
+import 'package:internship_practice/core/utils/theme_manager.dart';
 import 'package:internship_practice/features/auth/presentation/bloc/network/network_bloc.dart';
 import 'package:internship_practice/features/auth/presentation/cubit/sign%20out/sign_out_cubit.dart';
 import 'package:internship_practice/features/auth/presentation/cubit/user%20status/user_status_cubit.dart';
@@ -17,7 +16,6 @@ import 'package:internship_practice/features/chat/presentation/bloc/conversation
 import 'package:internship_practice/features/chat/presentation/cubit/conversation/conversation_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
 import 'package:internship_practice/features/notification/presentation/cubit/notification/notification_cubit.dart';
-import 'package:internship_practice/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:internship_practice/injection_container.dart' as di;
 import 'package:internship_practice/routes/router.gr.dart';
 import 'features/auth/presentation/bloc/facebook_sign_in/facebook_sign_in_bloc.dart';
@@ -87,9 +85,6 @@ class MyApp extends StatelessWidget {
         BlocProvider<NotificationCubit>(
           create: (context) => di.sl<NotificationCubit>(),
         ),
-        BlocProvider<ProfileBloc>(
-          create: (context) => di.sl<ProfileBloc>(),
-        ),
         BlocProvider<NetworkBloc>(
           create: (context) => di.sl<NetworkBloc>()..add(NetworkObserveEvent()),
         ),
@@ -121,19 +116,7 @@ class MyApp extends StatelessWidget {
             //   ],
             // ),
             routeInformationParser: _appRouter.defaultRouteParser(),
-            theme: ThemeData(
-              inputDecorationTheme: InputDecorationTheme(
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 15,
-                ),
-                hintStyle: GoogleFonts.sourceSansPro(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w400,
-                  color: ColorUtil.kTextFieldColor,
-                ),
-              ),
-            ),
+            theme: getApplicationTheme(),
           );
         },
       ),

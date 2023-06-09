@@ -15,6 +15,7 @@ import 'package:internship_practice/features/profile/domain/entities/user_profil
 import 'package:internship_practice/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:internship_practice/features/profile/presentation/widgets/change_profile_picture_widget.dart';
 import 'package:internship_practice/features/profile/presentation/widgets/profile_header_widget.dart';
+import 'package:internship_practice/injection_container.dart';
 
 class EditProfileScreen extends StatefulWidget {
   final String photoUrl;
@@ -41,6 +42,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController _ageController;
   late TextEditingController _instagramController;
   late TextEditingController _locationController;
+  late ProfileBloc _profileBloc;
   final _form = GlobalKey<FormState>();
   XFile? pickedImage;
 
@@ -51,6 +53,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _ageController = TextEditingController(text: widget.age);
     _instagramController = TextEditingController(text: widget.instagram);
     _locationController = TextEditingController(text: widget.location);
+    _profileBloc = sl<ProfileBloc>();
   }
 
   @override
@@ -59,6 +62,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _ageController.dispose();
     _instagramController.dispose();
     _locationController.dispose();
+    _profileBloc.close();
     super.dispose();
   }
 
@@ -87,177 +91,183 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       backgroundColor: ColorUtil.kPrimaryColor,
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Form(
-            key: _form,
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 20,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(
-                    height: 40,
-                  ),
-                  BlocConsumer<ProfileBloc, ProfileState>(
-                    listener: (context, state) {
-                      if (state is ProfileEditSuccess) {
-                        loadingOverlay.hide();
-                        context.router.pop();
-                      } else if (state is ProfileLoading) {
-                        loadingOverlay.show(context);
-                      } else if (state is ProfileError) {
-                        loadingOverlay.hide();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(state.errorMessage.toString()),
-                          ),
-                        );
-                      }
-                    },
-                    builder: (context, state) {
-                      return ProfileHeader(
-                        buttonText: AppStrings.save,
-                        onPress: () async {
-                          bool result =
-                              await InternetConnectionChecker().hasConnection;
-                          if (result == false) {
-                            // if there is no internet connection
-                            AppDialogs.showAlertDialog(
-                              context: context,
-                              title: const Text("No Internet Connection"),
-                              content: const Text(
-                                  "Please check your device connection."),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: const Text("Close"),
-                                ),
-                              ],
-                            );
-                          } else {
-                            _form.currentState!.save();
-                            if (_form.currentState!.validate()) {
-                              if (mounted) {
-                                if (pickedImage != null) {
-                                  _editProfile(
-                                    context,
-                                    currentUserEmail: currentUserEmail!,
-                                    image: pickedImage,
-                                  );
-                                } else {
-                                  _editProfile(
-                                    context,
-                                    currentUserEmail: currentUserEmail!,
-                                  );
+          child: BlocProvider(
+            create: (context) => _profileBloc,
+            child: Form(
+              key: _form,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(
+                      height: 40,
+                    ),
+                    BlocConsumer<ProfileBloc, ProfileState>(
+                      listener: (context, state) {
+                        if (state is ProfileEditSuccess) {
+                          loadingOverlay.hide();
+                          context.router.pop();
+                        } else if (state is ProfileLoading) {
+                          loadingOverlay.show(context);
+                        } else if (state is ProfileError) {
+                          loadingOverlay.hide();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(state.errorMessage.toString()),
+                            ),
+                          );
+                        }
+                      },
+                      builder: (context, state) {
+                        return ProfileHeader(
+                          buttonText: AppStrings.save,
+                          onPress: () async {
+                            bool result =
+                                await InternetConnectionChecker().hasConnection;
+                            if (result == false) {
+                              // if there is no internet connection
+                              AppDialogs.showAlertDialog(
+                                context: context,
+                                title: const Text("No Internet Connection"),
+                                content: const Text(
+                                    "Please check your device connection."),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text("Close"),
+                                  ),
+                                ],
+                              );
+                            } else {
+                              _form.currentState!.save();
+                              if (_form.currentState!.validate()) {
+                                if (mounted) {
+                                  if (pickedImage != null) {
+                                    _editProfile(
+                                      context,
+                                      currentUserEmail: currentUserEmail!,
+                                      image: pickedImage,
+                                    );
+                                  } else {
+                                    _editProfile(
+                                      context,
+                                      currentUserEmail: currentUserEmail!,
+                                    );
+                                  }
                                 }
                               }
                             }
-                          }
-                        },
-                      );
-                    },
-                  ),
-                  const SizedBox(
-                    height: 60,
-                  ),
-                  ChangeProfilePictureWidget(
-                    onPress: () {
-                      AppDialogs.showImageDialog(
-                        context: context,
-                        title: const Text("Choose an action"),
-                        canPickVideo: false,
-                        onGalleryImageAction: () {
-                          Navigator.of(context).pop();
-                          getImage(isFromGallery: true);
-                        },
-                        onGalleryVideoAction: () {},
-                        onCameraAction: () {
-                          Navigator.of(context).pop();
-                          getImage(isFromGallery: false);
-                        },
-                      );
-                    },
-                    backgroundImage: pickedImage == null
-                        ? NetworkImage(widget.photoUrl)
-                        : Image.file(File(pickedImage!.path)).image,
-                  ),
-                  const SizedBox(
-                    height: 80,
-                  ),
-                  CustomTextField(
-                    heading: AppStrings.name,
-                    hintText: AppStrings.name,
-                    textInputType: TextInputType.name,
-                    controller: _nameController,
-                    textInputAction: TextInputAction.next,
-                    textCapitalization: TextCapitalization.sentences,
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return "Name is required";
-                      }
-                      return null;
-                    },
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        flex: 1,
-                        child: CustomTextField(
-                          heading: AppStrings.age,
-                          hintText: "00",
-                          textInputType: TextInputType.number,
-                          controller: _ageController,
-                          textInputAction: TextInputAction.next,
-                          textCapitalization: TextCapitalization.none,
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return "Age is required";
-                            }
-                            return null;
                           },
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 25,
-                      ),
-                      Expanded(
-                        flex: 5,
-                        child: CustomTextField(
-                          heading: AppStrings.instagram,
-                          hintText: "@instagram",
-                          textInputType: TextInputType.emailAddress,
-                          controller: _instagramController,
-                          textInputAction: TextInputAction.next,
-                          textCapitalization: TextCapitalization.none,
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return "Instagram is required";
-                            }
-                            return null;
+                        );
+                      },
+                    ),
+                    const SizedBox(
+                      height: 60,
+                    ),
+                    ChangeProfilePictureWidget(
+                      onPress: () {
+                        AppDialogs.showImageDialog(
+                          context: context,
+                          title: const Text("Choose an action"),
+                          canPickVideo: false,
+                          onGalleryImageAction: () {
+                            Navigator.of(context).pop();
+                            getImage(isFromGallery: true);
                           },
+                          onGalleryVideoAction: () {},
+                          onCameraAction: () {
+                            Navigator.of(context).pop();
+                            getImage(isFromGallery: false);
+                          },
+                        );
+                      },
+                      backgroundImage: pickedImage == null
+                          ? NetworkImage(widget.photoUrl)
+                          : Image.file(File(pickedImage!.path)).image,
+                    ),
+                    const SizedBox(
+                      height: 80,
+                    ),
+                    CustomTextField(
+                      heading: AppStrings.name,
+                      hintText: AppStrings.name,
+                      textInputType: TextInputType.name,
+                      controller: _nameController,
+                      textInputAction: TextInputAction.next,
+                      textCapitalization: TextCapitalization.sentences,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return "Name is required";
+                        }
+                        return null;
+                      },
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: CustomTextField(
+                            heading: AppStrings.age,
+                            hintText: "00",
+                            textInputType: TextInputType.number,
+                            controller: _ageController,
+                            textInputAction: TextInputAction.next,
+                            textCapitalization: TextCapitalization.none,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return "Required";
+                              }
+                              if (value.length > 2) {
+                                return "Incorrect Length";
+                              }
+                              return null;
+                            },
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  CustomTextField(
-                    heading: AppStrings.location,
-                    hintText: AppStrings.location,
-                    textInputType: TextInputType.text,
-                    controller: _locationController,
-                    textInputAction: TextInputAction.done,
-                    textCapitalization: TextCapitalization.sentences,
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return "Location is required";
-                      }
-                      return null;
-                    },
-                  ),
-                ],
+                        const SizedBox(
+                          width: 25,
+                        ),
+                        Expanded(
+                          flex: 5,
+                          child: CustomTextField(
+                            heading: AppStrings.instagram,
+                            hintText: "@instagram",
+                            textInputType: TextInputType.emailAddress,
+                            controller: _instagramController,
+                            textInputAction: TextInputAction.next,
+                            textCapitalization: TextCapitalization.none,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return "Instagram is required";
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    CustomTextField(
+                      heading: AppStrings.location,
+                      hintText: AppStrings.location,
+                      textInputType: TextInputType.text,
+                      controller: _locationController,
+                      textInputAction: TextInputAction.done,
+                      textCapitalization: TextCapitalization.sentences,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return "Location is required";
+                        }
+                        return null;
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

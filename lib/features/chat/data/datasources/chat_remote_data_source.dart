@@ -455,7 +455,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
     return querySnapshot.docs.isNotEmpty;
   }
 
-  void _unsendMessageDataFromCollection({
+  Future<void> _unsendMessageDataFromCollection({
     required String senderId,
     required String senderName,
     required String receiverId,
@@ -506,7 +506,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
         .update(updateReceiverConversationData);
   }
 
-  void _saveDataToConversationCollection({
+  Future<void> _saveDataToConversationCollection({
     required String receiverId,
     required String receiverName,
     required String receiverPhotoUrl,
@@ -545,7 +545,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
         .set(data);
   }
 
-  void _saveMessageDataToMessageCollection({
+  Future<void> _saveMessageDataToMessageCollection({
     required String messageContent,
     required String messageTime,
     required String senderId,

@@ -4,7 +4,8 @@ enum MessageType {
   video('video'),
   location('location'),
   gif('gif'),
-  audio('audio');
+  audio('audio'),
+  call('call');
 
   const MessageType(this.type);
   final String type;
@@ -25,6 +26,8 @@ extension MessageTypeExtension on String {
         return MessageType.gif;
       case 'audio':
         return MessageType.audio;
+      case 'call':
+        return MessageType.call;
       default:
         return MessageType.text;
     }

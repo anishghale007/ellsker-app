@@ -16,7 +16,6 @@ import 'package:internship_practice/common/widgets/loader_widget.dart';
 import 'package:internship_practice/constants.dart';
 import 'package:internship_practice/core/enums/message_type_enum.dart';
 import 'package:internship_practice/core/functions/app_dialogs.dart';
-import 'package:internship_practice/features/call/presentation/bloc/call/call_bloc.dart';
 import 'package:internship_practice/features/call/presentation/pages/incoming_call_screen.dart';
 import 'package:internship_practice/features/chat/presentation/widgets/message%20content/chat_box_widget.dart';
 import 'package:internship_practice/features/auth/presentation/bloc/network/network_bloc.dart';
@@ -194,18 +193,18 @@ class _ChatScreenState extends State<ChatScreen> {
                     //   const IncomingCallRoute(),
                     // );
                     context.router.push(const VideoCallRoute());
-                    context.read<CallBloc>().add(
-                          MakeCallEvent(
-                            callerId: currentUser.uid,
-                            callerName: currentUser.displayName!,
-                            callerPhotoUrl: currentUser.photoURL!,
-                            receiverId: widget.userId,
-                            receiverName: widget.username,
-                            receiverPhotoUrl: widget.photoUrl,
-                            callStartTime: DateTime.now().toString(),
-                            callEndTime: DateTime.now().toString(),
-                          ),
-                        );
+                    // context.read<CallBloc>().add(
+                    //       MakeCallEvent(
+                    //         callerId: currentUser.uid,
+                    //         callerName: currentUser.displayName!,
+                    //         callerPhotoUrl: currentUser.photoURL!,
+                    //         receiverId: widget.userId,
+                    //         receiverName: widget.username,
+                    //         receiverPhotoUrl: widget.photoUrl,
+                    //         callStartTime: DateTime.now().toString(),
+                    //         callEndTime: DateTime.now().toString(),
+                    //       ),
+                    //     );
                     // context.read<TokenBloc>().add(
                     //       const GetRtcTokenEvent(
                     //         channelName: "test",

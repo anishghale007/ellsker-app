@@ -1,6 +1,5 @@
 import 'package:agora_uikit/agora_uikit.dart';
 import 'package:flutter/material.dart';
-import 'package:internship_practice/constants.dart';
 
 class VideoCallScreen extends StatefulWidget {
   // final String rtcToken;
@@ -22,11 +21,17 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
     super.initState();
     _agoraClient = AgoraClient(
       agoraConnectionData: AgoraConnectionData(
-        appId: Constant.appId,
-        channelName: 'ellsker-app',
+        // appId: Constant.appId,
+        appId: 'be4b0f54027345278394c4681a45a768',
+        channelName: 'test',
         // tempToken: widget.rtcToken,
-        tokenUrl: Constant.tokenBaseUrl,
+        // tokenUrl: Constant.tokenBaseUrl,
+        // tokenUrl: "https://ellsker-token-generator.onrender.com",
       ),
+      enabledPermission: [
+        Permission.camera,
+        Permission.microphone,
+      ],
     );
     initAgora();
   }
