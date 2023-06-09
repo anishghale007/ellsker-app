@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:internship_practice/common/widgets/loading_widget.dart';
 import 'package:internship_practice/common/widgets/search_bar_widget.dart';
 import 'package:internship_practice/core/utils/strings_manager.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/user_list/user_list_cubit.dart';
@@ -121,11 +122,7 @@ class _UserListScreenState extends State<UserListScreen> {
                   BlocBuilder<UserListCubit, UserListState>(
                     builder: (context, state) {
                       if (state is UserListLoading) {
-                        return const Center(
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                          ),
-                        );
+                        return const LoadingWidget();
                       } else if (state is UserListLoaded) {
                         log("Loaded");
                         return ListView.separated(

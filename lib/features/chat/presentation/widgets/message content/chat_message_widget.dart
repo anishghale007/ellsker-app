@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:internship_practice/common/widgets/loader_widget.dart';
+import 'package:internship_practice/common/widgets/loading_widget.dart';
 import 'package:internship_practice/features/chat/domain/entities/message_entity.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/pages/chat_screen.dart';

@@ -21,3 +21,12 @@ class CallError extends CallState {
 }
 
 class CallSuccess extends CallState {}
+
+class CallLogsLoaded extends CallState {
+  final List<CallEntity> callLogsList;
+
+  const CallLogsLoaded({required this.callLogsList});
+
+  @override
+  List<Object> get props => [callLogsList];
+}

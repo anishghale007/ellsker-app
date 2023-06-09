@@ -40,3 +40,12 @@ class MakeCallEvent extends CallEvent {
         callEndTime,
       ];
 }
+
+class GetAllCallLogsEvent extends CallEvent {
+  final String userId;
+
+  const GetAllCallLogsEvent({required this.userId});
+
+  @override
+  List<Object> get props => [userId];
+}

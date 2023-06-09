@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:internship_practice/features/call/domain/entities/call_entity.dart';
 
 class CallModel extends CallEntity {
@@ -41,6 +42,21 @@ class CallModel extends CallEntity {
       callStartTime: json['callStartTime'],
       callEndTime: json['callEndTime'],
       hasDialled: json['hasDialled'],
+    );
+  }
+
+  factory CallModel.fromSnapshot(QueryDocumentSnapshot snapshot) {
+    return CallModel(
+      callId: snapshot['callId'],
+      callerId: snapshot['callerId'],
+      callerName: snapshot['callerName'],
+      callerPhotoUrl: snapshot['callerPhotoUrl'],
+      receiverId: snapshot['receiverId'],
+      receiverName: snapshot['receiverName'],
+      receiverPhotoUrl: snapshot['receiverPhotoUrl'],
+      callStartTime: snapshot['callStartTime'],
+      callEndTime: snapshot['callEndTime'],
+      hasDialled: snapshot['hasDialled'],
     );
   }
 }

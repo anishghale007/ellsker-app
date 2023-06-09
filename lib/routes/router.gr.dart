@@ -91,9 +91,13 @@ class AppRouter extends _i9.RootStackRouter {
       );
     },
     CallHistoryRoute.name: (routeData) {
+      final args = routeData.argsAs<CallHistoryRouteArgs>();
       return _i9.MaterialPageX<dynamic>(
         routeData: routeData,
-        child: const _i7.CallHistoryScreen(),
+        child: _i7.CallHistoryScreen(
+          key: args.key,
+          userId: args.userId,
+        ),
       );
     },
     IncomingCallRoute.name: (routeData) {
@@ -436,14 +440,36 @@ class VideoCallRoute extends _i9.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i7.CallHistoryScreen]
-class CallHistoryRoute extends _i9.PageRouteInfo<void> {
-  const CallHistoryRoute()
-      : super(
+class CallHistoryRoute extends _i9.PageRouteInfo<CallHistoryRouteArgs> {
+  CallHistoryRoute({
+    _i16.Key? key,
+    required String userId,
+  }) : super(
           CallHistoryRoute.name,
           path: '/callHistory',
+          args: CallHistoryRouteArgs(
+            key: key,
+            userId: userId,
+          ),
         );
 
   static const String name = 'CallHistoryRoute';
+}
+
+class CallHistoryRouteArgs {
+  const CallHistoryRouteArgs({
+    this.key,
+    required this.userId,
+  });
+
+  final _i16.Key? key;
+
+  final String userId;
+
+  @override
+  String toString() {
+    return 'CallHistoryRouteArgs{key: $key, userId: $userId}';
+  }
 }
 
 /// generated route for

@@ -1,6 +1,7 @@
 import 'package:internship_practice/core/error/exceptions.dart';
 import 'package:internship_practice/core/network/network_info.dart';
 import 'package:internship_practice/features/call/data/datasources/call_remote_data_source.dart';
+import 'package:internship_practice/features/call/domain/entities/call_entity.dart';
 import 'package:internship_practice/features/call/domain/entities/rtc_token_entity.dart';
 import 'package:internship_practice/core/error/failure.dart';
 import 'package:dartz/dartz.dart';
@@ -66,4 +67,20 @@ class CallRepositoryImpl implements CallRepository {
       return Left(ServerFailure());
     }
   }
+
+  @override
+  Future<Either<Failure, List<CallEntity>>> getAllCallLogs(
+      String userId) async {
+    try {
+      final response = await callRemoteDataSource.getAllChatLogs(userId);
+      return Right(response);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
+
+  // @override
+  // Stream<List<CallEntity>> getAllCallLogs(String userId) {
+  //   return callRemoteDataSource.getAllChatLogs(userId);
+  // }
 }

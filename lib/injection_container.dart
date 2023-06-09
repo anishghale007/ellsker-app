@@ -17,6 +17,7 @@ import 'package:internship_practice/features/auth/presentation/cubit/user%20stat
 import 'package:internship_practice/features/call/data/datasources/call_remote_data_source.dart';
 import 'package:internship_practice/features/call/data/repositories/call_repository_impl.dart';
 import 'package:internship_practice/features/call/domain/repositories/call_repository.dart';
+import 'package:internship_practice/features/call/domain/usecases/get_call_logs_usecase.dart';
 import 'package:internship_practice/features/call/domain/usecases/get_rtc_token_usecase.dart';
 import 'package:internship_practice/features/call/domain/usecases/make_call_usecase.dart';
 import 'package:internship_practice/features/call/presentation/bloc/call/call_bloc.dart';
@@ -123,7 +124,10 @@ Future<void> init() async {
   );
 
   sl.registerFactory<CallBloc>(
-    () => CallBloc(makeCallUsecase: sl()),
+    () => CallBloc(
+      makeCallUsecase: sl(),
+      getCallLogsUsecase: sl(),
+    ),
   );
 
   // profile bloc
@@ -218,6 +222,10 @@ Future<void> init() async {
 
   sl.registerLazySingleton<MakeCallUsecase>(
     () => MakeCallUsecase(callRepository: sl()),
+  );
+
+  sl.registerLazySingleton<GetCallLogsUsecase>(
+    () => GetCallLogsUsecase(callRepository: sl()),
   );
 
   /// Repository

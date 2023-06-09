@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:internship_practice/colors_utils.dart';
+import 'package:internship_practice/common/widgets/loading_widget.dart';
 import 'package:internship_practice/features/profile/presentation/widgets/profile_header_widget.dart';
 import 'package:internship_practice/core/utils/strings_manager.dart';
 import 'package:internship_practice/features/profile/presentation/widgets/profile_picture_widget.dart';
@@ -68,11 +69,7 @@ class ProfileScreen extends StatelessWidget {
                   ],
                 );
               } else if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(
-                  child: CircularProgressIndicator(
-                    color: Colors.white,
-                  ),
-                );
+                return const LoadingWidget();
               } else {
                 return Center(
                   child: Text(snapshot.error.toString()),
