@@ -6,11 +6,13 @@ import 'package:internship_practice/core/enums/message_type_enum.dart';
 import 'package:internship_practice/core/functions/app_dialogs.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/widgets/message%20content/audio_message_widget.dart';
+import 'package:internship_practice/features/chat/presentation/widgets/message%20content/call_message_widget.dart';
 import 'package:internship_practice/features/chat/presentation/widgets/message%20content/gif_message_widget.dart';
 import 'package:internship_practice/features/chat/presentation/widgets/message%20content/location_message_widget.dart';
 import 'package:internship_practice/features/chat/presentation/widgets/message%20content/photo_message_widget.dart';
 import 'package:internship_practice/features/chat/presentation/widgets/message%20content/text_message_widget.dart';
 import 'package:internship_practice/features/chat/presentation/widgets/message%20content/video_player_widget.dart';
+import 'package:internship_practice/routes/router.gr.dart';
 
 class ChatBoxWidget extends StatelessWidget {
   final String messageId;
@@ -86,13 +88,12 @@ class ChatBoxWidget extends StatelessWidget {
             );
           },
           onTap: () {
-            context.router.pushNamed(
-              '/map',
-              // MapRoute(
-              //   userLatitude: double.parse(latitude),
-              //   userLongitude: double.parse(longitude),
-              //   username: senderName,
-              // ),
+            context.router.push(
+              MapRoute(
+                userLatitude: double.parse(latitude),
+                userLongitude: double.parse(longitude),
+                username: senderName,
+              ),
             );
           },
         );
@@ -150,20 +151,25 @@ class ChatBoxWidget extends StatelessWidget {
             );
           },
         );
-      // return VoiceMessageWidget(
-      //   senderId: senderId,
-      //   senderName: senderName,
-      //   senderPhotoUrl: senderPhotoUrl,
-      //   audioUrl: fileUrl,
-      //   messageTime: messageTime,
-      //   onSenderLongPress: () {
-      //     _showDialog(
-      //       context,
-      //       canCopy: false,
-      //       canUnsend: true,
-      //     );
-      //   },
-      // );
+      case MessageType.call:
+        return CallMessageWidget(
+          senderId: senderId,
+          senderName: senderName,
+          senderPhotoUrl: senderPhotoUrl,
+          messageContent: messageContent,
+          messageTime: messageTime,
+          onSenderLongPress: () {
+            _showDialog(
+              context,
+              canCopy: false,
+              canUnsend: true,
+              messageType: messageType,
+              receiverId: receiverId,
+              senderId: senderId,
+            );
+          },
+          onReceiverLongPress: () {},
+        );
       default:
         return TextMessageWidget(
           senderId: senderId,

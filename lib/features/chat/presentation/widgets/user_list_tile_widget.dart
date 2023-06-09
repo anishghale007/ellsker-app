@@ -7,14 +7,14 @@ import 'package:internship_practice/features/chat/presentation/bloc/conversation
 import 'package:internship_practice/routes/router.gr.dart';
 
 class UserListTileWidget extends StatelessWidget {
+  final UserEntity data;
+  final String currentUser;
+
   const UserListTileWidget({
     super.key,
     required this.data,
     required this.currentUser,
   });
-
-  final UserEntity data;
-  final String currentUser;
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +32,7 @@ class UserListTileWidget extends StatelessWidget {
           ),
         );
       },
+      onLongPress: () {},
       child: SizedBox(
         height: data.userId == currentUser ? 0 : 70,
         child: ListTile(

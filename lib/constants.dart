@@ -14,7 +14,7 @@ class Constant {
   static const String locationMessageContent = "Sent a Location.";
   static const String gifMessageContent = "Sent a GIF.";
   static const String voiceMessageContent = "Sent a Voice Message.";
-  static const String callMessageContent = "Called you.";
+  static const String callMessageContent = "Made a Call";
   static const String missedCallMessageContent = "Missed call.";
   static const String unsendMessageContent = "Unsent a Message.";
   static const String serverFailureMessage = "server failure";

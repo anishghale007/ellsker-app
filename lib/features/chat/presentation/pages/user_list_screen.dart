@@ -171,6 +171,28 @@ class _UserListScreenState extends State<UserListScreen> {
             ),
           ),
         ),
+        bottomSheet: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          decoration: BoxDecoration(
+            color: Colors.green,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+            border: Border.all(
+              width: 0,
+            ),
+          ),
+          child: Row(
+            children: [
+              ElevatedButton(
+                onPressed: () {},
+                child: const Text("Hello"),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
