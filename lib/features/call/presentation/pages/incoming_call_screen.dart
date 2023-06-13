@@ -109,6 +109,8 @@ class IncomingCallScreen extends StatelessWidget {
                               ),
                               ElevatedButton(
                                 onPressed: () {
+                                  // set inCall to true in user collection
+
                                   context.router.push(const VideoCallRoute());
                                 },
                                 style: ElevatedButton.styleFrom(

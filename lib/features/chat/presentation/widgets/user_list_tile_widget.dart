@@ -20,9 +20,9 @@ class UserListTileWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        context
-            .read<ConversationBloc>()
-            .add(SeenConversationEvent(conversationId: data.userId));
+        context.read<ConversationBloc>().add(
+              SeenConversationEvent(conversationId: data.userId),
+            );
         context.router.push(
           ChatRoute(
             username: data.userName,

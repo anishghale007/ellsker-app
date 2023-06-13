@@ -88,13 +88,18 @@ class CallRemoteDataSourceImpl implements CallRemoteDataSource {
   @override
   Future<void> endCall(EndCallParams params) async {
     try {
-      // QuerySnapshot<Map<String, dynamic>> snapshot =
-      //     await FirebaseFirestore.instance.collection('call').get();
       Map<String, dynamic> updateCallerData = {
         "callEndTime": params.callEndTime,
         "hasDialled": true,
       };
-      await dbCall.doc(params.callerId).set(updateCallerData);
+      // caller user call collection
+      await dbCall
+          .doc("${params.callerId}-${params.receiverId}")
+          .set(updateCallerData);
+      // receiver user call collection
+      await dbCall
+          .doc("${params.receiverId}-${params.callerId}")
+          .set(updateCallerData);
     } on FirebaseException catch (e) {
       throw Exception(e.toString());
     }

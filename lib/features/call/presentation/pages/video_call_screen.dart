@@ -1,5 +1,6 @@
 import 'package:agora_uikit/agora_uikit.dart';
 import 'package:flutter/material.dart';
+import 'package:internship_practice/core/config/agora_config.dart';
 
 class VideoCallScreen extends StatefulWidget {
   // final String rtcToken;
@@ -22,11 +23,9 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
     _agoraClient = AgoraClient(
       agoraConnectionData: AgoraConnectionData(
         // appId: Constant.appId,
-        appId: 'be4b0f54027345278394c4681a45a768',
+        appId: AgoraConfig.appId,
         channelName: 'test',
-        // tempToken: widget.rtcToken,
-        // tokenUrl: Constant.tokenBaseUrl,
-        // tokenUrl: "https://ellsker-token-generator.onrender.com",
+        tokenUrl: 'https://ellsker-token-server.onrender.com',
       ),
       enabledPermission: [
         Permission.camera,
@@ -50,16 +49,30 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
                 children: [
                   AgoraVideoViewer(
                     client: _agoraClient!,
-                    layoutType: Layout.floating,
-                    showNumberOfUsers: true,
                   ),
                   AgoraVideoButtons(
                     client: _agoraClient!,
                     enabledButtons: const [
                       BuiltInButtons.toggleCamera,
-                      BuiltInButtons.callEnd,
+                      // BuiltInButtons.callEnd,
                       BuiltInButtons.toggleMic,
+                      BuiltInButtons.switchCamera,
                     ],
+                    disconnectButtonChild: IconButton(
+                      onPressed: () async {
+                        await _agoraClient!.engine.leaveChannel();
+                        // Send the call message
+
+                        // If the user does not pickup send missed call message
+
+                        // send the call data to the call history collection
+
+                        // set the isDialled to false in both of the user collection
+
+                        // set the inCall to false in both of the user collection
+                      },
+                      icon: const Icon(Icons.call_end),
+                    ),
                   ),
                 ],
               ),

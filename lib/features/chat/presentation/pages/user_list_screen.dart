@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:auto_route/auto_route.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,15 +7,24 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:internship_practice/common/widgets/loading_widget.dart';
 import 'package:internship_practice/common/widgets/search_bar_widget.dart';
 import 'package:internship_practice/core/utils/strings_manager.dart';
+import 'package:internship_practice/features/chat/presentation/bloc/conversation/conversation_bloc.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/user_list/user_list_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/widgets/user_list_tile_widget.dart';
 import 'package:internship_practice/injection_container.dart';
 
-class UserListScreen extends StatefulWidget {
+class UserListScreen extends StatefulWidget implements AutoRouteWrapper {
   const UserListScreen({super.key});
 
   @override
   State<UserListScreen> createState() => _UserListScreenState();
+
+  @override
+  Widget wrappedRoute(BuildContext context) {
+    return BlocProvider(
+      create: (context) => sl<ConversationBloc>(),
+      child: this,
+    );
+  }
 }
 
 class _UserListScreenState extends State<UserListScreen> {
@@ -166,28 +176,6 @@ class _UserListScreenState extends State<UserListScreen> {
                 ],
               ),
             ),
-          ),
-        ),
-        bottomSheet: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: BoxDecoration(
-            color: Colors.green,
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
-            ),
-            border: Border.all(
-              width: 0,
-            ),
-          ),
-          child: Row(
-            children: [
-              ElevatedButton(
-                onPressed: () {},
-                child: const Text("Hello"),
-              ),
-            ],
           ),
         ),
       ),

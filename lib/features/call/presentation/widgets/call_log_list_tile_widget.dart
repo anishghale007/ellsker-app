@@ -6,16 +6,16 @@ import 'package:internship_practice/features/call/domain/entities/call_entity.da
 import 'package:intl/intl.dart';
 
 class CallLogListTileWidget extends StatelessWidget {
+  final CallEntity data;
+  final String currentUser;
+  final int callTime;
+
   const CallLogListTileWidget({
     super.key,
     required this.data,
     required this.currentUser,
     required this.callTime,
   });
-
-  final CallEntity data;
-  final String currentUser;
-  final int callTime;
 
   @override
   Widget build(BuildContext context) {
@@ -68,18 +68,20 @@ class CallLogListTileWidget extends StatelessWidget {
           ),
         ],
       ),
-      trailing: ElevatedButton(
-        onPressed: () {},
-        style: ElevatedButton.styleFrom(
-          shape: const CircleBorder(),
-          padding: const EdgeInsets.all(10),
-          backgroundColor: Colors.grey[700],
-        ),
-        child: const Icon(
-          Icons.call,
-          size: 20,
-        ),
-      ),
+      trailing: currentUser == data.callerId
+          ? null
+          : ElevatedButton(
+              onPressed: () {},
+              style: ElevatedButton.styleFrom(
+                shape: const CircleBorder(),
+                padding: const EdgeInsets.all(10),
+                backgroundColor: Colors.grey[700],
+              ),
+              child: const Icon(
+                Icons.call,
+                size: 20,
+              ),
+            ),
     );
   }
 }

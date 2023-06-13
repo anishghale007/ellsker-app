@@ -168,7 +168,8 @@ class ChatBoxWidget extends StatelessWidget {
               senderId: senderId,
             );
           },
-          onReceiverLongPress: () {},
+          onSenderCallButtonPress: () {},
+          onReceiverCallButtonPress: () {},
         );
       default:
         return TextMessageWidget(

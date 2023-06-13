@@ -16,7 +16,6 @@ import 'package:internship_practice/colors_utils.dart';
 import 'package:internship_practice/constants.dart';
 import 'package:internship_practice/core/enums/message_type_enum.dart';
 import 'package:internship_practice/core/functions/app_dialogs.dart';
-import 'package:internship_practice/features/call/presentation/bloc/call/call_bloc.dart';
 import 'package:internship_practice/features/call/presentation/pages/incoming_call_screen.dart';
 import 'package:internship_practice/features/auth/presentation/bloc/network/network_bloc.dart';
 import 'package:internship_practice/features/chat/domain/entities/conversation_entity.dart';
@@ -218,25 +217,32 @@ class _ChatScreenState extends State<ChatScreen> {
                     return IconButton(
                       onPressed: () {
                         // if (data!['isOnline'] == true) {
-                        _sendMessage(
-                          context,
-                          currentUser,
-                          messageContent: Constant.callMessageContent,
-                          messageType: MessageType.call,
-                        );
-                        // context.router.push(const VideoCallRoute());
-                        context.read<CallBloc>().add(
-                              MakeCallEvent(
-                                callerId: currentUser.uid,
-                                callerName: currentUser.displayName!,
-                                callerPhotoUrl: currentUser.photoURL!,
-                                receiverId: widget.userId,
-                                receiverName: widget.username,
-                                receiverPhotoUrl: widget.photoUrl,
-                                callStartTime: DateTime.now().toString(),
-                                callEndTime: DateTime.now().toString(),
-                              ),
-                            );
+                        // context.router.push(
+                        //   CallingRoute(
+                        //     userId: widget.userId,
+                        //     photoUrl: widget.photoUrl,
+                        //     username: widget.username,
+                        //   ),
+                        // );
+                        // _sendMessage(
+                        //   context,
+                        //   currentUser,
+                        //   messageContent: Constant.callMessageContent,
+                        //   messageType: MessageType.call,
+                        // );
+                        context.router.push(const VideoCallRoute());
+                        // context.read<CallBloc>().add(
+                        //       MakeCallEvent(
+                        //         callerId: currentUser.uid,
+                        //         callerName: currentUser.displayName!,
+                        //         callerPhotoUrl: currentUser.photoURL!,
+                        //         receiverId: widget.userId,
+                        //         receiverName: widget.username,
+                        //         receiverPhotoUrl: widget.photoUrl,
+                        //         callStartTime: DateTime.now().toString(),
+                        //         callEndTime: DateTime.now().toString(),
+                        //       ),
+                        //     );
                         // context.read<TokenBloc>().add(
                         //       const GetRtcTokenEvent(
                         //         channelName: "test",
