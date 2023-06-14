@@ -1,7 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
 import 'package:auto_route/auto_route.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +15,6 @@ import 'package:internship_practice/colors_utils.dart';
 import 'package:internship_practice/constants.dart';
 import 'package:internship_practice/core/enums/message_type_enum.dart';
 import 'package:internship_practice/core/functions/app_dialogs.dart';
-import 'package:internship_practice/features/call/presentation/pages/incoming_call_screen.dart';
 import 'package:internship_practice/features/auth/presentation/bloc/network/network_bloc.dart';
 import 'package:internship_practice/features/chat/domain/entities/conversation_entity.dart';
 import 'package:internship_practice/features/chat/domain/entities/message_entity.dart';
@@ -163,6 +161,12 @@ class _ChatScreenState extends State<ChatScreen> {
         messageType: MessageType.gif,
         gifUrl: value.images!.original!.url,
       );
+      _sendNotification(
+        context,
+        currentUser,
+        messageContent: Constant.gifMessageContent,
+        notificationType: Constant.normalNotification,
+      );
       return value;
     }, onError: (error) {
       log(error);
@@ -173,576 +177,572 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     LocationPermission? locationPermission;
 
-    return IncomingCallScreen(
-      scaffold: Container(
-        width: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xff3A4070),
-              Color(0xff1F1F40),
-            ],
-          ),
+    return Container(
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Color(0xff3A4070),
+            Color(0xff1F1F40),
+          ],
         ),
-        child: Form(
-          key: _form,
-          // autovalidateMode: AutovalidateMode.always,
-          child: Scaffold(
-            appBar: AppBar(
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              centerTitle: true,
-              bottom: PreferredSize(
-                preferredSize: const Size.fromHeight(4.0),
-                child: Container(
-                  height: 0.2,
-                  color: Colors.grey,
-                ),
-              ),
-              title: UserProfileWidget(
-                userId: widget.userId,
-                username: widget.username,
-                photoUrl: widget.photoUrl,
-              ),
-              actions: [
-                StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                  stream: FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(widget.userId)
-                      .snapshots(),
-                  builder: (context, snapshot) {
-                    // var data = snapshot.data?.data();
-                    return IconButton(
-                      onPressed: () {
-                        // if (data!['isOnline'] == true) {
-                        // context.router.push(
-                        //   CallingRoute(
-                        //     userId: widget.userId,
-                        //     photoUrl: widget.photoUrl,
-                        //     username: widget.username,
-                        //   ),
-                        // );
-                        // _sendMessage(
-                        //   context,
-                        //   currentUser,
-                        //   messageContent: Constant.callMessageContent,
-                        //   messageType: MessageType.call,
-                        // );
-                        context.router.push(const VideoCallRoute());
-                        // context.read<CallBloc>().add(
-                        //       MakeCallEvent(
-                        //         callerId: currentUser.uid,
-                        //         callerName: currentUser.displayName!,
-                        //         callerPhotoUrl: currentUser.photoURL!,
-                        //         receiverId: widget.userId,
-                        //         receiverName: widget.username,
-                        //         receiverPhotoUrl: widget.photoUrl,
-                        //         callStartTime: DateTime.now().toString(),
-                        //         callEndTime: DateTime.now().toString(),
-                        //       ),
-                        //     );
-                        // context.read<TokenBloc>().add(
-                        //       const GetRtcTokenEvent(
-                        //         channelName: "test",
-                        //         role: "publisher",
-                        //         tokenType: "userAccount",
-                        //         uid: "10",
-                        //       ),
-                        //     );
-                        // } else {
-                        //   // IF THE USER IS NOT ONLINE
-                        //   AppDialogs.showAlertDialog(
-                        //     context: context,
-                        //     title: Text("${widget.username} is offline"),
-                        //     content: const Text(
-                        //         "Please call at another moment or when he/she is online"),
-                        //     actions: [
-                        //       TextButton(
-                        //         onPressed: () {
-                        //           Navigator.of(context).pop();
-                        //         },
-                        //         child: const Text('Ok'),
-                        //       ),
-                        //     ],
-                        //   );
-                        // }
-                      },
-                      icon: const Icon(
-                        Icons.video_call,
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                PopupMenuButton<int>(
-                  offset: const Offset(0, 30),
-                  elevation: 2,
-                  itemBuilder: (context) => [
-                    PopupMenuItem(
-                      value: 1,
-                      child: Row(
-                        children: const [
-                          Icon(
-                            Icons.photo,
-                            color: Colors.black,
-                          ),
-                          SizedBox(
-                            width: 8,
-                          ),
-                          Text("Media and Files"),
-                        ],
-                      ),
-                    ),
-                    PopupMenuItem(
-                      value: 2,
-                      child: Row(
-                        children: const [
-                          Icon(
-                            Icons.call,
-                            color: Colors.black,
-                          ),
-                          SizedBox(
-                            width: 8,
-                          ),
-                          Text("Call History"),
-                        ],
-                      ),
-                    ),
-                  ],
-                  onSelected: (value) {
-                    if (value == 1) {
-                      context.router.push(
-                        SharedFilesRoute(
-                          receiverId: widget.userId,
-                        ),
-                      );
-                    }
-                    if (value == 2) {
-                      context.router.push(
-                        CallHistoryRoute(
-                          userId: widget.userId,
-                        ),
-                      );
-                    }
-                  },
-                  child: const Icon(Icons.more_vert),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-              ],
-              iconTheme: const IconThemeData(
-                color: Colors.white,
-              ),
-            ),
+      ),
+      child: Form(
+        key: _form,
+        // autovalidateMode: AutovalidateMode.always,
+        child: Scaffold(
+          appBar: AppBar(
             backgroundColor: Colors.transparent,
-            body: SingleChildScrollView(
-              reverse: true,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 15,
-                ),
-                child: Column(
-                  children: [
-                    const SizedBox(
-                      height: 50,
-                    ),
-                    ChatMessageWidget(
-                      widget: widget,
-                    ),
-                    const SizedBox(
-                      height: 80,
-                    ),
-                  ],
-                ),
+            elevation: 0,
+            centerTitle: true,
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(4.0),
+              child: Container(
+                height: 0.2,
+                color: Colors.grey,
               ),
             ),
-            bottomSheet: Container(
-              // height: 55,
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              decoration: BoxDecoration(
-                color: ColorUtil.kSecondaryColor,
-                border: Border.all(
-                  width: 0,
+            title: UserProfileWidget(
+              userId: widget.userId,
+              username: widget.username,
+              photoUrl: widget.photoUrl,
+            ),
+            actions: [
+              IconButton(
+                onPressed: () {
+                  // _sendMessage(
+                  //   context,
+                  //   currentUser,
+                  //   messageContent: Constant.callMessageContent,
+                  //   messageType: MessageType.call,
+                  // );
+                  // context.router.push(
+                  //   CallCheckRoute(
+                  //     userId: widget.userId,
+                  //     photoUrl: widget.photoUrl,
+                  //     username: widget.username,
+                  //     token: widget.token,
+                  //     senderToken: myToken!,
+                  //   ),
+                  // );
+                  // _sendNotification(
+                  //   context,
+                  //   currentUser,
+                  //   messageContent: Constant.incomingCallMessageContent,
+                  //   notificationType: Constant.callNotification,
+                  // );
+                  _sendNotification(
+                    context,
+                    currentUser,
+                    messageContent: Constant.missedCallMessageContent,
+                    notificationType: Constant.missedCallNotification,
+                  );
+                  // context.router.push(CallingRoute(
+                  //     userId: widget.userId,
+                  //     photoUrl: widget.photoUrl,
+                  //     username: widget.username));
+                },
+                icon: const Icon(
+                  Icons.video_call,
                 ),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Container(
-                    width: MediaQuery.of(context).size.width * 0.8,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: TextFormField(
-                      controller: _messageController,
-                      textCapitalization: TextCapitalization.sentences,
-                      textInputAction: TextInputAction.done,
-                      minLines: 1,
-                      maxLines: 3,
-                      onChanged: (value) {
-                        if (value.isNotEmpty) {
-                          setState(() {
-                            isShowSendButton = true;
-                          });
-                        } else {
-                          setState(() {
-                            isShowSendButton = false;
-                          });
-                        }
-                      },
-                      readOnly: pickedImage != null ||
-                              pickedVideo != null ||
-                              latitude != null && longitude != null
-                          ? true
-                          : false,
-                      validator: pickedImage != null ||
-                              pickedVideo != null ||
-                              latitude != null
-                          ? null
-                          : (value) {
-                              if (value!.isEmpty) {
-                                return "";
-                              }
-                              return null;
-                            },
-                      // pickedImage != null
-                      //     ? null
-                      //     : latitude != null
-                      //         ? null
-                      //         : (value) {
-                      //             if (value!.isEmpty) {
-                      //               return "";
-                      //             }
-                      //             return null;
-                      //           },
-                      keyboardAppearance: Brightness.dark,
-                      style: GoogleFonts.sourceSansPro(
-                        color: Colors.white,
-                        fontSize: 16,
-                      ),
-                      decoration: InputDecoration(
-                        errorStyle: const TextStyle(fontSize: 0.01),
-                        fillColor: Colors.grey[800],
-                        filled: true,
-                        hintStyle: GoogleFonts.sourceSansPro(
-                          color: Colors.grey[400],
-                          fontSize: 16,
+              const SizedBox(
+                width: 10,
+              ),
+              PopupMenuButton<int>(
+                offset: const Offset(0, 30),
+                elevation: 2,
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: 1,
+                    child: Row(
+                      children: const [
+                        Icon(
+                          Icons.photo,
+                          color: Colors.black,
                         ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          vertical: 5,
-                          horizontal: 5,
+                        SizedBox(
+                          width: 8,
                         ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                        prefixIcon: latitude == null && longitude == null
-                            ? IconButton(
-                                onPressed: () {
-                                  AppDialogs.showImageDialog(
-                                    context: context,
-                                    canPickVideo: true,
-                                    title: const Text("Choose an action"),
-                                    onCameraAction: () {
-                                      Navigator.of(context).pop();
-                                      getImage(isFromGallery: false);
-                                    },
-                                    onGalleryVideoAction: () {
-                                      Navigator.of(context).pop();
-                                      getVideo();
-                                    },
-                                    onGalleryImageAction: () {
-                                      Navigator.of(context).pop();
-                                      getImage(isFromGallery: true);
-                                    },
-                                  );
-                                },
-                                icon: Icon(
-                                  Icons.image_outlined,
-                                  color: ColorUtil.kIconColor,
-                                ),
-                              )
-                            : null,
-                        suffixIcon: pickedImage != null
-                            ? Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const SizedBox(
-                                    width: 2,
-                                  ),
-                                  Container(
-                                    height: 60,
-                                    width: 50,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      color: Colors.white,
-                                    ),
-                                    margin: const EdgeInsets.only(
-                                      right: 20,
-                                      top: 7,
-                                      bottom: 7,
-                                    ),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                      child: Image.file(
-                                        File(pickedImage!.path),
-                                      ),
-                                    ),
-                                  ),
-                                  IconButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        pickedImage = null;
-                                      });
-                                    },
-                                    icon: Icon(
-                                      Icons.highlight_remove_outlined,
-                                      color: ColorUtil.kTertiaryColor,
-                                    ),
-                                  ),
-                                ],
-                              )
-                            : pickedVideo != null ||
-                                    latitude != null && longitude != null
-                                ? IconButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        pickedVideo = null;
-                                        latitude = null;
-                                        longitude = null;
-                                        _messageController.clear();
-                                      });
-                                    },
-                                    icon: Icon(
-                                      Icons.highlight_remove_outlined,
-                                      color: ColorUtil.kTertiaryColor,
-                                    ),
-                                  )
-                                : isShowSendButton == false
-                                    ? Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          IconButton(
-                                            onPressed: () {
-                                              getGIF();
-                                            },
-                                            icon: Icon(
-                                              Icons.gif_box,
-                                              color: ColorUtil.kIconColor,
-                                            ),
-                                          ),
-                                          IconButton(
-                                            onPressed: () async {
-                                              locationPermission =
-                                                  await Geolocator
-                                                      .requestPermission();
-                                              if (locationPermission ==
-                                                  LocationPermission.denied) {
-                                                locationPermission =
-                                                    await Geolocator
-                                                        .requestPermission();
-                                              } else if (locationPermission ==
-                                                  LocationPermission
-                                                      .deniedForever) {
-                                                await Geolocator
-                                                    .openAppSettings();
-                                              } else if (locationPermission ==
-                                                      LocationPermission
-                                                          .always ||
-                                                  locationPermission ==
-                                                      LocationPermission
-                                                          .whileInUse) {
-                                                final response =
-                                                    await Geolocator
-                                                        .getCurrentPosition();
-                                                setState(() {
-                                                  longitude =
-                                                      response.longitude;
-                                                  latitude = response.latitude;
-                                                  _messageController.text =
-                                                      "Lat: $latitude || Long: $longitude";
-                                                  log("Longitude: $longitude");
-                                                  log("Latitude: $latitude");
-                                                });
-                                              }
-                                            },
-                                            icon: Icon(
-                                              Icons.location_on,
-                                              color: ColorUtil.kIconColor,
-                                            ),
-                                          ),
-                                        ],
-                                      )
-                                    : null,
-                      ),
+                        Text("Media and Files"),
+                      ],
                     ),
                   ),
-                  MultiBlocListener(
-                    listeners: [
-                      BlocListener<NetworkBloc, NetworkState>(
-                        listener: (context, state) {
-                          if (state is NetworkFailure) {
-                            log("Not connected to Internet");
-                          } else if (state is NetworkSuccess) {
-                            log("Connected to Internet");
-                          } else {
-                            log("Not working");
-                          }
-                        },
-                      ),
-                      BlocListener<ConversationBloc, ConversationsState>(
-                        listener: (context, state) {
-                          if (state is ConversationsCreated) {
-                            log("Conversation created successfully.");
-                          } else if (state is ConversationsError) {
-                            log(state.errorMessage);
-                          }
-                        },
-                      ),
-                      BlocListener<MessageCubit, MessageState>(
-                        listener: (context, state) {
-                          if (state is MessageSuccess) {
-                            log("Message sent successfully");
-                            _messageController.clear();
-                            FocusScope.of(context).unfocus();
-                          } else if (state is MessageError) {
-                            log(state.errorMessage);
-                          }
-                        },
-                      ),
-                      BlocListener<NotificationCubit, NotificationState>(
-                        listener: (context, state) {
-                          if (state is NotificationSuccess) {
-                            log("Notification sent successfully");
-                            _messageController.clear();
-                            FocusScope.of(context).unfocus();
-                          } else if (state is NotificationError) {
-                            log("Notification Error:${state.errorMessage}");
-                          } else {
-                            log("Notification not sent");
-                          }
-                        },
-                      ),
-                    ],
-                    child: MessageSendButtonWidget(
-                      // buttonIcon: isShowSendButton == true
-                      //     ? Icons.send_outlined
-                      //     : isRecording == false
-                      //         ? Icons.mic
-                      //         : Icons.close,
-                      buttonIcon: isShowSendButton == true ||
-                              pickedImage != null ||
-                              pickedVideo != null ||
-                              latitude != null
-                          ? Icons.send_outlined
-                          : isRecording
-                              ? Icons.stop
-                              : Icons.mic,
-                      onPress: isShowSendButton == true ||
-                              pickedImage != null ||
-                              pickedVideo != null ||
-                              latitude != null
-                          ? () async {
-                              _form.currentState!.save();
-                              FocusScope.of(context).unfocus();
-                              if (_form.currentState!.validate()) {
-                                if (pickedImage != null) {
-                                  // If the user picks an image
-                                  _sendMessage(
-                                    context,
-                                    currentUser,
-                                    messageContent:
-                                        Constant.photoMessageContent,
-                                    messageType: MessageType.photo,
-                                    photoFile: pickedImage,
-                                  );
-                                  setState(() {
-                                    pickedImage = null;
-                                  });
-                                } else if (pickedVideo != null) {
-                                  // If the user picks a video
-                                  _sendMessage(
-                                    context,
-                                    currentUser,
-                                    messageContent:
-                                        Constant.videoMessageContent,
-                                    messageType: MessageType.video,
-                                    videoFile: pickedVideo,
-                                  );
-                                  setState(() {
-                                    pickedVideo = null;
-                                  });
-                                } else if (latitude != null ||
-                                    longitude != null) {
-                                  // If the user sends a location message
-                                  _sendMessage(
-                                    context,
-                                    currentUser,
-                                    messageContent:
-                                        Constant.locationMessageContent,
-                                    messageType: MessageType.location,
-                                    latitude: latitude.toString(),
-                                    longitude: longitude.toString(),
-                                  );
-                                  setState(() {
-                                    latitude = null;
-                                    longitude = null;
-                                  });
-                                } else {
-                                  // If the user does not pick an image and sends a text message
-                                  _sendMessage(
-                                    context,
-                                    currentUser,
-                                    messageContent:
-                                        _messageController.text.trim(),
-                                    messageType: MessageType.text,
-                                  );
-                                }
-                              }
-                            }
-                          : () async {
-                              File file;
-                              String? filePath;
-                              if (await record.hasPermission()) {
-                                if (isRecording) {
-                                  filePath = await record.stop();
-                                  file = File(filePath!);
-                                  log("FilePath: $filePath");
-                                  if (mounted) {
-                                    _sendMessage(
-                                      context,
-                                      currentUser,
-                                      messageContent:
-                                          Constant.voiceMessageContent,
-                                      messageType: MessageType.audio,
-                                      audioFile: file,
-                                    );
-                                    setState(() {
-                                      isRecording = !isRecording;
-                                    });
-                                  }
-                                } else {
-                                  if (mounted) {
-                                    setState(() {
-                                      isRecording = !isRecording;
-                                    });
-                                    await record.start();
-                                  }
-                                }
-                              }
-                            },
+                  PopupMenuItem(
+                    value: 2,
+                    child: Row(
+                      children: const [
+                        Icon(
+                          Icons.call,
+                          color: Colors.black,
+                        ),
+                        SizedBox(
+                          width: 8,
+                        ),
+                        Text("Call History"),
+                      ],
                     ),
                   ),
                 ],
+                onSelected: (value) {
+                  if (value == 1) {
+                    context.router.push(
+                      SharedFilesRoute(
+                        receiverId: widget.userId,
+                      ),
+                    );
+                  }
+                  if (value == 2) {
+                    context.router.push(
+                      CallHistoryRoute(
+                        userId: widget.userId,
+                      ),
+                    );
+                  }
+                },
+                child: const Icon(Icons.more_vert),
               ),
+              const SizedBox(
+                width: 10,
+              ),
+            ],
+            iconTheme: const IconThemeData(
+              color: Colors.white,
+            ),
+          ),
+          backgroundColor: Colors.transparent,
+          body: SingleChildScrollView(
+            reverse: true,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 15,
+              ),
+              child: Column(
+                children: [
+                  const SizedBox(
+                    height: 50,
+                  ),
+                  ChatMessageWidget(
+                    widget: widget,
+                  ),
+                  const SizedBox(
+                    height: 80,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          bottomSheet: Container(
+            // height: 55,
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            decoration: BoxDecoration(
+              color: ColorUtil.kSecondaryColor,
+              border: Border.all(
+                width: 0,
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: TextFormField(
+                    controller: _messageController,
+                    textCapitalization: TextCapitalization.sentences,
+                    textInputAction: TextInputAction.done,
+                    minLines: 1,
+                    maxLines: 3,
+                    onChanged: (value) {
+                      if (value.isNotEmpty) {
+                        setState(() {
+                          isShowSendButton = true;
+                        });
+                      } else {
+                        setState(() {
+                          isShowSendButton = false;
+                        });
+                      }
+                    },
+                    readOnly: pickedImage != null ||
+                            pickedVideo != null ||
+                            latitude != null && longitude != null
+                        ? true
+                        : false,
+                    validator: pickedImage != null ||
+                            pickedVideo != null ||
+                            latitude != null
+                        ? null
+                        : (value) {
+                            if (value!.isEmpty) {
+                              return "";
+                            }
+                            return null;
+                          },
+                    // pickedImage != null
+                    //     ? null
+                    //     : latitude != null
+                    //         ? null
+                    //         : (value) {
+                    //             if (value!.isEmpty) {
+                    //               return "";
+                    //             }
+                    //             return null;
+                    //           },
+                    keyboardAppearance: Brightness.dark,
+                    style: GoogleFonts.sourceSansPro(
+                      color: Colors.white,
+                      fontSize: 16,
+                    ),
+                    decoration: InputDecoration(
+                      errorStyle: const TextStyle(fontSize: 0.01),
+                      fillColor: Colors.grey[800],
+                      filled: true,
+                      hintStyle: GoogleFonts.sourceSansPro(
+                        color: Colors.grey[400],
+                        fontSize: 16,
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 5,
+                        horizontal: 5,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                      prefixIcon: latitude == null && longitude == null
+                          ? IconButton(
+                              onPressed: () {
+                                AppDialogs.showImageDialog(
+                                  context: context,
+                                  canPickVideo: true,
+                                  title: const Text("Choose an action"),
+                                  onCameraAction: () {
+                                    Navigator.of(context).pop();
+                                    getImage(isFromGallery: false);
+                                  },
+                                  onGalleryVideoAction: () {
+                                    Navigator.of(context).pop();
+                                    getVideo();
+                                  },
+                                  onGalleryImageAction: () {
+                                    Navigator.of(context).pop();
+                                    getImage(isFromGallery: true);
+                                  },
+                                );
+                              },
+                              icon: Icon(
+                                Icons.image_outlined,
+                                color: ColorUtil.kIconColor,
+                              ),
+                            )
+                          : null,
+                      suffixIcon: pickedImage != null
+                          ? Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const SizedBox(
+                                  width: 2,
+                                ),
+                                Container(
+                                  height: 60,
+                                  width: 50,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: Colors.white,
+                                  ),
+                                  margin: const EdgeInsets.only(
+                                    right: 20,
+                                    top: 7,
+                                    bottom: 7,
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: Image.file(
+                                      File(pickedImage!.path),
+                                    ),
+                                  ),
+                                ),
+                                IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      pickedImage = null;
+                                    });
+                                  },
+                                  icon: Icon(
+                                    Icons.highlight_remove_outlined,
+                                    color: ColorUtil.kTertiaryColor,
+                                  ),
+                                ),
+                              ],
+                            )
+                          : pickedVideo != null ||
+                                  latitude != null && longitude != null
+                              ? IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      pickedVideo = null;
+                                      latitude = null;
+                                      longitude = null;
+                                      _messageController.clear();
+                                    });
+                                  },
+                                  icon: Icon(
+                                    Icons.highlight_remove_outlined,
+                                    color: ColorUtil.kTertiaryColor,
+                                  ),
+                                )
+                              : isShowSendButton == false
+                                  ? Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        IconButton(
+                                          onPressed: () {
+                                            getGIF();
+                                          },
+                                          icon: Icon(
+                                            Icons.gif_box,
+                                            color: ColorUtil.kIconColor,
+                                          ),
+                                        ),
+                                        IconButton(
+                                          onPressed: () async {
+                                            locationPermission =
+                                                await Geolocator
+                                                    .requestPermission();
+                                            if (locationPermission ==
+                                                LocationPermission.denied) {
+                                              locationPermission =
+                                                  await Geolocator
+                                                      .requestPermission();
+                                            } else if (locationPermission ==
+                                                LocationPermission
+                                                    .deniedForever) {
+                                              await Geolocator
+                                                  .openAppSettings();
+                                            } else if (locationPermission ==
+                                                    LocationPermission.always ||
+                                                locationPermission ==
+                                                    LocationPermission
+                                                        .whileInUse) {
+                                              final response = await Geolocator
+                                                  .getCurrentPosition();
+                                              setState(() {
+                                                longitude = response.longitude;
+                                                latitude = response.latitude;
+                                                _messageController.text =
+                                                    "Lat: $latitude || Long: $longitude";
+                                                log("Longitude: $longitude");
+                                                log("Latitude: $latitude");
+                                              });
+                                            }
+                                          },
+                                          icon: Icon(
+                                            Icons.location_on,
+                                            color: ColorUtil.kIconColor,
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  : null,
+                    ),
+                  ),
+                ),
+                MultiBlocListener(
+                  listeners: [
+                    BlocListener<NetworkBloc, NetworkState>(
+                      listener: (context, state) {
+                        if (state is NetworkFailure) {
+                          log("Not connected to Internet");
+                        } else if (state is NetworkSuccess) {
+                          log("Connected to Internet");
+                        } else {
+                          log("Not working");
+                        }
+                      },
+                    ),
+                    BlocListener<ConversationBloc, ConversationsState>(
+                      listener: (context, state) {
+                        if (state is ConversationsCreated) {
+                          log("Conversation created successfully.");
+                        } else if (state is ConversationsError) {
+                          log(state.errorMessage);
+                        }
+                      },
+                    ),
+                    BlocListener<MessageCubit, MessageState>(
+                      listener: (context, state) {
+                        if (state is MessageSuccess) {
+                          log("Message sent successfully");
+                          _messageController.clear();
+                          FocusScope.of(context).unfocus();
+                        } else if (state is MessageError) {
+                          log(state.errorMessage);
+                        }
+                      },
+                    ),
+                    BlocListener<NotificationCubit, NotificationState>(
+                      listener: (context, state) {
+                        if (state is NotificationSuccess) {
+                          log("Notification sent successfully");
+                          _messageController.clear();
+                          FocusScope.of(context).unfocus();
+                        } else if (state is NotificationError) {
+                          log("Notification Error:${state.errorMessage}");
+                        } else {
+                          log("Notification not sent");
+                        }
+                      },
+                    ),
+                  ],
+                  child: MessageSendButtonWidget(
+                    // buttonIcon: isShowSendButton == true
+                    //     ? Icons.send_outlined
+                    //     : isRecording == false
+                    //         ? Icons.mic
+                    //         : Icons.close,
+                    buttonIcon: isShowSendButton == true ||
+                            pickedImage != null ||
+                            pickedVideo != null ||
+                            latitude != null
+                        ? Icons.send_outlined
+                        : isRecording
+                            ? Icons.stop
+                            : Icons.mic,
+                    onPress: isShowSendButton == true ||
+                            pickedImage != null ||
+                            pickedVideo != null ||
+                            latitude != null
+                        ? () async {
+                            _form.currentState!.save();
+                            FocusScope.of(context).unfocus();
+                            if (_form.currentState!.validate()) {
+                              if (pickedImage != null) {
+                                // If the user picks an image
+                                _sendMessage(
+                                  context,
+                                  currentUser,
+                                  messageContent: Constant.photoMessageContent,
+                                  messageType: MessageType.photo,
+                                  photoFile: pickedImage,
+                                );
+                                _sendNotification(
+                                  context,
+                                  currentUser,
+                                  messageContent: Constant.photoMessageContent,
+                                  notificationType: Constant.normalNotification,
+                                );
+                                setState(() {
+                                  pickedImage = null;
+                                });
+                              } else if (pickedVideo != null) {
+                                // If the user picks a video
+                                _sendMessage(
+                                  context,
+                                  currentUser,
+                                  messageContent: Constant.videoMessageContent,
+                                  messageType: MessageType.video,
+                                  videoFile: pickedVideo,
+                                );
+                                _sendNotification(
+                                  context,
+                                  currentUser,
+                                  messageContent: Constant.videoMessageContent,
+                                  notificationType: Constant.normalNotification,
+                                );
+                                setState(() {
+                                  pickedVideo = null;
+                                });
+                              } else if (latitude != null ||
+                                  longitude != null) {
+                                // If the user sends a location message
+                                _sendMessage(
+                                  context,
+                                  currentUser,
+                                  messageContent:
+                                      Constant.locationMessageContent,
+                                  messageType: MessageType.location,
+                                  latitude: latitude.toString(),
+                                  longitude: longitude.toString(),
+                                );
+                                _sendNotification(
+                                  context,
+                                  currentUser,
+                                  messageContent:
+                                      Constant.locationMessageContent,
+                                  notificationType: Constant.normalNotification,
+                                );
+                                setState(() {
+                                  latitude = null;
+                                  longitude = null;
+                                });
+                              } else {
+                                // If the user does not pick an image and sends a text message
+                                _sendMessage(
+                                  context,
+                                  currentUser,
+                                  messageContent:
+                                      _messageController.text.trim(),
+                                  messageType: MessageType.text,
+                                );
+                                _sendNotification(
+                                  context,
+                                  currentUser,
+                                  messageContent:
+                                      _messageController.text.trim(),
+                                  notificationType: Constant.normalNotification,
+                                );
+                              }
+                            }
+                          }
+                        : () async {
+                            File file;
+                            String? filePath;
+                            if (await record.hasPermission()) {
+                              if (isRecording) {
+                                filePath = await record.stop();
+                                file = File(filePath!);
+                                log("FilePath: $filePath");
+                                if (mounted) {
+                                  _sendMessage(
+                                    context,
+                                    currentUser,
+                                    messageContent:
+                                        Constant.voiceMessageContent,
+                                    messageType: MessageType.audio,
+                                    audioFile: file,
+                                  );
+                                  _sendNotification(
+                                    context,
+                                    currentUser,
+                                    messageContent:
+                                        Constant.voiceMessageContent,
+                                    notificationType:
+                                        Constant.normalNotification,
+                                  );
+                                  setState(() {
+                                    isRecording = !isRecording;
+                                  });
+                                }
+                              } else {
+                                if (mounted) {
+                                  setState(() {
+                                    isRecording = !isRecording;
+                                  });
+                                  await record.start();
+                                }
+                              }
+                            }
+                          },
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -801,14 +801,23 @@ class _ChatScreenState extends State<ChatScreen> {
             gifUrl: gifUrl,
           ),
         );
+  }
+
+  void _sendNotification(
+    BuildContext context,
+    User currentUser, {
+    required dynamic messageContent,
+    required String notificationType,
+  }) {
     context.read<NotificationCubit>().sendNotification(
           notificationEntity: NotificationEntity(
-            conversationId: widget.userId,
+            conversationId: widget.userId, // other user's id
             token: widget.token,
             title: currentUser.displayName!,
             body: messageContent,
             photoUrl: widget.photoUrl,
             username: widget.username,
+            notificationType: notificationType,
           ),
         );
   }

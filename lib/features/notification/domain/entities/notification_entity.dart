@@ -1,4 +1,3 @@
-
 import 'package:equatable/equatable.dart';
 
 class NotificationEntity extends Equatable {
@@ -8,6 +7,7 @@ class NotificationEntity extends Equatable {
   final String body;
   final String photoUrl;
   final String username;
+  final String notificationType;
 
   const NotificationEntity({
     required this.conversationId,
@@ -16,6 +16,7 @@ class NotificationEntity extends Equatable {
     required this.body,
     required this.photoUrl,
     required this.username,
+    required this.notificationType,
   });
 
   @override
@@ -25,5 +26,6 @@ class NotificationEntity extends Equatable {
         body,
         photoUrl,
         username,
+        notificationType,
       ];
 }

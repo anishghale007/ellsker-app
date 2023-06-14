@@ -4,31 +4,33 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i7;
-import 'dart:convert' as _i16;
-import 'dart:typed_data' as _i17;
+import 'dart:convert' as _i17;
+import 'dart:typed_data' as _i18;
 
 import 'package:dartz/dartz.dart' as _i2;
 import 'package:http/http.dart' as _i6;
 import 'package:internet_connection_checker/internet_connection_checker.dart'
     as _i5;
 import 'package:internship_practice/core/error/failure.dart' as _i8;
-import 'package:internship_practice/core/network/network_info.dart' as _i15;
+import 'package:internship_practice/core/network/network_info.dart' as _i16;
 import 'package:internship_practice/features/call/data/datasources/call_remote_data_source.dart'
-    as _i14;
+    as _i15;
 import 'package:internship_practice/features/call/data/models/rtc_token_model.dart'
     as _i3;
 import 'package:internship_practice/features/call/domain/entities/call_entity.dart'
-    as _i13;
+    as _i14;
 import 'package:internship_practice/features/call/domain/entities/rtc_token_entity.dart'
     as _i9;
 import 'package:internship_practice/features/call/domain/repositories/call_repository.dart'
     as _i4;
 import 'package:internship_practice/features/call/domain/usecases/end_call_usecase.dart'
-    as _i12;
+    as _i13;
 import 'package:internship_practice/features/call/domain/usecases/get_rtc_token_usecase.dart'
     as _i10;
 import 'package:internship_practice/features/call/domain/usecases/make_call_usecase.dart'
     as _i11;
+import 'package:internship_practice/features/call/domain/usecases/pickup_call_usecase.dart'
+    as _i12;
 import 'package:mockito/mockito.dart' as _i1;
 
 // ignore_for_file: type=lint
@@ -159,8 +161,25 @@ class MockCallRepository extends _i1.Mock implements _i4.CallRepository {
         )),
       ) as _i7.Future<_i2.Either<_i8.Failure, void>>);
   @override
+  _i7.Future<_i2.Either<_i8.Failure, void>> pickupCall(
+          _i12.PickupCallParams? params) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #pickupCall,
+          [params],
+        ),
+        returnValue: _i7.Future<_i2.Either<_i8.Failure, void>>.value(
+            _FakeEither_0<_i8.Failure, void>(
+          this,
+          Invocation.method(
+            #pickupCall,
+            [params],
+          ),
+        )),
+      ) as _i7.Future<_i2.Either<_i8.Failure, void>>);
+  @override
   _i7.Future<_i2.Either<_i8.Failure, void>> endCall(
-          _i12.EndCallParams? params) =>
+          _i13.EndCallParams? params) =>
       (super.noSuchMethod(
         Invocation.method(
           #endCall,
@@ -176,7 +195,7 @@ class MockCallRepository extends _i1.Mock implements _i4.CallRepository {
         )),
       ) as _i7.Future<_i2.Either<_i8.Failure, void>>);
   @override
-  _i7.Future<_i2.Either<_i8.Failure, List<_i13.CallEntity>>> getAllCallLogs(
+  _i7.Future<_i2.Either<_i8.Failure, List<_i14.CallEntity>>> getAllCallLogs(
           String? userId) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -184,22 +203,22 @@ class MockCallRepository extends _i1.Mock implements _i4.CallRepository {
           [userId],
         ),
         returnValue:
-            _i7.Future<_i2.Either<_i8.Failure, List<_i13.CallEntity>>>.value(
-                _FakeEither_0<_i8.Failure, List<_i13.CallEntity>>(
+            _i7.Future<_i2.Either<_i8.Failure, List<_i14.CallEntity>>>.value(
+                _FakeEither_0<_i8.Failure, List<_i14.CallEntity>>(
           this,
           Invocation.method(
             #getAllCallLogs,
             [userId],
           ),
         )),
-      ) as _i7.Future<_i2.Either<_i8.Failure, List<_i13.CallEntity>>>);
+      ) as _i7.Future<_i2.Either<_i8.Failure, List<_i14.CallEntity>>>);
 }
 
 /// A class which mocks [CallRemoteDataSource].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockCallRemoteDataSource extends _i1.Mock
-    implements _i14.CallRemoteDataSource {
+    implements _i15.CallRemoteDataSource {
   MockCallRemoteDataSource() {
     _i1.throwOnMissingStub(this);
   }
@@ -229,7 +248,17 @@ class MockCallRemoteDataSource extends _i1.Mock
         returnValueForMissingStub: _i7.Future<void>.value(),
       ) as _i7.Future<void>);
   @override
-  _i7.Future<void> endCall(_i12.EndCallParams? params) => (super.noSuchMethod(
+  _i7.Future<void> pickupCall(_i12.PickupCallParams? params) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #pickupCall,
+          [params],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+  @override
+  _i7.Future<void> endCall(_i13.EndCallParams? params) => (super.noSuchMethod(
         Invocation.method(
           #endCall,
           [params],
@@ -238,15 +267,15 @@ class MockCallRemoteDataSource extends _i1.Mock
         returnValueForMissingStub: _i7.Future<void>.value(),
       ) as _i7.Future<void>);
   @override
-  _i7.Future<List<_i13.CallEntity>> getAllChatLogs(String? userId) =>
+  _i7.Future<List<_i14.CallEntity>> getAllChatLogs(String? userId) =>
       (super.noSuchMethod(
         Invocation.method(
           #getAllChatLogs,
           [userId],
         ),
         returnValue:
-            _i7.Future<List<_i13.CallEntity>>.value(<_i13.CallEntity>[]),
-      ) as _i7.Future<List<_i13.CallEntity>>);
+            _i7.Future<List<_i14.CallEntity>>.value(<_i14.CallEntity>[]),
+      ) as _i7.Future<List<_i14.CallEntity>>);
 }
 
 /// A class which mocks [GetRtcTokenUsecase].
@@ -374,7 +403,7 @@ class MockInternetConnectionChecker extends _i1.Mock
 /// A class which mocks [NetworkInfo].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockNetworkInfo extends _i1.Mock implements _i15.NetworkInfo {
+class MockNetworkInfo extends _i1.Mock implements _i16.NetworkInfo {
   MockNetworkInfo() {
     _i1.throwOnMissingStub(this);
   }
@@ -439,7 +468,7 @@ class MockHttpClient extends _i1.Mock implements _i6.Client {
     Uri? url, {
     Map<String, String>? headers,
     Object? body,
-    _i16.Encoding? encoding,
+    _i17.Encoding? encoding,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -469,7 +498,7 @@ class MockHttpClient extends _i1.Mock implements _i6.Client {
     Uri? url, {
     Map<String, String>? headers,
     Object? body,
-    _i16.Encoding? encoding,
+    _i17.Encoding? encoding,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -499,7 +528,7 @@ class MockHttpClient extends _i1.Mock implements _i6.Client {
     Uri? url, {
     Map<String, String>? headers,
     Object? body,
-    _i16.Encoding? encoding,
+    _i17.Encoding? encoding,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -529,7 +558,7 @@ class MockHttpClient extends _i1.Mock implements _i6.Client {
     Uri? url, {
     Map<String, String>? headers,
     Object? body,
-    _i16.Encoding? encoding,
+    _i17.Encoding? encoding,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -568,7 +597,7 @@ class MockHttpClient extends _i1.Mock implements _i6.Client {
         returnValue: _i7.Future<String>.value(''),
       ) as _i7.Future<String>);
   @override
-  _i7.Future<_i17.Uint8List> readBytes(
+  _i7.Future<_i18.Uint8List> readBytes(
     Uri? url, {
     Map<String, String>? headers,
   }) =>
@@ -578,8 +607,8 @@ class MockHttpClient extends _i1.Mock implements _i6.Client {
           [url],
           {#headers: headers},
         ),
-        returnValue: _i7.Future<_i17.Uint8List>.value(_i17.Uint8List(0)),
-      ) as _i7.Future<_i17.Uint8List>);
+        returnValue: _i7.Future<_i18.Uint8List>.value(_i18.Uint8List(0)),
+      ) as _i7.Future<_i18.Uint8List>);
   @override
   _i7.Future<_i6.StreamedResponse> send(_i6.BaseRequest? request) =>
       (super.noSuchMethod(

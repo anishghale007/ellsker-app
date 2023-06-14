@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internship_practice/colors_utils.dart';
+import 'package:internship_practice/constants.dart';
 import 'package:internship_practice/features/chat/presentation/widgets/message%20content/receiver_user_message_box.dart';
 import 'package:internship_practice/features/chat/presentation/widgets/message%20content/sender_user_message_box.dart';
 import 'package:intl/intl.dart';
@@ -172,8 +173,10 @@ class CallMessageWidget extends StatelessWidget {
                               shape: BoxShape.circle,
                               color: Colors.grey[600],
                             ),
-                            child: const Icon(
-                              Icons.phone,
+                            child: Icon(
+                              messageContent == Constant.callMessageContent
+                                  ? Icons.phone
+                                  : Icons.phone_missed,
                               size: 20,
                               color: Colors.white,
                             ),
@@ -189,7 +192,7 @@ class CallMessageWidget extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "Video call",
+                                messageContent,
                                 style: GoogleFonts.sourceSansPro(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w400,

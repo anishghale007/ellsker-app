@@ -17,9 +17,9 @@ import 'package:flutter/material.dart' as _i17;
 import '../features/auth/presentation/pages/festival_screen.dart' as _i12;
 import '../features/auth/presentation/pages/home_screen.dart' as _i2;
 import '../features/auth/presentation/pages/login_screen.dart' as _i1;
+import '../features/call/presentation/pages/call_check_screen.dart' as _i8;
 import '../features/call/presentation/pages/call_history_screen.dart' as _i7;
-import '../features/call/presentation/pages/calling_screen.dart' as _i8;
-import '../features/call/presentation/pages/incoming_call_screen.dart' as _i9;
+import '../features/call/presentation/pages/calling_screen.dart' as _i9;
 import '../features/call/presentation/pages/video_call_screen.dart' as _i6;
 import '../features/chat/presentation/pages/chat_list_screen.dart' as _i13;
 import '../features/chat/presentation/pages/chat_screen.dart' as _i3;
@@ -101,25 +101,31 @@ class AppRouter extends _i10.RootStackRouter {
         ),
       );
     },
-    CallingRoute.name: (routeData) {
-      final args = routeData.argsAs<CallingRouteArgs>();
+    CallCheckRoute.name: (routeData) {
+      final args = routeData.argsAs<CallCheckRouteArgs>();
       return _i10.MaterialPageX<dynamic>(
         routeData: routeData,
-        child: _i8.CallingScreen(
+        child: _i8.CallCheckScreen(
           key: args.key,
           userId: args.userId,
           photoUrl: args.photoUrl,
           username: args.username,
+          token: args.token,
+          senderToken: args.senderToken,
         ),
       );
     },
-    IncomingCallRoute.name: (routeData) {
-      final args = routeData.argsAs<IncomingCallRouteArgs>();
+    CallingRoute.name: (routeData) {
+      final args = routeData.argsAs<CallingRouteArgs>();
       return _i10.MaterialPageX<dynamic>(
         routeData: routeData,
-        child: _i9.IncomingCallScreen(
+        child: _i9.CallingScreen(
           key: args.key,
-          scaffold: args.scaffold,
+          userId: args.userId,
+          photoUrl: args.photoUrl,
+          username: args.username,
+          token: args.token,
+          senderToken: args.senderToken,
         ),
       );
     },
@@ -280,11 +286,11 @@ class AppRouter extends _i10.RootStackRouter {
           path: '/callHistory',
         ),
         _i10.RouteConfig(
-          CallingRoute.name,
-          path: '/calling',
+          CallCheckRoute.name,
+          path: '/callCheck',
         ),
         _i10.RouteConfig(
-          IncomingCallRoute.name,
+          CallingRoute.name,
           path: '/incomingCall',
         ),
       ];
@@ -490,21 +496,79 @@ class CallHistoryRouteArgs {
 }
 
 /// generated route for
-/// [_i8.CallingScreen]
+/// [_i8.CallCheckScreen]
+class CallCheckRoute extends _i10.PageRouteInfo<CallCheckRouteArgs> {
+  CallCheckRoute({
+    _i17.Key? key,
+    required String userId,
+    required String photoUrl,
+    required String username,
+    required String token,
+    required String senderToken,
+  }) : super(
+          CallCheckRoute.name,
+          path: '/callCheck',
+          args: CallCheckRouteArgs(
+            key: key,
+            userId: userId,
+            photoUrl: photoUrl,
+            username: username,
+            token: token,
+            senderToken: senderToken,
+          ),
+        );
+
+  static const String name = 'CallCheckRoute';
+}
+
+class CallCheckRouteArgs {
+  const CallCheckRouteArgs({
+    this.key,
+    required this.userId,
+    required this.photoUrl,
+    required this.username,
+    required this.token,
+    required this.senderToken,
+  });
+
+  final _i17.Key? key;
+
+  final String userId;
+
+  final String photoUrl;
+
+  final String username;
+
+  final String token;
+
+  final String senderToken;
+
+  @override
+  String toString() {
+    return 'CallCheckRouteArgs{key: $key, userId: $userId, photoUrl: $photoUrl, username: $username, token: $token, senderToken: $senderToken}';
+  }
+}
+
+/// generated route for
+/// [_i9.CallingScreen]
 class CallingRoute extends _i10.PageRouteInfo<CallingRouteArgs> {
   CallingRoute({
     _i17.Key? key,
     required String userId,
     required String photoUrl,
     required String username,
+    required String token,
+    required String senderToken,
   }) : super(
           CallingRoute.name,
-          path: '/calling',
+          path: '/incomingCall',
           args: CallingRouteArgs(
             key: key,
             userId: userId,
             photoUrl: photoUrl,
             username: username,
+            token: token,
+            senderToken: senderToken,
           ),
         );
 
@@ -517,6 +581,8 @@ class CallingRouteArgs {
     required this.userId,
     required this.photoUrl,
     required this.username,
+    required this.token,
+    required this.senderToken,
   });
 
   final _i17.Key? key;
@@ -527,43 +593,13 @@ class CallingRouteArgs {
 
   final String username;
 
-  @override
-  String toString() {
-    return 'CallingRouteArgs{key: $key, userId: $userId, photoUrl: $photoUrl, username: $username}';
-  }
-}
+  final String token;
 
-/// generated route for
-/// [_i9.IncomingCallScreen]
-class IncomingCallRoute extends _i10.PageRouteInfo<IncomingCallRouteArgs> {
-  IncomingCallRoute({
-    _i17.Key? key,
-    required _i17.Widget scaffold,
-  }) : super(
-          IncomingCallRoute.name,
-          path: '/incomingCall',
-          args: IncomingCallRouteArgs(
-            key: key,
-            scaffold: scaffold,
-          ),
-        );
-
-  static const String name = 'IncomingCallRoute';
-}
-
-class IncomingCallRouteArgs {
-  const IncomingCallRouteArgs({
-    this.key,
-    required this.scaffold,
-  });
-
-  final _i17.Key? key;
-
-  final _i17.Widget scaffold;
+  final String senderToken;
 
   @override
   String toString() {
-    return 'IncomingCallRouteArgs{key: $key, scaffold: $scaffold}';
+    return 'CallingRouteArgs{key: $key, userId: $userId, photoUrl: $photoUrl, username: $username, token: $token, senderToken: $senderToken}';
   }
 }
 

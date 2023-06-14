@@ -5,18 +5,6 @@ import 'package:internship_practice/core/usecases/usecase.dart';
 import 'package:internship_practice/features/call/domain/entities/call_entity.dart';
 import 'package:internship_practice/features/call/domain/repositories/call_repository.dart';
 
-// class GetCallLogsUsecase
-//     implements StreamUseCase<List<CallEntity>, GetCallLogsParams> {
-//   final CallRepository callRepository;
-
-//   const GetCallLogsUsecase({required this.callRepository});
-
-//   @override
-//   Stream<List<CallEntity>> call(GetCallLogsParams params) {
-//     return callRepository.getAllCallLogs(params.userId);
-//   }
-// }
-
 class GetCallLogsUsecase
     implements UseCase<List<CallEntity>, GetCallLogsParams> {
   final CallRepository callRepository;

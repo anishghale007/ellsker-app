@@ -55,7 +55,8 @@ dependencies:
   audioplayers: ^4.0.1
   chewie: ^1.5.0
   auto_route: ^4.0.0
-
+  awesome_notifications: ^0.7.4+1
+  awesome_notifications_fcm: ^0.7.4+1
 
 dev_dependencies:
   flutter_test:

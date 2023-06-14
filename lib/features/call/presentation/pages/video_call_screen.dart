@@ -53,14 +53,16 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
                   AgoraVideoButtons(
                     client: _agoraClient!,
                     enabledButtons: const [
-                      BuiltInButtons.toggleCamera,
-                      // BuiltInButtons.callEnd,
+                      BuiltInButtons.callEnd,
                       BuiltInButtons.toggleMic,
+                      BuiltInButtons.toggleCamera,
                       BuiltInButtons.switchCamera,
                     ],
-                    disconnectButtonChild: IconButton(
+                    disconnectButtonChild: ElevatedButton(
                       onPressed: () async {
                         await _agoraClient!.engine.leaveChannel();
+                        // Go back to the chat screen
+
                         // Send the call message
 
                         // If the user does not pickup send missed call message
@@ -71,7 +73,15 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
 
                         // set the inCall to false in both of the user collection
                       },
-                      icon: const Icon(Icons.call_end),
+                      style: ElevatedButton.styleFrom(
+                        shape: const CircleBorder(),
+                        padding: const EdgeInsets.all(15),
+                        backgroundColor: Colors.red,
+                      ),
+                      child: const Icon(
+                        Icons.call_end,
+                        size: 30,
+                      ),
                     ),
                   ),
                 ],

@@ -1,11 +1,13 @@
 import 'dart:developer';
 
 import 'package:auto_route/auto_route.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:internship_practice/colors_utils.dart';
+import 'package:internship_practice/core/controller/notification_controller.dart';
 import 'package:internship_practice/core/utils/strings_manager.dart';
 import 'package:internship_practice/features/auth/presentation/cubit/sign%20out/sign_out_cubit.dart';
 import 'package:internship_practice/features/auth/presentation/cubit/user%20status/user_status_cubit.dart';
@@ -22,6 +24,22 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   late SignOutCubit _bloc;
+
+  @override
+  void initState() {
+    super.initState();
+    requestPermission();
+    initInfo();
+    _bloc = sl<SignOutCubit>();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    _bloc.close();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
 
   Future<bool> _showExitPopup() async {
     return await showDialog(
@@ -74,22 +92,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   @override
-  void initState() {
-    super.initState();
-    requestPermission();
-    initInfo();
-    _bloc = sl<SignOutCubit>();
-    WidgetsBinding.instance.addObserver(this);
-  }
-
-  @override
-  void dispose() {
-    _bloc.close();
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
-
-  @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
     switch (state) {
@@ -134,40 +136,89 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     var androidInitialize =
         const AndroidInitializationSettings('@mipmap/ic_launcher');
     var iOSInitialize = const DarwinInitializationSettings();
-    var initializationSettings =
-        InitializationSettings(android: androidInitialize, iOS: iOSInitialize);
+    var initializationSettings = InitializationSettings(
+      android: androidInitialize,
+      iOS: iOSInitialize,
+    );
     flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
     FirebaseMessaging.onMessage.listen((RemoteMessage remoteMessage) async {
-      BigTextStyleInformation bigTextStyleInformation = BigTextStyleInformation(
-        remoteMessage.notification!.body.toString(),
-        htmlFormatBigText: true,
-        contentTitle: remoteMessage.notification!.title.toString(),
-        htmlFormatContentTitle: true,
-      );
-      AndroidNotificationDetails androidNotificationDetails =
-          AndroidNotificationDetails(
-        'ellsker_app',
-        'ellsker_app',
-        importance: Importance.high,
-        styleInformation: bigTextStyleInformation,
-        priority: Priority.high,
-        playSound: true,
-        enableVibration: true,
-
-        // ongoing: true,
-      );
-      NotificationDetails notificationDetails = NotificationDetails(
-        android: androidNotificationDetails,
-        iOS: const DarwinNotificationDetails(),
-      );
-      await flutterLocalNotificationsPlugin.show(
-        0,
-        remoteMessage.notification?.title,
-        remoteMessage.notification?.body,
-        notificationDetails,
-        payload: remoteMessage.data['body'],
-      );
+      if (remoteMessage.notification != null) {
+        if (remoteMessage.data['notificationType'] ==
+            "missed call notification") {
+          AwesomeNotifications().dismiss(1);
+          // BigTextStyleInformation bigTextStyleInformation =
+          //     BigTextStyleInformation(
+          //   remoteMessage.notification!.body.toString(),
+          //   htmlFormatBigText: true,
+          //   contentTitle: remoteMessage.notification!.title.toString(),
+          //   htmlFormatContentTitle: true,
+          // );
+          // AndroidNotificationDetails androidNotificationDetails =
+          //     AndroidNotificationDetails(
+          //   'ellsker_app',
+          //   'ellsker_app',
+          //   importance: Importance.high,
+          //   styleInformation: bigTextStyleInformation,
+          //   priority: Priority.high,
+          //   playSound: true,
+          //   enableVibration: true,
+          //   // ongoing: true,
+          // );
+          // NotificationDetails notificationDetails = NotificationDetails(
+          //   android: androidNotificationDetails,
+          //   iOS: const DarwinNotificationDetails(),
+          // );
+          // await flutterLocalNotificationsPlugin.show(
+          //   0,
+          //   remoteMessage.notification?.title,
+          //   remoteMessage.notification?.body,
+          //   notificationDetails,
+          //   payload: remoteMessage.data['body'],
+          // );
+        } else if (remoteMessage.data['notificationType'] ==
+            "call notification") {
+          AwesomeNotifications().createNotification(
+            content: NotificationContent(
+              id: 1,
+              channelKey: "ellsker_app",
+              color: Colors.white,
+              title: remoteMessage.notification!.title,
+              body: remoteMessage.notification!.body,
+              category: NotificationCategory.Call,
+              wakeUpScreen: true,
+              fullScreenIntent: true,
+              autoDismissible: false,
+              backgroundColor: Colors.orange,
+            ),
+            actionButtons: [
+              NotificationActionButton(
+                key: "ACCEPT",
+                label: "Accept Call",
+                color: Colors.green,
+                autoDismissible: true,
+              ),
+              NotificationActionButton(
+                key: "REJECT",
+                label: "Reject Call",
+                color: Colors.red,
+                autoDismissible: true,
+              ),
+            ],
+          );
+          AwesomeNotifications().setListeners(
+            onActionReceivedMethod: (receivedAction) =>
+                NotificationController.onActionReceivedMethod(
+              receivedAction,
+              context: context,
+              userId: remoteMessage.data['conversationId'],
+              photoUrl: remoteMessage.data['photoUrl'],
+              username: remoteMessage.data['username'],
+              token: remoteMessage.data['token'],
+            ),
+          );
+        }
+      }
       // checkRoute(remoteMessage);
     });
 
@@ -187,22 +238,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           context.router.push(
             ChatRoute(
               username: message.data['username'],
-              userId: message.data['conversationId'],
+              userId: message.data['conversationId'], // other user's id
               photoUrl: message.data['photoUrl'],
               token: message.data['token'],
             ),
           );
-          // Navigator.push(
-          //   context,
-          //   MaterialPageRoute(
-          //     builder: (context) => ChatScreen(
-          //       username: message.data['username'],
-          //       userId: message.data['conversationId'],
-          //       photoUrl: message.data['photoUrl'],
-          //       token: message.data['token'],
-          //     ),
-          //   ),
-          // );
         }
       }
     }

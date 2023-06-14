@@ -41,6 +41,34 @@ class MakeCallEvent extends CallEvent {
       ];
 }
 
+class PickupCallEvent extends CallEvent {
+  final String userId;
+
+  const PickupCallEvent({required this.userId});
+
+  @override
+  List<Object> get props => [userId];
+}
+
+class EndCallEvent extends CallEvent {
+  final String callerId;
+  final String receiverId;
+  final String callEndTime;
+
+  const EndCallEvent({
+    required this.callerId,
+    required this.receiverId,
+    required this.callEndTime,
+  });
+
+  @override
+  List<Object> get props => [
+        callerId,
+        receiverId,
+        callEndTime,
+      ];
+}
+
 class GetAllCallLogsEvent extends CallEvent {
   final String userId;
 

@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -31,6 +32,21 @@ void main() async {
   );
   await FirebaseMessaging.instance.getInitialMessage();
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+  AwesomeNotifications().initialize(
+    null,
+    [
+      NotificationChannel(
+        channelKey: "ellsker_app",
+        channelName: "ellsker_app",
+        channelDescription: "Video Call",
+        importance: NotificationImportance.Max,
+        channelShowBadge: true,
+        locked: true,
+        defaultRingtoneType: DefaultRingtoneType.Ringtone,
+        vibrationPattern: highVibrationPattern,
+      ),
+    ],
+  );
   runApp(MyApp());
 }
 
@@ -65,21 +81,6 @@ class MyApp extends StatelessWidget {
         BlocProvider<UserStatusCubit>(
           create: (context) => di.sl<UserStatusCubit>(),
         ),
-        // BlocProvider<ConversationCubit>(
-        //   create: (context) => di.sl<ConversationCubit>(),
-        // ),
-        // BlocProvider<ConversationBloc>(
-        //   create: (context) => di.sl<ConversationBloc>(),
-        // ),
-        // BlocProvider<MessageCubit>(
-        //   create: (context) => di.sl<MessageCubit>(),
-        // ),
-        // BlocProvider<NotificationBloc>(
-        //   create: (context) => di.sl<NotificationBloc>(),
-        // ),
-        // BlocProvider<NotificationCubit>(
-        //   create: (context) => di.sl<NotificationCubit>(),
-        // ),
         BlocProvider<NetworkBloc>(
           create: (context) => di.sl<NetworkBloc>()..add(NetworkObserveEvent()),
         ),

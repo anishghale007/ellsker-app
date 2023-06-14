@@ -147,6 +147,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       instagram: "@instagram",
       location: "Location",
       isOnline: true,
+      inCall: false,
     ).toJson();
     dbUser.doc(userInfo.uid).set(userData);
   }

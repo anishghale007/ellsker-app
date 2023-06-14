@@ -2,9 +2,9 @@ import 'package:auto_route/auto_route.dart';
 import 'package:internship_practice/features/auth/presentation/pages/festival_screen.dart';
 import 'package:internship_practice/features/auth/presentation/pages/home_screen.dart';
 import 'package:internship_practice/features/auth/presentation/pages/login_screen.dart';
+import 'package:internship_practice/features/call/presentation/pages/call_check_screen.dart';
 import 'package:internship_practice/features/call/presentation/pages/call_history_screen.dart';
 import 'package:internship_practice/features/call/presentation/pages/calling_screen.dart';
-import 'package:internship_practice/features/call/presentation/pages/incoming_call_screen.dart';
 import 'package:internship_practice/features/call/presentation/pages/video_call_screen.dart';
 import 'package:internship_practice/features/chat/presentation/pages/chat_list_screen.dart';
 import 'package:internship_practice/features/chat/presentation/pages/chat_screen.dart';
@@ -103,12 +103,12 @@ import 'package:internship_practice/features/profile/presentation/pages/profile_
       page: CallHistoryScreen,
     ),
     AutoRoute(
-      path: '/calling',
-      page: CallingScreen,
+      path: '/callCheck',
+      page: CallCheckScreen,
     ),
     AutoRoute(
       path: '/incomingCall',
-      page: IncomingCallScreen,
+      page: CallingScreen,
     ),
   ],
 )

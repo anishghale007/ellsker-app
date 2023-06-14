@@ -9,6 +9,7 @@ import 'package:internship_practice/features/call/domain/repositories/call_repos
 import 'package:internship_practice/features/call/domain/usecases/end_call_usecase.dart';
 import 'package:internship_practice/features/call/domain/usecases/get_rtc_token_usecase.dart';
 import 'package:internship_practice/features/call/domain/usecases/make_call_usecase.dart';
+import 'package:internship_practice/features/call/domain/usecases/pickup_call_usecase.dart';
 
 class CallRepositoryImpl implements CallRepository {
   final CallRemoteDataSource callRemoteDataSource;
@@ -79,8 +80,13 @@ class CallRepositoryImpl implements CallRepository {
     }
   }
 
-  // @override
-  // Stream<List<CallEntity>> getAllCallLogs(String userId) {
-  //   return callRemoteDataSource.getAllChatLogs(userId);
-  // }
+  @override
+  Future<Either<Failure, void>> pickupCall(PickupCallParams params) async {
+    try {
+      final response = await callRemoteDataSource.pickupCall(params);
+      return Right(response);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
 }

@@ -5,6 +5,7 @@
 list(APPEND FLUTTER_PLUGIN_LIST
   agora_rtc_engine
   audioplayers_windows
+  awesome_notifications
   connectivity_plus
   flutter_secure_storage_windows
   geolocator_windows

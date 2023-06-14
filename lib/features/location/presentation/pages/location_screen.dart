@@ -20,7 +20,7 @@ class LocationScreen extends StatelessWidget {
                 padding: EdgeInsets.only(top: screenHeight / 2),
                 child: Center(
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       context.router.push(
                         MapRoute(
                           userLatitude: null,

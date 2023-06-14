@@ -34,6 +34,7 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
               'token': notificationEntity.token,
               'photoUrl': notificationEntity.photoUrl,
               'username': notificationEntity.username,
+              'notificationType': notificationEntity.notificationType,
             },
             "notification": <String, dynamic>{
               "title": notificationEntity.title,

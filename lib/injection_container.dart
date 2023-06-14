@@ -17,9 +17,11 @@ import 'package:internship_practice/features/auth/presentation/cubit/user%20stat
 import 'package:internship_practice/features/call/data/datasources/call_remote_data_source.dart';
 import 'package:internship_practice/features/call/data/repositories/call_repository_impl.dart';
 import 'package:internship_practice/features/call/domain/repositories/call_repository.dart';
+import 'package:internship_practice/features/call/domain/usecases/end_call_usecase.dart';
 import 'package:internship_practice/features/call/domain/usecases/get_call_logs_usecase.dart';
 import 'package:internship_practice/features/call/domain/usecases/get_rtc_token_usecase.dart';
 import 'package:internship_practice/features/call/domain/usecases/make_call_usecase.dart';
+import 'package:internship_practice/features/call/domain/usecases/pickup_call_usecase.dart';
 import 'package:internship_practice/features/call/presentation/bloc/call/call_bloc.dart';
 import 'package:internship_practice/features/call/presentation/bloc/token/token_bloc.dart';
 import 'package:internship_practice/features/chat/data/datasources/chat_remote_data_source.dart';
@@ -127,6 +129,8 @@ Future<void> init() async {
     () => CallBloc(
       makeCallUsecase: sl(),
       getCallLogsUsecase: sl(),
+      pickupCallUsecase: sl(),
+      endCallUsecase: sl(),
     ),
   );
 
@@ -224,8 +228,16 @@ Future<void> init() async {
     () => MakeCallUsecase(callRepository: sl()),
   );
 
+  sl.registerLazySingleton<PickupCallUsecase>(
+    () => PickupCallUsecase(callRepository: sl()),
+  );
+
   sl.registerLazySingleton<GetCallLogsUsecase>(
     () => GetCallLogsUsecase(callRepository: sl()),
+  );
+
+  sl.registerLazySingleton<EndCallUsecase>(
+    () => EndCallUsecase(callRepository: sl()),
   );
 
   /// Repository

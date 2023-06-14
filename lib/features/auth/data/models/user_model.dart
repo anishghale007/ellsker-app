@@ -8,6 +8,7 @@ class UserModel {
   final String instagram;
   final String location;
   final bool isOnline;
+  final bool inCall;
 
   const UserModel({
     required this.userId,
@@ -19,6 +20,7 @@ class UserModel {
     required this.instagram,
     required this.location,
     required this.isOnline,
+    required this.inCall,
   });
 
   Map<String, dynamic> toJson() {
@@ -32,6 +34,22 @@ class UserModel {
       "instagram": instagram,
       "location": location,
       "isOnline": isOnline,
+      "inCall": inCall,
     };
+  }
+
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    return UserModel(
+      userId: json['userId'],
+      email: json['email'],
+      photoUrl: json['photoUrl'],
+      userName: json['username'],
+      token: json['token'],
+      age: json['age'],
+      instagram: json['instagram'],
+      location: json['location'],
+      isOnline: json['isOnline'],
+      inCall: json['inCall'],
+    );
   }
 }

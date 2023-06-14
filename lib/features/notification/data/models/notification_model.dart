@@ -8,5 +8,6 @@ class NotificationModel extends NotificationEntity {
     required super.body,
     required super.photoUrl,
     required super.username,
+    required super.notificationType,
   });
 }
