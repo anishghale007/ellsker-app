@@ -2,11 +2,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internship_practice/colors_utils.dart';
-import 'package:internship_practice/features/call/domain/entities/call_entity.dart';
+import 'package:internship_practice/features/call/domain/entities/call_log_entity.dart';
 import 'package:intl/intl.dart';
 
 class CallLogListTileWidget extends StatelessWidget {
-  final CallEntity data;
+  final CallLogEntity data;
   final String currentUser;
   final int callTime;
 

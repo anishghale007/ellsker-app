@@ -24,12 +24,14 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   late SignOutCubit _bloc;
+  String? myToken = "";
 
   @override
   void initState() {
     super.initState();
     requestPermission();
     initInfo();
+    getToken();
     _bloc = sl<SignOutCubit>();
     WidgetsBinding.instance.addObserver(this);
   }
@@ -132,6 +134,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
   }
 
+  void getToken() async {
+    await FirebaseMessaging.instance.getToken().then(
+      (token) {
+        setState(() {
+          myToken = token;
+          log("MyToken: $myToken");
+        });
+      },
+    );
+  }
+
   initInfo() {
     var androidInitialize =
         const AndroidInitializationSettings('@mipmap/ic_launcher');
@@ -215,6 +228,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               photoUrl: remoteMessage.data['photoUrl'],
               username: remoteMessage.data['username'],
               token: remoteMessage.data['token'],
+              senderToken: myToken!,
             ),
           );
         }

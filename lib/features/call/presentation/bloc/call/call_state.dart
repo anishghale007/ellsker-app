@@ -23,7 +23,7 @@ class CallError extends CallState {
 class CallSuccess extends CallState {}
 
 class CallLogsLoaded extends CallState {
-  final List<CallEntity> callLogsList;
+  final List<CallLogEntity> callLogsList;
 
   const CallLogsLoaded({required this.callLogsList});
 

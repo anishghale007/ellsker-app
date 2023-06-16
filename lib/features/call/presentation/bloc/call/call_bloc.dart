@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:internship_practice/features/call/domain/entities/call_entity.dart';
+import 'package:internship_practice/features/call/domain/entities/call_log_entity.dart';
 import 'package:internship_practice/features/call/domain/usecases/end_call_usecase.dart';
 import 'package:internship_practice/features/call/domain/usecases/get_call_logs_usecase.dart';
 import 'package:internship_practice/features/call/domain/usecases/make_call_usecase.dart';
@@ -64,8 +64,12 @@ class CallBloc extends Bloc<CallEvent, CallState> {
     final response = await endCallUsecase.call(
       EndCallParams(
         callerId: event.callerId,
+        callerPhotoUrl: event.callerPhotoUrl,
+        callerName: event.callerName,
         receiverId: event.receiverId,
+        callStartTime: event.callStartTime,
         callEndTime: event.callEndTime,
+        didPickup: event.didPickup,
       ),
     );
     response.fold(

@@ -19,6 +19,7 @@ import 'package:internship_practice/features/chat/presentation/cubit/message/mes
 import 'package:internship_practice/features/notification/domain/entities/notification_entity.dart';
 import 'package:internship_practice/features/notification/presentation/cubit/notification/notification_cubit.dart';
 import 'package:internship_practice/injection_container.dart';
+import 'package:internship_practice/routes/router.gr.dart';
 
 class CallingScreen extends StatelessWidget implements AutoRouteWrapper {
   final String userId;
@@ -125,8 +126,12 @@ class CallingScreen extends StatelessWidget implements AutoRouteWrapper {
                               context.read<CallBloc>().add(
                                     EndCallEvent(
                                       callerId: currentUser.uid,
+                                      callerPhotoUrl: currentUser.photoURL!,
+                                      callerName: currentUser.displayName!,
                                       receiverId: userId,
+                                      callStartTime: DateTime.now().toString(),
                                       callEndTime: DateTime.now().toString(),
+                                      didPickup: false,
                                     ),
                                   );
                               // missed call notification
@@ -165,9 +170,19 @@ class CallingScreen extends StatelessWidget implements AutoRouteWrapper {
               ),
             );
           } else {
-            // If the other user picks up the call then navigate to video call screen
-            //   // context.router.replace(const VideoCallRoute());
+            // If the other user picks up the call then navigate to video call screen and pass the current time
+            context.router.replace(
+              VideoCallRoute(
+                callStartTime: DateTime.now().toString(),
+              ),
+            );
             // Send Call Message
+            _sendMessage(
+              context,
+              currentUser,
+              messageContent: Constant.callMessageContent,
+              messageType: MessageType.call,
+            );
           }
         }
         return const LoadingWidget();

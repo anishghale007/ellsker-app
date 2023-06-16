@@ -13,7 +13,7 @@ class Constant {
   static const String gifMessageContent = "Sent a GIF.";
   static const String voiceMessageContent = "Sent a Voice Message.";
   static const String callMessageContent = "Made a Call";
-  static const String missedCallMessageContent = "Missed your call.";
+  static const String missedCallMessageContent = "Made a missed call.";
   static const String didNotPickUpMessageContent = "Did not pick up.";
   static const String incomingCallMessageContent = "Incoming call";
   static const String unsendMessageContent = "Unsent a Message.";

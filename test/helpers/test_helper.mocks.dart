@@ -17,7 +17,7 @@ import 'package:internship_practice/features/call/data/datasources/call_remote_d
     as _i15;
 import 'package:internship_practice/features/call/data/models/rtc_token_model.dart'
     as _i3;
-import 'package:internship_practice/features/call/domain/entities/call_entity.dart'
+import 'package:internship_practice/features/call/domain/entities/call_log_entity.dart'
     as _i14;
 import 'package:internship_practice/features/call/domain/entities/rtc_token_entity.dart'
     as _i9;
@@ -195,7 +195,7 @@ class MockCallRepository extends _i1.Mock implements _i4.CallRepository {
         )),
       ) as _i7.Future<_i2.Either<_i8.Failure, void>>);
   @override
-  _i7.Future<_i2.Either<_i8.Failure, List<_i14.CallEntity>>> getAllCallLogs(
+  _i7.Future<_i2.Either<_i8.Failure, List<_i14.CallLogEntity>>> getAllCallLogs(
           String? userId) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -203,15 +203,15 @@ class MockCallRepository extends _i1.Mock implements _i4.CallRepository {
           [userId],
         ),
         returnValue:
-            _i7.Future<_i2.Either<_i8.Failure, List<_i14.CallEntity>>>.value(
-                _FakeEither_0<_i8.Failure, List<_i14.CallEntity>>(
+            _i7.Future<_i2.Either<_i8.Failure, List<_i14.CallLogEntity>>>.value(
+                _FakeEither_0<_i8.Failure, List<_i14.CallLogEntity>>(
           this,
           Invocation.method(
             #getAllCallLogs,
             [userId],
           ),
         )),
-      ) as _i7.Future<_i2.Either<_i8.Failure, List<_i14.CallEntity>>>);
+      ) as _i7.Future<_i2.Either<_i8.Failure, List<_i14.CallLogEntity>>>);
 }
 
 /// A class which mocks [CallRemoteDataSource].
@@ -267,15 +267,15 @@ class MockCallRemoteDataSource extends _i1.Mock
         returnValueForMissingStub: _i7.Future<void>.value(),
       ) as _i7.Future<void>);
   @override
-  _i7.Future<List<_i14.CallEntity>> getAllChatLogs(String? userId) =>
+  _i7.Future<List<_i14.CallLogEntity>> getAllCallLogs(String? userId) =>
       (super.noSuchMethod(
         Invocation.method(
-          #getAllChatLogs,
+          #getAllCallLogs,
           [userId],
         ),
         returnValue:
-            _i7.Future<List<_i14.CallEntity>>.value(<_i14.CallEntity>[]),
-      ) as _i7.Future<List<_i14.CallEntity>>);
+            _i7.Future<List<_i14.CallLogEntity>>.value(<_i14.CallLogEntity>[]),
+      ) as _i7.Future<List<_i14.CallLogEntity>>);
 }
 
 /// A class which mocks [GetRtcTokenUsecase].

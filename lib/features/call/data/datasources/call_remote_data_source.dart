@@ -5,9 +5,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:internship_practice/constants.dart';
 import 'package:internship_practice/core/error/exceptions.dart';
 import 'package:http/http.dart' as http;
+import 'package:internship_practice/features/call/data/models/call_log_model.dart';
 import 'package:internship_practice/features/call/data/models/call_model.dart';
 import 'package:internship_practice/features/call/data/models/rtc_token_model.dart';
-import 'package:internship_practice/features/call/domain/entities/call_entity.dart';
+import 'package:internship_practice/features/call/domain/entities/call_log_entity.dart';
 import 'package:internship_practice/features/call/domain/usecases/end_call_usecase.dart';
 import 'package:internship_practice/features/call/domain/usecases/get_rtc_token_usecase.dart';
 import 'package:internship_practice/features/call/domain/usecases/make_call_usecase.dart';
@@ -19,8 +20,7 @@ abstract class CallRemoteDataSource {
   Future<void> makeCall(MakeCallParams params);
   Future<void> pickupCall(PickupCallParams params);
   Future<void> endCall(EndCallParams params);
-  // Stream<List<CallEntity>> getAllChatLogs(String userId);
-  Future<List<CallEntity>> getAllChatLogs(String userId);
+  Future<List<CallLogEntity>> getAllCallLogs(String userId);
 }
 
 class CallRemoteDataSourceImpl implements CallRemoteDataSource {
@@ -68,6 +68,10 @@ class CallRemoteDataSourceImpl implements CallRemoteDataSource {
         callEndTime: params.callEndTime,
         hasDialled: true,
       );
+      // setting inCall to true in the caller user collection
+      await dbUser.doc(params.callerId).set({
+        "inCall": true,
+      });
       // call receiver data
       _saveCallDataToCollection(
         callId: callId,
@@ -100,6 +104,7 @@ class CallRemoteDataSourceImpl implements CallRemoteDataSource {
       await dbUser.doc(currentUser).set({
         "inCall": true,
       });
+      // add a new doc in the call logs collection
     } on FirebaseException catch (e) {
       throw Exception(e.toString());
     }
@@ -115,22 +120,41 @@ class CallRemoteDataSourceImpl implements CallRemoteDataSource {
       Map<String, dynamic> updateCallerStatus = {
         "inCall": false,
       };
+      final callLogData = CallLogModel(
+        callerId: params.callerId,
+        callerPhotoUrl: params.callerPhotoUrl,
+        callerName: params.callerName,
+        callStartTime: params.callStartTime,
+        callEndTime: params.callEndTime,
+        didPickup: params.didPickup,
+      ).toJson();
+      /* 
+      CALLER DATA
+       */
       // caller user call collection
       await dbCall
           .doc("${params.callerId}-${params.receiverId}")
           .set(updateCallerData);
-      // var callHistory = await dbCallHistory
-      //     .doc("${params.callerId}-${params.receiverId}")
-      //     .collection('call logs')
-      //     .get();
-      // for (var doc in callHistory.docs) {
-
-      // }
+      // caller user call log collection
+      await dbCallHistory
+          .doc("${params.callerId}-${params.receiverId}")
+          .collection('call logs')
+          .doc()
+          .set(callLogData);
       await dbUser.doc(params.callerId).set(updateCallerStatus);
+      /* 
+      CALL RECEIVER DATA
+       */
       // receiver user call collection
       await dbCall
           .doc("${params.receiverId}-${params.callerId}")
           .set(updateCallerData);
+      // receiver user call log collection
+      await dbCallHistory
+          .doc("${params.receiverId}-${params.callerId}")
+          .collection('call logs')
+          .doc()
+          .set(callLogData);
       await dbUser.doc(params.receiverId).set(updateCallerStatus);
     } on FirebaseException catch (e) {
       throw Exception(e.toString());
@@ -138,7 +162,7 @@ class CallRemoteDataSourceImpl implements CallRemoteDataSource {
   }
 
   @override
-  Future<List<CallEntity>> getAllChatLogs(String userId) async {
+  Future<List<CallLogEntity>> getAllCallLogs(String userId) async {
     try {
       final currentUser = FirebaseAuth.instance.currentUser!.uid;
       QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
@@ -147,7 +171,7 @@ class CallRemoteDataSourceImpl implements CallRemoteDataSource {
           .doc("$currentUser-$userId")
           .collection('call logs')
           .get();
-      return snapshot.docs.map((e) => CallModel.fromSnapshot(e)).toList();
+      return snapshot.docs.map((e) => CallLogModel.fromSnapshot(e)).toList();
     } on FirebaseException catch (e) {
       throw Exception(e.toString());
     }
@@ -167,7 +191,6 @@ class CallRemoteDataSourceImpl implements CallRemoteDataSource {
     required String callEndTime,
     required bool hasDialled,
   }) async {
-    final currentUser = FirebaseAuth.instance.currentUser!;
     // call data
     final callerData = CallModel(
       callId: callId,
@@ -183,15 +206,5 @@ class CallRemoteDataSourceImpl implements CallRemoteDataSource {
     ).toJson();
     // call collection
     await dbCall.doc("$callDocFirstId-$callDocSecondId").set(callerData);
-    // call history / logs collection for a single conversation
-    await dbCallHistory
-        .doc("$callDocFirstId-$callDocSecondId")
-        .collection('call logs')
-        .doc()
-        .set(callerData);
-    // setting inCall to true in the caller user collection
-    await dbUser.doc(currentUser.uid).set({
-      "inCall": true,
-    });
   }
 }

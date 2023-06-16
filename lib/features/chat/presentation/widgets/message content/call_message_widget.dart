@@ -72,8 +72,10 @@ class CallMessageWidget extends StatelessWidget {
                                   shape: BoxShape.circle,
                                   color: Colors.grey[600],
                                 ),
-                                child: const Icon(
-                                  Icons.phone,
+                                child: Icon(
+                                  messageContent == Constant.callMessageContent
+                                      ? Icons.phone
+                                      : Icons.phone_missed,
                                   size: 20,
                                   color: Colors.white,
                                 ),

@@ -52,20 +52,32 @@ class PickupCallEvent extends CallEvent {
 
 class EndCallEvent extends CallEvent {
   final String callerId;
+  final String callerPhotoUrl;
+  final String callerName;
   final String receiverId;
+  final String callStartTime;
   final String callEndTime;
+  final bool didPickup;
 
   const EndCallEvent({
     required this.callerId,
+    required this.callerPhotoUrl,
+    required this.callerName,
     required this.receiverId,
+    required this.callStartTime,
     required this.callEndTime,
+    required this.didPickup,
   });
 
   @override
   List<Object> get props => [
         callerId,
+        callerPhotoUrl,
+        callerName,
         receiverId,
+        callStartTime,
         callEndTime,
+        didPickup,
       ];
 }
 
