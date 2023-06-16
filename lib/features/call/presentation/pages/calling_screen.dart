@@ -173,6 +173,10 @@ class CallingScreen extends StatelessWidget implements AutoRouteWrapper {
             // If the other user picks up the call then navigate to video call screen and pass the current time
             context.router.replace(
               VideoCallRoute(
+                callerId: currentUser.uid,
+                callerName: currentUser.displayName!,
+                callerPhotoUrl: currentUser.photoURL!,
+                receiverId: userId,
                 callStartTime: DateTime.now().toString(),
               ),
             );

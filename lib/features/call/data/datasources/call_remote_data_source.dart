@@ -104,7 +104,6 @@ class CallRemoteDataSourceImpl implements CallRemoteDataSource {
       await dbUser.doc(currentUser).set({
         "inCall": true,
       });
-      // add a new doc in the call logs collection
     } on FirebaseException catch (e) {
       throw Exception(e.toString());
     }
@@ -113,7 +112,7 @@ class CallRemoteDataSourceImpl implements CallRemoteDataSource {
   @override
   Future<void> endCall(EndCallParams params) async {
     try {
-      Map<String, dynamic> updateCallerData = {
+      Map<String, dynamic> updateCallData = {
         "callEndTime": params.callEndTime,
         "hasDialled": false,
       };
@@ -134,7 +133,7 @@ class CallRemoteDataSourceImpl implements CallRemoteDataSource {
       // caller user call collection
       await dbCall
           .doc("${params.callerId}-${params.receiverId}")
-          .set(updateCallerData);
+          .set(updateCallData);
       // caller user call log collection
       await dbCallHistory
           .doc("${params.callerId}-${params.receiverId}")
@@ -148,7 +147,7 @@ class CallRemoteDataSourceImpl implements CallRemoteDataSource {
       // receiver user call collection
       await dbCall
           .doc("${params.receiverId}-${params.callerId}")
-          .set(updateCallerData);
+          .set(updateCallData);
       // receiver user call log collection
       await dbCallHistory
           .doc("${params.receiverId}-${params.callerId}")

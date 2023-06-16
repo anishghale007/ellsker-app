@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:internship_practice/colors_utils.dart';
-import 'package:internship_practice/core/controller/notification_controller.dart';
+import 'package:internship_practice/features/notification/controller/notification_controller.dart';
 import 'package:internship_practice/core/utils/strings_manager.dart';
 import 'package:internship_practice/features/auth/presentation/cubit/sign%20out/sign_out_cubit.dart';
 import 'package:internship_practice/features/auth/presentation/cubit/user%20status/user_status_cubit.dart';
@@ -31,6 +31,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     super.initState();
     requestPermission();
     initInfo();
+    initNotification();
     getToken();
     _bloc = sl<SignOutCubit>();
     WidgetsBinding.instance.addObserver(this);
@@ -260,6 +261,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         }
       }
     }
+  }
+
+  initNotification() {
+    NotificationConfig.initInfo(
+      context,
+      checkRoute,
+      senderToken: myToken!,
+    );
   }
 
   @override

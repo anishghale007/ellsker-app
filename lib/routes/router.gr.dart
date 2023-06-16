@@ -90,6 +90,10 @@ class AppRouter extends _i10.RootStackRouter {
       return _i10.MaterialPageX<dynamic>(
         routeData: routeData,
         child: _i6.VideoCallScreen(
+          callerId: args.callerId,
+          callerPhotoUrl: args.callerPhotoUrl,
+          callerName: args.callerName,
+          receiverId: args.receiverId,
           callStartTime: args.callStartTime,
           key: args.key,
         ),
@@ -457,12 +461,20 @@ class SharedFilesRouteArgs {
 /// [_i6.VideoCallScreen]
 class VideoCallRoute extends _i10.PageRouteInfo<VideoCallRouteArgs> {
   VideoCallRoute({
+    required String callerId,
+    required String callerPhotoUrl,
+    required String callerName,
+    required String receiverId,
     required String callStartTime,
     _i17.Key? key,
   }) : super(
           VideoCallRoute.name,
           path: '/videoCall',
           args: VideoCallRouteArgs(
+            callerId: callerId,
+            callerPhotoUrl: callerPhotoUrl,
+            callerName: callerName,
+            receiverId: receiverId,
             callStartTime: callStartTime,
             key: key,
           ),
@@ -473,9 +485,21 @@ class VideoCallRoute extends _i10.PageRouteInfo<VideoCallRouteArgs> {
 
 class VideoCallRouteArgs {
   const VideoCallRouteArgs({
+    required this.callerId,
+    required this.callerPhotoUrl,
+    required this.callerName,
+    required this.receiverId,
     required this.callStartTime,
     this.key,
   });
+
+  final String callerId;
+
+  final String callerPhotoUrl;
+
+  final String callerName;
+
+  final String receiverId;
 
   final String callStartTime;
 
@@ -483,7 +507,7 @@ class VideoCallRouteArgs {
 
   @override
   String toString() {
-    return 'VideoCallRouteArgs{callStartTime: $callStartTime, key: $key}';
+    return 'VideoCallRouteArgs{callerId: $callerId, callerPhotoUrl: $callerPhotoUrl, callerName: $callerName, receiverId: $receiverId, callStartTime: $callStartTime, key: $key}';
   }
 }
 

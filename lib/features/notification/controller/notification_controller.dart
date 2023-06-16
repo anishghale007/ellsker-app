@@ -29,15 +29,20 @@ class NotificationController {
     required BuildContext context,
   }) async {
     if (receivedAction.buttonKeyPressed == "ACCEPT") {
-      // If the call is accepted
+      final currentUser = FirebaseAuth.instance.currentUser!;
+      // IF THE CALL IS ACCEPTED
       context.router.push(
         VideoCallRoute(
+          callerId: userId, // from notification
+          callerName: username,
+          callerPhotoUrl: photoUrl,
+          receiverId: currentUser.uid,
           callStartTime: DateTime.now().toString(),
         ),
       );
       context.read<CallBloc>().add(PickupCallEvent(userId: userId));
     } else if (receivedAction.buttonKeyPressed == "REJECT") {
-      // If the call is rejected
+      // IF THE CALL IS REJECTED
       // Send did not pickup notification
       final currentUser = FirebaseAuth.instance.currentUser!;
       context.read<NotificationCubit>().sendNotification(
