@@ -11,6 +11,7 @@ class CallEntity extends Equatable {
   final String callStartTime;
   final String callEndTime;
   final bool hasDialled;
+  final bool didRejectCall;
 
   const CallEntity({
     required this.callId,
@@ -23,6 +24,7 @@ class CallEntity extends Equatable {
     required this.callStartTime,
     required this.callEndTime,
     required this.hasDialled,
+    required this.didRejectCall,
   });
 
   @override
@@ -37,5 +39,6 @@ class CallEntity extends Equatable {
         callStartTime,
         callEndTime,
         hasDialled,
+        didRejectCall,
       ];
 }

@@ -60,9 +60,6 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     return FirebaseAuth.instance.currentUser!.uid == widget.senderId
         ? GestureDetector(
             onLongPress: widget.onSenderLongPress,
-            // onTap: () {
-            //   chewieController.enterFullScreen();
-            // },
             child: Container(
               margin: const EdgeInsets.only(
                 left: 40,

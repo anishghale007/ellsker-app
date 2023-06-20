@@ -66,6 +66,9 @@ class ProfileScreen extends StatelessWidget {
                       location: data['location'],
                       email: data['email'],
                     ),
+                    const SizedBox(
+                      height: 40,
+                    ),
                   ],
                 );
               } else if (snapshot.connectionState == ConnectionState.waiting) {

@@ -88,7 +88,10 @@ class _MapScreenState extends State<MapScreen> {
           ? GoogleMap(
               mapType: MapType.normal,
               markers: marker,
-              zoomControlsEnabled: false,
+              zoomControlsEnabled: true,
+              padding: const EdgeInsets.symmetric(
+                vertical: 80,
+              ),
               initialCameraPosition: CameraPosition(
                 target: LatLng(
                   widget.userLatitude ?? myLatitude!,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
+import 'package:internship_practice/features/chat/presentation/widgets/shared_videos_widget.dart';
 
 class SharedVideosScreen extends StatelessWidget {
   final String receiverId;
@@ -21,6 +22,8 @@ class SharedVideosScreen extends StatelessWidget {
               height: 20,
             ),
             BlocBuilder<MessageCubit, MessageState>(
+              bloc: context.read<MessageCubit>()
+                ..getAllSharedVideos(receiverId: receiverId),
               builder: (context, state) {
                 if (state is SharedVideosLoaded) {
                   return GridView.builder(
@@ -35,22 +38,8 @@ class SharedVideosScreen extends StatelessWidget {
                     ),
                     itemBuilder: (context, index) {
                       final data = state.videoList[index];
-                      return Container(
-                        decoration: BoxDecoration(
-                          color: Colors.green[200],
-                        ),
-                        child: Text(
-                          data.toString(),
-                          style: const TextStyle(
-                            color: Colors.black,
-                          ),
-                        ),
-                        // CachedNetworkImage(
-                        //   imageUrl: data,
-                        //   fit: BoxFit.contain,
-                        //   errorWidget: (context, url, error) =>
-                        //       const Icon(Icons.error),
-                        // ),
+                      return SharedVideosWidget(
+                        videoUrl: data,
                       );
                     },
                   );

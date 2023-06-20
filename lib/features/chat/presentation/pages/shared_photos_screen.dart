@@ -23,6 +23,8 @@ class SharedPhotosScreen extends StatelessWidget {
               height: 20,
             ),
             BlocBuilder<MessageCubit, MessageState>(
+              bloc: context.read<MessageCubit>()
+                ..getAllSharedPhotos(receiverId: receiverId),
               builder: (context, state) {
                 if (state is SharedPhotosLoaded) {
                   return GridView.builder(

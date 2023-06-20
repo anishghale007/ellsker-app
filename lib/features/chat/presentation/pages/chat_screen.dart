@@ -218,27 +218,27 @@ class _ChatScreenState extends State<ChatScreen> {
                   //   messageContent: Constant.callMessageContent,
                   //   messageType: MessageType.call,
                   // );
-                  // context.router.push(
-                  //   CallCheckRoute(
-                  //     userId: widget.userId,
-                  //     photoUrl: widget.photoUrl,
-                  //     username: widget.username,
-                  //     token: widget.token,
-                  //     senderToken: myToken!,
-                  //   ),
-                  // );
+                  context.router.push(
+                    CallCheckRoute(
+                      userId: widget.userId,
+                      photoUrl: widget.photoUrl,
+                      username: widget.username,
+                      token: widget.token,
+                      senderToken: myToken!,
+                    ),
+                  );
                   // _sendNotification(
                   //   context,
                   //   currentUser,
                   //   messageContent: Constant.incomingCallMessageContent,
                   //   notificationType: Constant.callNotification,
                   // );
-                  _sendNotification(
-                    context,
-                    currentUser,
-                    messageContent: Constant.missedCallMessageContent,
-                    notificationType: Constant.missedCallNotification,
-                  );
+                  // _sendNotification(
+                  //   context,
+                  //   currentUser,
+                  //   messageContent: Constant.missedCallMessageContent,
+                  //   notificationType: Constant.missedCallNotification,
+                  // );
                   // context.router.push(CallingRoute(
                   //     userId: widget.userId,
                   //     photoUrl: widget.photoUrl,
@@ -767,9 +767,11 @@ class _ChatScreenState extends State<ChatScreen> {
             conversationEntity: ConversationEntity(
               receiverId: widget.userId,
               receiverName: widget.username,
+              receiverNickname: widget.username,
               receiverPhotoUrl: widget.photoUrl,
               senderId: currentUser.uid, // me
               senderName: currentUser.displayName!,
+              senderNickname: currentUser.displayName!,
               senderPhotoUrl: currentUser.photoURL!,
               lastMessage: messageContent,
               lastMessageTime: DateTime.now().toString(),

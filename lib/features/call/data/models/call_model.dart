@@ -13,6 +13,7 @@ class CallModel extends CallEntity {
     required super.callStartTime,
     required super.callEndTime,
     required super.hasDialled,
+    required super.didRejectCall,
   });
 
   Map<String, dynamic> toJson() {
@@ -27,6 +28,7 @@ class CallModel extends CallEntity {
       'callStartTime': callStartTime,
       'callEndTime': callEndTime,
       'hasDialled': hasDialled,
+      "didRejectCall": didRejectCall,
     };
   }
 
@@ -42,6 +44,7 @@ class CallModel extends CallEntity {
       callStartTime: json['callStartTime'],
       callEndTime: json['callEndTime'],
       hasDialled: json['hasDialled'],
+      didRejectCall: json['didRejectCall'],
     );
   }
 
@@ -57,6 +60,7 @@ class CallModel extends CallEntity {
       callStartTime: snapshot['callStartTime'],
       callEndTime: snapshot['callEndTime'],
       hasDialled: snapshot['hasDialled'],
+      didRejectCall: snapshot['didRejectCall'],
     );
   }
 }

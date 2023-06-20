@@ -7,19 +7,40 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:internship_practice/colors_utils.dart';
+import 'package:internship_practice/features/chat/presentation/bloc/conversation/conversation_bloc.dart';
+import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
 import 'package:internship_practice/features/notification/controller/notification_controller.dart';
 import 'package:internship_practice/core/utils/strings_manager.dart';
 import 'package:internship_practice/features/auth/presentation/cubit/sign%20out/sign_out_cubit.dart';
 import 'package:internship_practice/features/auth/presentation/cubit/user%20status/user_status_cubit.dart';
 import 'package:internship_practice/features/notification/firebase_messaging/notifications_config.dart';
+import 'package:internship_practice/features/notification/presentation/cubit/notification/notification_cubit.dart';
 import 'package:internship_practice/injection_container.dart';
 import 'package:internship_practice/routes/router.gr.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatefulWidget implements AutoRouteWrapper {
   const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
+
+  @override
+  Widget wrappedRoute(BuildContext context) {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<NotificationCubit>(
+          create: (context) => sl<NotificationCubit>(),
+        ),
+        BlocProvider<ConversationBloc>(
+          create: (context) => sl<ConversationBloc>(),
+        ),
+        BlocProvider<MessageCubit>(
+          create: (context) => sl<MessageCubit>(),
+        ),
+      ],
+      child: this,
+    );
+  }
 }
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
@@ -31,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     super.initState();
     requestPermission();
     initInfo();
-    initNotification();
+    // initNotification();
     getToken();
     _bloc = sl<SignOutCubit>();
     WidgetsBinding.instance.addObserver(this);
@@ -161,35 +182,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         if (remoteMessage.data['notificationType'] ==
             "missed call notification") {
           AwesomeNotifications().dismiss(1);
-          // BigTextStyleInformation bigTextStyleInformation =
-          //     BigTextStyleInformation(
-          //   remoteMessage.notification!.body.toString(),
-          //   htmlFormatBigText: true,
-          //   contentTitle: remoteMessage.notification!.title.toString(),
-          //   htmlFormatContentTitle: true,
-          // );
-          // AndroidNotificationDetails androidNotificationDetails =
-          //     AndroidNotificationDetails(
-          //   'ellsker_app',
-          //   'ellsker_app',
-          //   importance: Importance.high,
-          //   styleInformation: bigTextStyleInformation,
-          //   priority: Priority.high,
-          //   playSound: true,
-          //   enableVibration: true,
-          //   // ongoing: true,
-          // );
-          // NotificationDetails notificationDetails = NotificationDetails(
-          //   android: androidNotificationDetails,
-          //   iOS: const DarwinNotificationDetails(),
-          // );
-          // await flutterLocalNotificationsPlugin.show(
-          //   0,
-          //   remoteMessage.notification?.title,
-          //   remoteMessage.notification?.body,
-          //   notificationDetails,
-          //   payload: remoteMessage.data['body'],
-          // );
         } else if (remoteMessage.data['notificationType'] ==
             "call notification") {
           AwesomeNotifications().createNotification(
@@ -232,6 +224,36 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               senderToken: myToken!,
             ),
           );
+        } else {
+          BigTextStyleInformation bigTextStyleInformation =
+              BigTextStyleInformation(
+            remoteMessage.notification!.body.toString(),
+            htmlFormatBigText: true,
+            contentTitle: remoteMessage.notification!.title.toString(),
+            htmlFormatContentTitle: true,
+          );
+          AndroidNotificationDetails androidNotificationDetails =
+              AndroidNotificationDetails(
+            'ellsker_app',
+            'ellsker_app',
+            importance: Importance.high,
+            styleInformation: bigTextStyleInformation,
+            priority: Priority.high,
+            playSound: true,
+            enableVibration: true,
+            // ongoing: true,
+          );
+          NotificationDetails notificationDetails = NotificationDetails(
+            android: androidNotificationDetails,
+            iOS: const DarwinNotificationDetails(),
+          );
+          await flutterLocalNotificationsPlugin.show(
+            0,
+            remoteMessage.notification?.title,
+            remoteMessage.notification?.body,
+            notificationDetails,
+            payload: remoteMessage.data['body'],
+          );
         }
       }
       // checkRoute(remoteMessage);
@@ -263,13 +285,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
   }
 
-  initNotification() {
-    NotificationConfig.initInfo(
-      context,
-      checkRoute,
-      senderToken: myToken!,
-    );
-  }
+  // initNotification() {
+  //   NotificationConfig.initInfo(
+  //     context,
+  //     checkRoute,
+  //     senderToken: myToken!,
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {

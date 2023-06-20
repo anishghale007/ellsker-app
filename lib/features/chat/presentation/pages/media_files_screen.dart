@@ -1,6 +1,4 @@
-import 'dart:developer';
-
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
@@ -8,7 +6,7 @@ import 'package:internship_practice/features/chat/presentation/pages/shared_phot
 import 'package:internship_practice/features/chat/presentation/pages/shared_videos_screen.dart';
 import 'package:internship_practice/injection_container.dart';
 
-class SharedFilesScreen extends StatefulWidget {
+class SharedFilesScreen extends StatefulWidget implements AutoRouteWrapper {
   final String receiverId;
 
   const SharedFilesScreen({
@@ -18,42 +16,37 @@ class SharedFilesScreen extends StatefulWidget {
 
   @override
   State<SharedFilesScreen> createState() => _SharedFilesScreenState();
+
+  @override
+  Widget wrappedRoute(BuildContext context) {
+    return BlocProvider(
+      create: (context) => sl<MessageCubit>(),
+      // ..getAllSharedPhotos(receiverId: receiverId)
+      // ..getAllSharedVideos(receiverId: receiverId),
+      child: this,
+    );
+  }
 }
 
 class _SharedFilesScreenState extends State<SharedFilesScreen>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   late TabController _tabController;
-  late MessageCubit bloc;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    bloc = sl<MessageCubit>()
-      ..getAllSharedPhotos(receiverId: widget.receiverId)
-      ..getAllSharedVideos(receiverId: widget.receiverId);
   }
 
   @override
   void dispose() {
-    bloc.close();
     _tabController.dispose();
     super.dispose();
   }
 
-  Future<void> storageFiles() async {
-    final storageRef = FirebaseStorage.instance
-        .ref()
-        .child("smgvhiMr7ZX7ylD3Ie6RqIrRPkD3-gsbLwpdiSLUV0pCqLOe2EUvJbCs1/");
-    final listResult = await storageRef.listAll();
-    for (Reference ref in listResult.items) {
-      final fileUrl = await ref.getDownloadURL();
-      log("FileURL: $fileUrl");
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -86,21 +79,21 @@ class _SharedFilesScreenState extends State<SharedFilesScreen>
               child: TabBar(
                 controller: _tabController,
                 labelColor: Colors.black,
-                onTap: (value) {
-                  switch (value) {
-                    case 0:
-                      context
-                          .read<MessageCubit>()
-                          .getAllSharedPhotos(receiverId: widget.receiverId);
-                      break;
-                    case 1:
-                      context
-                          .read<MessageCubit>()
-                          .getAllSharedVideos(receiverId: widget.receiverId);
-                      break;
-                    default:
-                  }
-                },
+                // onTap: (value) {
+                //   switch (value) {
+                //     case 0:
+                //       context
+                //           .read<MessageCubit>()
+                //           .getAllSharedPhotos(receiverId: widget.receiverId);
+                //       break;
+                //     case 1:
+                //       context
+                //           .read<MessageCubit>()
+                //           .getAllSharedVideos(receiverId: widget.receiverId);
+                //       break;
+                //     default:
+                //   }
+                // },
                 labelStyle: const TextStyle(
                   fontWeight: FontWeight.bold,
                 ),
@@ -124,21 +117,21 @@ class _SharedFilesScreenState extends State<SharedFilesScreen>
             ),
           ),
         ),
-        body: BlocProvider(
-          create: (context) => bloc,
-          child: TabBarView(
-            controller: _tabController,
-            children: [
-              SharedPhotosScreen(
-                receiverId: widget.receiverId,
-              ),
-              SharedVideosScreen(
-                receiverId: widget.receiverId,
-              ),
-            ],
-          ),
+        body: TabBarView(
+          controller: _tabController,
+          children: [
+            SharedPhotosScreen(
+              receiverId: widget.receiverId,
+            ),
+            SharedVideosScreen(
+              receiverId: widget.receiverId,
+            ),
+          ],
         ),
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

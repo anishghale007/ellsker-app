@@ -11,6 +11,7 @@ import 'package:timeago/timeago.dart' as timeago;
 class ConversationTile extends StatelessWidget {
   final String receiverId;
   final String receiverName;
+  final String receiverNickname;
   final String receiverPhotoUrl;
   final String lastMessage;
   final String lastMessageSenderName;
@@ -18,15 +19,15 @@ class ConversationTile extends StatelessWidget {
   final String lastMessageTime;
   final bool isSeen;
   final String unSeenMessages;
-  final TextEditingController controller;
   final VoidCallback onPress;
-  final VoidCallback onEdit;
-  final Function(BuildContext) onDelete;
+  final Function(BuildContext) onEditPressed;
+  final Function(BuildContext) onDeletePressed;
 
   const ConversationTile({
     Key? key,
     required this.receiverId,
     required this.receiverName,
+    required this.receiverNickname,
     required this.receiverPhotoUrl,
     required this.lastMessage,
     required this.lastMessageSenderName,
@@ -34,10 +35,9 @@ class ConversationTile extends StatelessWidget {
     required this.lastMessageTime,
     required this.isSeen,
     required this.unSeenMessages,
-    required this.controller,
     required this.onPress,
-    required this.onEdit,
-    required this.onDelete,
+    required this.onEditPressed,
+    required this.onDeletePressed,
   }) : super(key: key);
 
   @override
@@ -50,48 +50,54 @@ class ConversationTile extends StatelessWidget {
         extentRatio: 0.4,
         children: [
           SlidableAction(
-            onPressed: (context) {
-              showDialog(
-                context: context,
-                builder: (context) {
-                  return AlertDialog(
-                    title: const Text('Edit Nickname'),
-                    content: TextFormField(
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return "This Field is required";
-                        }
-                        return null;
-                      },
-                      controller: controller,
-                      keyboardType: TextInputType.name,
-                      textCapitalization: TextCapitalization.words,
-                      textInputAction: TextInputAction.done,
-                      style: GoogleFonts.sourceSansPro(
-                        fontWeight: FontWeight.w400,
-                        fontSize: 18,
-                        color: Colors.black,
-                      ),
-                      decoration: const InputDecoration(
-                        hintText: "Enter a nickname",
-                      ),
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop(false);
-                        },
-                        child: const Text('Cancel'),
-                      ),
-                      TextButton(
-                        onPressed: onEdit,
-                        child: const Text('Set'),
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
+            onPressed: onEditPressed,
+            // (context) {
+            //   showDialog(
+            //     context: context,
+            //     builder: (context) {
+            //       return AlertDialog(
+            //         title: const Text('Edit Nickname'),
+            //         content: TextFormField(
+            //           validator: (value) {
+            //             if (value!.isEmpty) {
+            //               return "This Field is required";
+            //             }
+            //             return null;
+            //           },
+            //           controller: controller,
+            //           keyboardType: TextInputType.name,
+            //           textCapitalization: TextCapitalization.words,
+            //           textInputAction: TextInputAction.done,
+            //           style: GoogleFonts.sourceSansPro(
+            //             fontWeight: FontWeight.w400,
+            //             fontSize: 18,
+            //             color: Colors.black,
+            //           ),
+            //           decoration: const InputDecoration(
+            //             hintText: "Enter a nickname",
+            //           ),
+            //         ),
+            //         actions: [
+            //           TextButton(
+            //             onPressed: () {
+            //               Navigator.of(context).pop(false);
+            //             },
+            //             child: const Text('Cancel'),
+            //           ),
+            //           TextButton(
+            //             onPressed: onEdit,
+            //             child: const Text('Set'),
+            //           ),
+            //         ],
+            //         shape: const RoundedRectangleBorder(
+            //           borderRadius: BorderRadius.all(
+            //             Radius.circular(10),
+            //           ),
+            //         ),
+            //       );
+            //     },
+            //   );
+            // },
             borderRadius: BorderRadius.circular(6),
             icon: Icons.autorenew,
             foregroundColor: ColorUtil.kIconColor,
@@ -99,7 +105,7 @@ class ConversationTile extends StatelessWidget {
             backgroundColor: ColorUtil.kSecondaryColor.withOpacity(0.8),
           ),
           SlidableAction(
-            onPressed: onDelete,
+            onPressed: onDeletePressed,
             borderRadius: BorderRadius.circular(6),
             icon: Icons.close,
             label: AppStrings.delete,
@@ -128,7 +134,7 @@ class ConversationTile extends StatelessWidget {
             ),
           ),
           title: Text(
-            receiverName,
+            receiverNickname,
             style: GoogleFonts.sourceSansPro(
               fontSize: 18,
               fontWeight: isSeen == true ? FontWeight.w400 : FontWeight.w700,
@@ -164,9 +170,9 @@ class ConversationTile extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
-                      DateFormat()
-                          .add_Hm()
-                          .format(DateTime.parse(lastMessageTime)),
+                      DateFormat().add_Hm().format(
+                            DateTime.parse(lastMessageTime),
+                          ),
                       style: GoogleFonts.sourceSansPro(
                         color: ColorUtil.kTertiaryColor,
                         fontWeight: FontWeight.w400,

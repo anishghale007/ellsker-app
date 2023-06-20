@@ -15,6 +15,7 @@ class AppStrings {
   static const String delete = "Delete";
   static const String usersList = "Users List";
   static const String calling = "Calling...";
+  static const String didNotPick = "Did not pick up your call";
   static const String callHistory = "Call History";
   static const String searchByEventOrTour = "Search by event or tour";
   static const String searchByUsernameOrEmail = "Search by username or email";

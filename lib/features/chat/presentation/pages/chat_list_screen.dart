@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internship_practice/colors_utils.dart';
-import 'package:internship_practice/core/functions/app_dialogs.dart';
 import 'package:internship_practice/core/utils/strings_manager.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/conversation/conversation_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/widgets/conversation_tile_widget.dart';
@@ -44,6 +43,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
   @override
   void initState() {
     super.initState();
+    super.didChangeDependencies();
     _conversationController = TextEditingController();
   }
 
@@ -141,7 +141,6 @@ class _ChatListScreenState extends State<ChatListScreen> {
                                 ConversationsState>(
                               listener: (context, state) {
                                 if (state is ConversationsEdited) {
-                                  Navigator.of(context).pop(false);
                                   _conversationController.clear();
                                 } else if (state is ConversationsError) {
                                   log(state.errorMessage.toString());
@@ -149,11 +148,10 @@ class _ChatListScreenState extends State<ChatListScreen> {
                               },
                               child: ConversationTile(
                                 onPress: () {
-                                  // context.read<ConversationCubit>().seenMessage(
-                                  //     conversationId: data.receiverId);
                                   context.read<ConversationBloc>().add(
                                         SeenConversationEvent(
-                                            conversationId: data.receiverId),
+                                          conversationId: data.receiverId,
+                                        ),
                                       );
                                   context.router.push(
                                     ChatRoute(
@@ -166,6 +164,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                                 },
                                 receiverId: data.receiverId,
                                 receiverName: data.receiverName,
+                                receiverNickname: data.receiverNickname,
                                 receiverPhotoUrl: data.receiverPhotoUrl,
                                 lastMessage: data.lastMessage,
                                 lastMessageSenderName:
@@ -174,53 +173,121 @@ class _ChatListScreenState extends State<ChatListScreen> {
                                 lastMessageTime: data.lastMessageTime,
                                 isSeen: data.isSeen,
                                 unSeenMessages: data.unSeenMessages.toString(),
-                                controller: _conversationController
-                                  ..text = data.receiverName,
-                                onEdit: () {
-                                  _form.currentState!.save();
-                                  if (_form.currentState!.validate()) {
-                                    if (_conversationController.text.isEmpty) {
-                                      // Validator not working so using this type of validation
-                                      log("Empty");
-                                    } else {
-                                      context.read<ConversationBloc>().add(
-                                            EditConversationEvent(
-                                              conversationId: data.receiverId,
-                                              newNickname:
-                                                  _conversationController.text
-                                                      .trim(),
-                                            ),
-                                          );
-                                    }
-                                  }
+                                onEditPressed: (editContext) {
+                                  showDialog(
+                                    context: editContext,
+                                    builder: (dialogContext) {
+                                      return AlertDialog(
+                                        title: const Text('Edit Nickname'),
+                                        content: TextFormField(
+                                          validator: (value) {
+                                            if (value!.isEmpty) {
+                                              return "This Field is required";
+                                            }
+                                            return null;
+                                          },
+                                          controller: _conversationController
+                                            ..text = data.receiverNickname,
+                                          keyboardType: TextInputType.name,
+                                          textCapitalization:
+                                              TextCapitalization.words,
+                                          textInputAction: TextInputAction.done,
+                                          style: GoogleFonts.sourceSansPro(
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 18,
+                                            color: Colors.black,
+                                          ),
+                                          decoration: const InputDecoration(
+                                            hintText: "Enter a nickname",
+                                          ),
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(dialogContext)
+                                                  .pop(false);
+                                            },
+                                            child: const Text('Cancel'),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              _form.currentState!.save();
+                                              if (_form.currentState!
+                                                  .validate()) {
+                                                if (_conversationController
+                                                    .text.isEmpty) {
+                                                  // Validator not working so using this type of validation
+                                                  log("Empty");
+                                                } else {
+                                                  context
+                                                      .read<ConversationBloc>()
+                                                      .add(
+                                                        EditConversationEvent(
+                                                          conversationId:
+                                                              data.receiverId,
+                                                          newNickname:
+                                                              _conversationController
+                                                                  .text
+                                                                  .trim(),
+                                                        ),
+                                                      );
+                                                  Navigator.of(dialogContext)
+                                                      .pop(true);
+                                                }
+                                              }
+                                            },
+                                            child: const Text('Set'),
+                                          ),
+                                        ],
+                                        shape: const RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(10),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  );
                                 },
-                                onDelete: (dialogContext) {
-                                  AppDialogs.showAlertDialog(
-                                    context: dialogContext,
-                                    title: const Text(
-                                        "Are you sure you want to delete it?"),
-                                    content: const Text(
-                                        "Once deleted it cannot be undone. The conversation will be deleted from your side only."),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: const Text("No"),
-                                      ),
-                                      TextButton(
-                                        onPressed: () {
-                                          context.read<ConversationBloc>().add(
-                                                DeleteConversationEvent(
-                                                  conversationId:
-                                                      data.receiverId,
-                                                ),
-                                              );
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: const Text("Yes"),
-                                      ),
-                                    ],
+                                onDeletePressed: (deleteContext) {
+                                  showDialog(
+                                    context: deleteContext,
+                                    builder: (dialogContext) {
+                                      return AlertDialog(
+                                        title: const Text(
+                                            "Are you sure you want to delete it?"),
+                                        content: const Text(
+                                            "Once deleted it cannot be undone. The conversation will be deleted from your side only."),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(dialogContext)
+                                                  .pop(false);
+                                            },
+                                            child: const Text("No"),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              context
+                                                  .read<ConversationBloc>()
+                                                  .add(
+                                                    DeleteConversationEvent(
+                                                      conversationId:
+                                                          data.receiverId,
+                                                    ),
+                                                  );
+                                              Navigator.of(dialogContext)
+                                                  .pop(true);
+                                            },
+                                            child: const Text("Yes"),
+                                          ),
+                                        ],
+                                        shape: const RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(10),
+                                          ),
+                                        ),
+                                      );
+                                    },
                                   );
                                 },
                               ),
@@ -238,7 +305,6 @@ class _ChatListScreenState extends State<ChatListScreen> {
           floatingActionButton: FloatingActionButton(
             backgroundColor: ColorUtil.kMessageAlertColor,
             onPressed: () {
-              // Navigator.pushNamed(context, kUserListScreenPath);
               context.router.push(const UserListRoute());
             },
             child: const Icon(Icons.message),

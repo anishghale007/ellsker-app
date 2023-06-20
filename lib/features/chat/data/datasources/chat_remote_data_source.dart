@@ -56,9 +56,11 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
         _saveDataToConversationCollection(
           receiverId: conversationEntity.receiverId,
           receiverName: conversationEntity.receiverName,
+          receiverNickname: conversationEntity.receiverNickname,
           receiverPhotoUrl: conversationEntity.receiverPhotoUrl,
           senderId: conversationEntity.senderId,
           senderName: conversationEntity.senderName,
+          senderNickname: conversationEntity.senderNickname,
           senderPhotoUrl: conversationEntity.senderPhotoUrl,
           lastMessage: conversationEntity.lastMessage,
           lastMessageSenderName: conversationEntity.lastMessageSenderName,
@@ -73,9 +75,11 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
         _saveDataToConversationCollection(
           receiverId: conversationEntity.senderId,
           receiverName: conversationEntity.senderName,
+          receiverNickname: conversationEntity.receiverNickname,
           receiverPhotoUrl: conversationEntity.senderPhotoUrl,
           senderId: conversationEntity.receiverId,
           senderName: conversationEntity.receiverName,
+          senderNickname: conversationEntity.senderNickname,
           senderPhotoUrl: conversationEntity.receiverPhotoUrl,
           lastMessage: conversationEntity.lastMessage,
           lastMessageSenderName: conversationEntity.lastMessageSenderName,
@@ -136,7 +140,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
           .collection('conversation')
           .doc(params.conversationId)
           .update({
-        "receiverName": params.newNickname,
+        "receiverNickname": params.newNickname,
       });
       // updating the conversation collection of the other user
       dbUser
@@ -144,7 +148,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
           .collection('conversation')
           .doc(currentUser)
           .update({
-        "senderName": params.newNickname,
+        "senderNickname": params.newNickname,
       });
       return Future.value("Success");
     } on FirebaseException catch (e) {
@@ -509,9 +513,11 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
   void _saveDataToConversationCollection({
     required String receiverId,
     required String receiverName,
+    required String receiverNickname,
     required String receiverPhotoUrl,
     required String senderId,
     required String senderName,
+    required String senderNickname,
     required String senderPhotoUrl,
     required String lastMessage,
     required String lastMessageSenderName,
@@ -525,9 +531,11 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
     final data = ConversationModel(
       receiverId: receiverId,
       receiverName: receiverName,
+      receiverNickname: receiverNickname,
       receiverPhotoUrl: receiverPhotoUrl,
       senderId: senderId,
       senderName: senderName,
+      senderNickname: senderNickname,
       senderPhotoUrl: senderPhotoUrl,
       lastMessage: lastMessage,
       lastMessageSenderName: lastMessageSenderName,

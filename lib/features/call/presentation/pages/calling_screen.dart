@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:internship_practice/colors_utils.dart';
 import 'package:internship_practice/common/widgets/loading_widget.dart';
 import 'package:internship_practice/constants.dart';
 import 'package:internship_practice/core/enums/message_type_enum.dart';
@@ -39,8 +40,18 @@ class CallingScreen extends StatelessWidget implements AutoRouteWrapper {
 
   @override
   Widget wrappedRoute(BuildContext context) {
-    return BlocProvider(
-      create: (context) => sl<NotificationCubit>(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<NotificationCubit>(
+          create: (context) => sl<NotificationCubit>(),
+        ),
+        BlocProvider<ConversationBloc>(
+          create: (context) => sl<ConversationBloc>(),
+        ),
+        BlocProvider<MessageCubit>(
+          create: (context) => sl<MessageCubit>(),
+        ),
+      ],
       child: this,
     );
   }
@@ -59,6 +70,7 @@ class CallingScreen extends StatelessWidget implements AutoRouteWrapper {
           CallModel call =
               CallModel.fromJson(snapshot.data!.data() as Map<String, dynamic>);
           if (call.hasDialled == false) {
+            // IF THE OTHER USER HAS NOT PICK UP THE CALL YET BUT IT IS RINGING
             return Container(
               width: double.infinity,
               decoration: BoxDecoration(
@@ -169,7 +181,103 @@ class CallingScreen extends StatelessWidget implements AutoRouteWrapper {
                 ),
               ),
             );
-          } else {
+          } else if (call.didRejectCall == true) {
+            // IF THE OTHER USER HAS REJECTED THE CALL
+            return Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: NetworkImage(photoUrl),
+                  colorFilter: const ColorFilter.mode(
+                    Colors.black87,
+                    BlendMode.srcOver,
+                  ),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child: Scaffold(
+                backgroundColor: Colors.transparent,
+                body: SafeArea(
+                  child: SingleChildScrollView(
+                    child: Center(
+                      child: Column(
+                        children: [
+                          const SizedBox(
+                            height: 150,
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: const Color.fromARGB(255, 110, 110, 117),
+                                width: 13,
+                              ),
+                            ),
+                            child: CircleAvatar(
+                              radius: 80,
+                              backgroundImage: NetworkImage(photoUrl),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          Text(
+                            AppStrings.didNotPick,
+                            style: GoogleFonts.sourceSansPro(
+                              fontWeight: FontWeight.w400,
+                              fontSize: 20,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                            username,
+                            style: GoogleFonts.sourceSansPro(
+                              fontWeight: FontWeight.w400,
+                              fontSize: 30,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 200,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 80,
+                            ),
+                            child: SizedBox(
+                              height: 50,
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: ColorUtil.kMessageAlertColor,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                ),
+                                onPressed: () {
+                                  context.router.pop();
+                                },
+                                child: const Text(
+                                  "Go Back",
+                                  style: TextStyle(
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          } else if (call.hasDialled == true) {
             // If the other user picks up the call then navigate to video call screen and pass the current time
             context.router.replace(
               VideoCallRoute(
@@ -230,9 +338,11 @@ class CallingScreen extends StatelessWidget implements AutoRouteWrapper {
             conversationEntity: ConversationEntity(
               receiverId: userId,
               receiverName: username,
+              receiverNickname: username,
               receiverPhotoUrl: photoUrl,
               senderId: currentUser.uid, // me
               senderName: currentUser.displayName!,
+              senderNickname: currentUser.displayName!,
               senderPhotoUrl: currentUser.photoURL!,
               lastMessage: messageContent,
               lastMessageTime: DateTime.now().toString(),

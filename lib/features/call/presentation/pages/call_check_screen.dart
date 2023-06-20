@@ -53,18 +53,21 @@ class CallCheckScreen extends StatelessWidget implements AutoRouteWrapper {
             return const LoadingWidget();
           } else {
             if (user.isOnline == false) {
+              // IF THE USER IS ONLINE
               return BusyCallWidget(
                 photoUrl: photoUrl,
                 username: username,
                 isOffline: true,
               );
             } else if (user.inCall == true) {
+              // IF THE USER IS IN ANOTHER CALL
               return BusyCallWidget(
                 photoUrl: photoUrl,
                 username: username,
                 isOffline: false,
               );
-            } else if (user.isOnline == false && user.inCall == false) {
+            } else if (user.isOnline == true && user.inCall == false) {
+              // IF THE USER IS ONLINE AND IS NOT IN ANOTHER CALL
               final currentUser = FirebaseAuth.instance.currentUser!;
               // Creating a conversation document in firebase
               context.read<CallBloc>().add(

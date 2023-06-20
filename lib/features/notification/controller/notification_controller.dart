@@ -106,9 +106,11 @@ void _sendMessage(
           conversationEntity: ConversationEntity(
             receiverId: userId,
             receiverName: username,
+            receiverNickname: username,
             receiverPhotoUrl: photoUrl,
             senderId: currentUser.uid, // me
             senderName: currentUser.displayName!,
+            senderNickname: currentUser.displayName!,
             senderPhotoUrl: currentUser.photoURL!,
             lastMessage: messageContent,
             lastMessageTime: DateTime.now().toString(),
