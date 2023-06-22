@@ -683,7 +683,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                   longitude = null;
                                 });
                               } else {
-                                // If the user does not pick an image and sends a text message
+                                // If the user sends a text message
                                 _sendMessage(
                                   context,
                                   currentUser,
@@ -696,7 +696,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                   currentUser,
                                   messageContent:
                                       _messageController.text.trim(),
-                                  notificationType: Constant.normalNotification,
+                                  notificationType: Constant.callNotification,
                                 );
                               }
                             }
@@ -813,13 +813,21 @@ class _ChatScreenState extends State<ChatScreen> {
   }) {
     context.read<NotificationCubit>().sendNotification(
           notificationEntity: NotificationEntity(
-            conversationId: widget.userId, // other user's id
-            token: widget.token,
+            receiverUserId: widget
+                .userId, // other user's id (Message Receiver ID and routing to chat screen from notification)
+            receiverToken: widget
+                .token, // message receiver token (For sending notification and routing to chat screen from notification)
+            receiverPhotoUrl: widget
+                .photoUrl, // message receiver photoURL (Needed for routing to chat screen from notification)
+            receiverUsername: widget
+                .username, // message receiver username (Needed for routing to chat screen)
+            senderUserId: currentUser.uid,
+            senderToken: myToken!,
+            senderPhotoUrl: currentUser.photoURL!,
+            senderUsername: currentUser.displayName!,
+            notificationType: notificationType,
             title: currentUser.displayName!,
             body: messageContent,
-            photoUrl: widget.photoUrl,
-            username: widget.username,
-            notificationType: notificationType,
           ),
         );
   }

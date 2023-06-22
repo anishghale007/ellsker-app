@@ -2,12 +2,16 @@ import 'package:internship_practice/features/notification/domain/entities/notifi
 
 class NotificationModel extends NotificationEntity {
   const NotificationModel({
-    required super.conversationId,
-    required super.token,
+    required super.receiverUserId,
+    required super.receiverToken,
     required super.title,
     required super.body,
-    required super.photoUrl,
-    required super.username,
+    required super.receiverPhotoUrl,
+    required super.receiverUsername,
     required super.notificationType,
+    required super.senderPhotoUrl,
+    required super.senderToken,
+    required super.senderUserId,
+    required super.senderUsername,
   });
 }

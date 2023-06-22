@@ -13,6 +13,7 @@ import 'package:internship_practice/features/chat/domain/entities/conversation_e
 import 'package:internship_practice/features/chat/domain/entities/message_entity.dart';
 import 'package:internship_practice/features/chat/presentation/bloc/conversation/conversation_bloc.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
+import 'package:internship_practice/features/chat/presentation/pages/message_screen.dart';
 import 'package:internship_practice/features/notification/domain/entities/notification_entity.dart';
 import 'package:internship_practice/features/notification/presentation/cubit/notification/notification_cubit.dart';
 import 'package:internship_practice/routes/router.gr.dart';
@@ -21,22 +22,31 @@ class NotificationController {
   @pragma("vm:entry-point")
   static Future<void> onActionReceivedMethod(
     ReceivedAction receivedAction, {
-    required String userId,
-    required String token,
+    required String receiverUserId,
+    required String receiverToken,
+    required String receiverPhotoUrl,
+    required String receiverUsername,
+    required String senderUserId,
+    required String senderPhotoUrl,
+    required String senderUsername,
     required String senderToken,
-    required String photoUrl,
-    required String username,
     required BuildContext context,
   }) async {
     if (receivedAction.buttonKeyPressed == "ACCEPT") {
       final currentUser = FirebaseAuth.instance.currentUser!;
-      context.read<CallBloc>().add(PickupCallEvent(userId: userId));
+      context.read<CallBloc>().add(PickupCallEvent(userId: senderUserId));
       // IF THE CALL IS ACCEPTED
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MessageScreen(remoteMessage: senderUserId),
+        ),
+      );
       context.router.push(
         VideoCallRoute(
-          callerId: userId, // from notification
-          callerName: username,
-          callerPhotoUrl: photoUrl,
+          callerId: senderUserId, // from notification
+          callerName: senderUsername,
+          callerPhotoUrl: senderPhotoUrl,
           receiverId: currentUser.uid,
           callStartTime: DateTime.now().toString(),
         ),
@@ -47,21 +57,25 @@ class NotificationController {
       final currentUser = FirebaseAuth.instance.currentUser!;
       context.read<NotificationCubit>().sendNotification(
             notificationEntity: NotificationEntity(
-              conversationId: userId, // other user's id
-              token: token,
+              receiverUserId: senderUserId, // other user's id
+              receiverToken: senderToken,
+              receiverPhotoUrl: senderPhotoUrl,
+              receiverUsername: senderUsername,
+              senderUserId: receiverUserId,
+              senderToken: receiverToken,
+              senderPhotoUrl: receiverPhotoUrl,
+              senderUsername: receiverUsername,
               title: currentUser.displayName!,
               body: Constant.didNotPickUpMessageContent,
-              photoUrl: photoUrl,
-              username: username,
               notificationType: Constant.missedCallNotification,
             ),
           );
       // End Call Event (Did Not Pickup Call)
       context.read<CallBloc>().add(
             EndCallEvent(
-              callerId: userId, // other user
-              callerPhotoUrl: photoUrl,
-              callerName: username,
+              callerId: senderUserId, // other user
+              callerPhotoUrl: senderPhotoUrl,
+              callerName: senderUsername,
               receiverId: currentUser.uid,
               callStartTime: DateTime.now().toString(),
               callEndTime: DateTime.now().toString(),
@@ -72,11 +86,11 @@ class NotificationController {
       _sendMessage(
         context,
         currentUser,
-        userId: userId,
-        username: username,
-        photoUrl: photoUrl,
-        token: token,
-        senderToken: senderToken,
+        userId: senderUserId,
+        username: senderUsername,
+        photoUrl: senderPhotoUrl,
+        receiverToken: senderToken,
+        senderToken: receiverToken, // Token of the user who rejects the call
         messageContent: Constant.didNotPickUpMessageContent,
         messageType: MessageType.call,
       );
@@ -90,7 +104,7 @@ void _sendMessage(
   required String userId,
   required String username,
   required String photoUrl,
-  required String token,
+  required String receiverToken,
   required String senderToken,
   required dynamic messageContent,
   required MessageType messageType,
@@ -118,7 +132,7 @@ void _sendMessage(
             lastMessageSenderId: currentUser.uid,
             isSeen: false,
             unSeenMessages: 0,
-            receiverToken: token,
+            receiverToken: receiverToken,
             senderToken: senderToken,
           ),
         ),

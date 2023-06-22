@@ -9,6 +9,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:internship_practice/colors_utils.dart';
 import 'package:internship_practice/features/chat/presentation/bloc/conversation/conversation_bloc.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
+import 'package:internship_practice/features/chat/presentation/pages/message_screen.dart';
 import 'package:internship_practice/features/notification/controller/notification_controller.dart';
 import 'package:internship_practice/core/utils/strings_manager.dart';
 import 'package:internship_practice/features/auth/presentation/cubit/sign%20out/sign_out_cubit.dart';
@@ -217,11 +218,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 NotificationController.onActionReceivedMethod(
               receivedAction,
               context: context,
-              userId: remoteMessage.data['conversationId'],
-              photoUrl: remoteMessage.data['photoUrl'],
-              username: remoteMessage.data['username'],
-              token: remoteMessage.data['token'],
-              senderToken: myToken!,
+              receiverUserId: remoteMessage.data['receiverUserId'],
+              receiverPhotoUrl: remoteMessage.data['receiverPhotoUrl'],
+              receiverUsername: remoteMessage.data['receiverUsername'],
+              receiverToken: remoteMessage.data['receiverToken'],
+              senderUserId: remoteMessage.data['senderUserId'],
+              senderPhotoUrl: remoteMessage.data['senderPhotoUrl'],
+              senderUsername: remoteMessage.data['senderUsername'],
+              senderToken: remoteMessage.data['senderToken'],
             ),
           );
         } else {
@@ -262,18 +266,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     // If the app is open in background (Not termainated)
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       checkRoute(message);
-      AwesomeNotifications().setListeners(
-        onActionReceivedMethod: (receivedAction) =>
-            NotificationController.onActionReceivedMethod(
-          receivedAction,
-          context: context,
-          userId: message.data['conversationId'],
-          photoUrl: message.data['photoUrl'],
-          username: message.data['username'],
-          token: message.data['token'],
-          senderToken: myToken!,
-        ),
-      );
     });
   }
 
@@ -282,16 +274,23 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
     if (notificationDetails!.didNotificationLaunchApp ||
         notificationDetails.notificationResponse == null) {
-      if (message.data['conversationId'] != null) {
+      if (message.data['receiverUserId'] != null) {
         if (mounted) {
-          context.router.push(
-            ChatRoute(
-              username: message.data['username'],
-              userId: message.data['conversationId'], // other user's id
-              photoUrl: message.data['photoUrl'],
-              token: message.data['token'],
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  MessageScreen(remoteMessage: message.data['senderUserId']),
             ),
           );
+          // context.router.push(
+          //   ChatRoute(
+          //     username: message.data['receiverUsername'],
+          //     userId: message.data['receiverUserId'], // other user's id
+          //     photoUrl: message.data['receiverPhotoUrl'],
+          //     token: message.data['receiverToken'],
+          //   ),
+          // );
         }
       }
     }

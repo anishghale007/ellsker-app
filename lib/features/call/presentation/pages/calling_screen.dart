@@ -310,12 +310,16 @@ class CallingScreen extends StatelessWidget implements AutoRouteWrapper {
   }) {
     context.read<NotificationCubit>().sendNotification(
           notificationEntity: NotificationEntity(
-            conversationId: userId, // other user's id
-            token: token,
+            receiverUserId: userId, // other user's id
+            receiverToken: token,
+            receiverPhotoUrl: photoUrl,
+            receiverUsername: username,
+            senderUserId: currentUser.uid,
+            senderPhotoUrl: currentUser.photoURL!,
+            senderToken: senderToken,
+            senderUsername: currentUser.displayName!,
             title: currentUser.displayName!,
             body: messageContent,
-            photoUrl: photoUrl,
-            username: username,
             notificationType: notificationType,
           ),
         );

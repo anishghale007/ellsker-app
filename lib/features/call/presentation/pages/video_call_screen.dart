@@ -85,7 +85,7 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
                         if (mounted) {
                           context.read<CallBloc>().add(
                                 EndCallEvent(
-                                  callerId: widget.callerId, // other user
+                                  callerId: widget.callerId,
                                   callerPhotoUrl: widget.callerPhotoUrl,
                                   callerName: widget.callerName,
                                   receiverId: widget.receiverId,
