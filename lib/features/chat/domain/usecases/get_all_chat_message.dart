@@ -19,5 +19,5 @@ class GetAllChatMessagesParams extends Equatable {
 
   const GetAllChatMessagesParams({required this.conversationId});
   @override
-  List<Object?> get props => throw UnimplementedError();
+  List<Object?> get props => [conversationId];
 }

@@ -1,7 +1,9 @@
+import 'dart:developer';
 import 'package:agora_uikit/agora_uikit.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:internship_practice/constants.dart';
 import 'package:internship_practice/core/config/agora_config.dart';
 import 'package:internship_practice/features/call/presentation/bloc/call/call_bloc.dart';
 
@@ -11,7 +13,6 @@ class VideoCallScreen extends StatefulWidget {
   final String callerName;
   final String receiverId;
   final String callStartTime;
-  // final String rtcToken;
 
   const VideoCallScreen({
     required this.callerId,
@@ -19,7 +20,6 @@ class VideoCallScreen extends StatefulWidget {
     required this.callerName,
     required this.receiverId,
     required this.callStartTime,
-    // required this.rtcToken,
     super.key,
   });
 
@@ -38,20 +38,28 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
         // appId: Constant.appId,
         appId: AgoraConfig.appId,
         channelName: 'test',
-        tokenUrl: 'https://ellsker-token-server.onrender.com',
+        tokenUrl: Constant.tokenBaseUrl,
       ),
       enabledPermission: [
         Permission.camera,
         Permission.microphone,
       ],
       agoraEventHandlers: AgoraRtcEventHandlers(
-        onLeaveChannel: (connection, stats) {
-          context.router.pop();
+        onLeaveChannel: (connection, stats) async {
+          context.router.popForced();
+          log("User left the channel");
+          await _agoraClient!.engine.leaveChannel();
         },
       ),
     );
     initAgora();
   }
+
+  // @override
+  // void dispose() {
+  //   _agoraClient!.release();
+  //   super.dispose();
+  // }
 
   void initAgora() async {
     await _agoraClient!.initialize();
@@ -80,7 +88,7 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
                       onPressed: () async {
                         await _agoraClient!.engine.leaveChannel();
                         // Go back to the chat screen
-                        context.router.pop();
+                        context.router.popForced();
                         // End Call Event
                         if (mounted) {
                           context.read<CallBloc>().add(

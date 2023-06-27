@@ -79,7 +79,9 @@ class CallHistoryScreen extends StatelessWidget {
                     ..add(GetAllCallLogsEvent(userId: userId)),
                   builder: (context, state) {
                     if (state is CallLoading) {
-                      return const LoadingWidget();
+                      return const LoadingWidget(
+                        color: Colors.white,
+                      );
                     } else if (state is CallError) {
                       return Center(
                         child: Text(state.errorMessage),

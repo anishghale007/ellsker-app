@@ -212,12 +212,6 @@ class _ChatScreenState extends State<ChatScreen> {
             actions: [
               IconButton(
                 onPressed: () {
-                  // _sendMessage(
-                  //   context,
-                  //   currentUser,
-                  //   messageContent: Constant.callMessageContent,
-                  //   messageType: MessageType.call,
-                  // );
                   context.router.push(
                     CallCheckRoute(
                       userId: widget.userId,
@@ -227,22 +221,6 @@ class _ChatScreenState extends State<ChatScreen> {
                       senderToken: myToken!,
                     ),
                   );
-                  // _sendNotification(
-                  //   context,
-                  //   currentUser,
-                  //   messageContent: Constant.incomingCallMessageContent,
-                  //   notificationType: Constant.callNotification,
-                  // );
-                  // _sendNotification(
-                  //   context,
-                  //   currentUser,
-                  //   messageContent: Constant.missedCallMessageContent,
-                  //   notificationType: Constant.missedCallNotification,
-                  // );
-                  // context.router.push(CallingRoute(
-                  //     userId: widget.userId,
-                  //     photoUrl: widget.photoUrl,
-                  //     username: widget.username));
                 },
                 icon: const Icon(
                   Icons.video_call,
@@ -696,7 +674,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                   currentUser,
                                   messageContent:
                                       _messageController.text.trim(),
-                                  notificationType: Constant.callNotification,
+                                  notificationType: Constant.normalNotification,
                                 );
                               }
                             }

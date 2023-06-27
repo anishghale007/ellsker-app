@@ -172,6 +172,7 @@ class CallRemoteDataSourceImpl implements CallRemoteDataSource {
           .collection("call history")
           .doc("$currentUser-$userId")
           .collection('call logs')
+          .orderBy('callStartTime', descending: true)
           .get();
       return snapshot.docs.map((e) => CallLogModel.fromSnapshot(e)).toList();
     } on FirebaseException catch (e) {

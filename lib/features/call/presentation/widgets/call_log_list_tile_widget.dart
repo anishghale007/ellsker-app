@@ -51,18 +51,26 @@ class CallLogListTileWidget extends StatelessWidget {
                   color: ColorUtil.kTertiaryColor,
                   size: 15,
                 )
-              : Icon(
+              : const Icon(
                   Icons.phone_missed,
-                  color: ColorUtil.kTertiaryColor,
+                  color: Colors.redAccent,
                   size: 15,
                 ),
-          Text(
-            "  $callTime mins  ",
-            style: GoogleFonts.sourceSansPro(
-              color: Colors.grey,
-              fontSize: 14,
-            ),
-          ),
+          data.didPickup
+              ? Text(
+                  "  $callTime mins  ",
+                  style: GoogleFonts.sourceSansPro(
+                    color: Colors.grey,
+                    fontSize: 14,
+                  ),
+                )
+              : Text(
+                  "  Missed  ",
+                  style: GoogleFonts.sourceSansPro(
+                    color: Colors.redAccent,
+                    fontSize: 14,
+                  ),
+                ),
           Text(
             DateFormat('(HH:mm * d MMMM)').format(
               DateTime.parse(data.callStartTime),

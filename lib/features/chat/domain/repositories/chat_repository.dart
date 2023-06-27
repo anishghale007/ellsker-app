@@ -7,7 +7,7 @@ import 'package:internship_practice/features/chat/domain/usecases/edit_conversat
 import 'package:internship_practice/features/chat/domain/usecases/unsend_message_usecase.dart';
 
 abstract class ChatRepository {
-  Future<Either<Failure, Stream<List<UserEntity>>>> getAllUsers();
+  Stream<List<UserEntity>> getAllUsers();
   Future<Either<Failure, String>> createConversation(
       ConversationEntity conversationEntity);
   Stream<List<ConversationEntity>> getAllConversations();

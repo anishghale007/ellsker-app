@@ -79,7 +79,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
           receiverPhotoUrl: conversationEntity.senderPhotoUrl,
           senderId: conversationEntity.receiverId,
           senderName: conversationEntity.receiverName,
-          senderNickname: conversationEntity.senderNickname,
+          senderNickname: conversationEntity.receiverNickname,
           senderPhotoUrl: conversationEntity.receiverPhotoUrl,
           lastMessage: conversationEntity.lastMessage,
           lastMessageSenderName: conversationEntity.lastMessageSenderName,

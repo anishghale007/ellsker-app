@@ -51,53 +51,6 @@ class ConversationTile extends StatelessWidget {
         children: [
           SlidableAction(
             onPressed: onEditPressed,
-            // (context) {
-            //   showDialog(
-            //     context: context,
-            //     builder: (context) {
-            //       return AlertDialog(
-            //         title: const Text('Edit Nickname'),
-            //         content: TextFormField(
-            //           validator: (value) {
-            //             if (value!.isEmpty) {
-            //               return "This Field is required";
-            //             }
-            //             return null;
-            //           },
-            //           controller: controller,
-            //           keyboardType: TextInputType.name,
-            //           textCapitalization: TextCapitalization.words,
-            //           textInputAction: TextInputAction.done,
-            //           style: GoogleFonts.sourceSansPro(
-            //             fontWeight: FontWeight.w400,
-            //             fontSize: 18,
-            //             color: Colors.black,
-            //           ),
-            //           decoration: const InputDecoration(
-            //             hintText: "Enter a nickname",
-            //           ),
-            //         ),
-            //         actions: [
-            //           TextButton(
-            //             onPressed: () {
-            //               Navigator.of(context).pop(false);
-            //             },
-            //             child: const Text('Cancel'),
-            //           ),
-            //           TextButton(
-            //             onPressed: onEdit,
-            //             child: const Text('Set'),
-            //           ),
-            //         ],
-            //         shape: const RoundedRectangleBorder(
-            //           borderRadius: BorderRadius.all(
-            //             Radius.circular(10),
-            //           ),
-            //         ),
-            //       );
-            //     },
-            //   );
-            // },
             borderRadius: BorderRadius.circular(6),
             icon: Icons.autorenew,
             foregroundColor: ColorUtil.kIconColor,

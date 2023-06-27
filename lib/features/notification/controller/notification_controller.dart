@@ -13,7 +13,6 @@ import 'package:internship_practice/features/chat/domain/entities/conversation_e
 import 'package:internship_practice/features/chat/domain/entities/message_entity.dart';
 import 'package:internship_practice/features/chat/presentation/bloc/conversation/conversation_bloc.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
-import 'package:internship_practice/features/chat/presentation/pages/message_screen.dart';
 import 'package:internship_practice/features/notification/domain/entities/notification_entity.dart';
 import 'package:internship_practice/features/notification/presentation/cubit/notification/notification_cubit.dart';
 import 'package:internship_practice/routes/router.gr.dart';
@@ -36,12 +35,6 @@ class NotificationController {
       final currentUser = FirebaseAuth.instance.currentUser!;
       context.read<CallBloc>().add(PickupCallEvent(userId: senderUserId));
       // IF THE CALL IS ACCEPTED
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => MessageScreen(remoteMessage: senderUserId),
-        ),
-      );
       context.router.push(
         VideoCallRoute(
           callerId: senderUserId, // from notification

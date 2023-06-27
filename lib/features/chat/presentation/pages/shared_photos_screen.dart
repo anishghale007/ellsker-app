@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:full_screen_image/full_screen_image.dart';
+import 'package:internship_practice/common/widgets/loading_widget.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
 
 class SharedPhotosScreen extends StatelessWidget {
@@ -56,8 +57,8 @@ class SharedPhotosScreen extends StatelessWidget {
                     },
                   );
                 } else if (state is MessageLoading) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
+                  return const LoadingWidget(
+                    color: Colors.blueAccent,
                   );
                 } else if (state is MessageError) {
                   return Center(

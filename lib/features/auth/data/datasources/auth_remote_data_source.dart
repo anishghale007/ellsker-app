@@ -4,13 +4,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:internship_practice/features/auth/data/models/facebook_user_model.dart';
-import 'package:internship_practice/features/auth/data/models/google_user_model.dart';
+import 'package:internship_practice/features/auth/data/models/auth_user_model.dart';
 import 'package:internship_practice/features/auth/data/models/user_model.dart';
 
 abstract class AuthRemoteDataSource {
-  Future<GoogleUserModel> googleSignIn();
-  Future<FacebookUserModel> facebookSignIn();
+  Future<AuthUserModel> googleSignIn();
+  Future<AuthUserModel> facebookSignIn();
   Future<void> signOut();
   Future<void> setUserStatus(bool isOnline);
 }
@@ -19,7 +18,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   CollectionReference dbUser = FirebaseFirestore.instance.collection("users");
 
   @override
-  Future<GoogleUserModel> googleSignIn() async {
+  Future<AuthUserModel> googleSignIn() async {
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
       final GoogleSignInAuthentication googleAuth =
@@ -51,7 +50,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           token: token!,
         );
       }
-      return GoogleUserModel(userCredential: userCredential);
+      return AuthUserModel(userCredential: userCredential);
     } on FirebaseAuthException catch (e) {
       log(e.toString());
       throw Exception(e.toString());
@@ -59,7 +58,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<FacebookUserModel> facebookSignIn() async {
+  Future<AuthUserModel> facebookSignIn() async {
     try {
       // Trigger the sign-in flow
       final LoginResult loginResult = await FacebookAuth.instance.login();
@@ -93,7 +92,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           token: token!,
         );
       }
-      return FacebookUserModel(userCredential: userCredential);
+      return AuthUserModel(userCredential: userCredential);
     } on FirebaseAuthException catch (e) {
       log(e.toString());
       throw Exception(e.toString());

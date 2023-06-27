@@ -129,7 +129,7 @@ class CallingScreen extends StatelessWidget implements AutoRouteWrapper {
                             ),
                           ),
                           const SizedBox(
-                            height: 200,
+                            height: 150,
                           ),
                           ElevatedButton(
                             onPressed: () {
@@ -173,6 +173,9 @@ class CallingScreen extends StatelessWidget implements AutoRouteWrapper {
                               Icons.call_end,
                               size: 50,
                             ),
+                          ),
+                          const SizedBox(
+                            height: 100,
                           ),
                         ],
                       ),
@@ -241,7 +244,7 @@ class CallingScreen extends StatelessWidget implements AutoRouteWrapper {
                             ),
                           ),
                           const SizedBox(
-                            height: 200,
+                            height: 150,
                           ),
                           Padding(
                             padding: const EdgeInsets.symmetric(
@@ -297,7 +300,9 @@ class CallingScreen extends StatelessWidget implements AutoRouteWrapper {
             );
           }
         }
-        return const LoadingWidget();
+        return const LoadingWidget(
+          color: Colors.white,
+        );
       },
     );
   }

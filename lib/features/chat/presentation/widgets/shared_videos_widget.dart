@@ -21,15 +21,13 @@ class _SharedVideosWidgetState extends State<SharedVideosWidget> {
   @override
   void initState() {
     super.initState();
+
     videoPlayerController = VideoPlayerController.network(widget.videoUrl)
       ..initialize();
 
     chewieController = ChewieController(
       videoPlayerController: videoPlayerController,
-      // zoomAndPan: false,
-      // allowFullScreen: true,
-      // showControls: true,
-      // showOptions: false,
+      showControlsOnInitialize: false,
       fullScreenByDefault: true,
     );
   }
@@ -43,10 +41,13 @@ class _SharedVideosWidgetState extends State<SharedVideosWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return FittedBox(
-      fit: BoxFit.fill,
-      child: Chewie(
-        controller: chewieController,
+    return InkWell(
+      onTap: () => chewieController.enterFullScreen(),
+      child: FittedBox(
+        fit: BoxFit.fill,
+        child: Chewie(
+          controller: chewieController,
+        ),
       ),
     );
   }

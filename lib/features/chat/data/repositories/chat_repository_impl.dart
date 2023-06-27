@@ -15,13 +15,8 @@ class ChatRepositoryImpl implements ChatRepository {
   const ChatRepositoryImpl({required this.chatRemoteDataSource});
 
   @override
-  Future<Either<Failure, Stream<List<UserEntity>>>> getAllUsers() async {
-    try {
-      final usersData = chatRemoteDataSource.getAllUsers();
-      return Right(usersData);
-    } on ServerException {
-      return Left(ServerFailure());
-    }
+  Stream<List<UserEntity>> getAllUsers() {
+    return chatRemoteDataSource.getAllUsers();
   }
 
   @override

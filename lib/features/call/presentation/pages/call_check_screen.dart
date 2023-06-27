@@ -50,7 +50,9 @@ class CallCheckScreen extends StatelessWidget implements AutoRouteWrapper {
           UserModel user =
               UserModel.fromJson(snapshot.data!.data() as Map<String, dynamic>);
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const LoadingWidget();
+            return const LoadingWidget(
+              color: Colors.white,
+            );
           } else {
             if (user.isOnline == false) {
               // IF THE USER IS ONLINE
@@ -102,7 +104,9 @@ class CallCheckScreen extends StatelessWidget implements AutoRouteWrapper {
             }
           }
         }
-        return const LoadingWidget();
+        return const LoadingWidget(
+          color: Colors.white,
+        );
       },
     );
   }

@@ -1,4 +1,3 @@
-
 part of 'google_sign_in_bloc.dart';
 
 abstract class GoogleSignInState extends Equatable {
@@ -13,7 +12,7 @@ class GoogleSignInInitial extends GoogleSignInState {}
 class GoogleSignInLoading extends GoogleSignInState {}
 
 class GoogleSignInSuccess extends GoogleSignInState {
-  final GoogleUserEntity googleUserEntity;
+  final AuthUserEntity googleUserEntity;
 
   const GoogleSignInSuccess({required this.googleUserEntity});
 

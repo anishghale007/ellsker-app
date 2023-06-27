@@ -70,7 +70,10 @@ class CallMessageWidget extends StatelessWidget {
                                 padding: const EdgeInsets.all(7),
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: Colors.grey[600],
+                                  color: messageContent ==
+                                          Constant.callMessageContent
+                                      ? Colors.grey[600]
+                                      : Colors.redAccent,
                                 ),
                                 child: Icon(
                                   messageContent == Constant.callMessageContent
@@ -91,7 +94,10 @@ class CallMessageWidget extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    "Video call",
+                                    messageContent ==
+                                            Constant.callMessageContent
+                                        ? "Video Call"
+                                        : messageContent,
                                     style: GoogleFonts.sourceSansPro(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w400,
@@ -173,7 +179,10 @@ class CallMessageWidget extends StatelessWidget {
                             padding: const EdgeInsets.all(7),
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: Colors.grey[600],
+                              color:
+                                  messageContent == Constant.callMessageContent
+                                      ? Colors.grey[600]
+                                      : Colors.redAccent,
                             ),
                             child: Icon(
                               messageContent == Constant.callMessageContent
@@ -194,7 +203,9 @@ class CallMessageWidget extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                messageContent,
+                                messageContent == Constant.callMessageContent
+                                    ? "Video Call"
+                                    : messageContent,
                                 style: GoogleFonts.sourceSansPro(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w400,

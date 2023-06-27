@@ -1,10 +1,10 @@
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class FacebookUserEntity extends Equatable {
+class AuthUserEntity extends Equatable {
   final UserCredential userCredential;
 
-  const FacebookUserEntity({required this.userCredential});
+  const AuthUserEntity({required this.userCredential});
 
   @override
   List<Object?> get props => [userCredential];
