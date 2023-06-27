@@ -580,11 +580,6 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   ],
                   child: MessageSendButtonWidget(
-                    // buttonIcon: isShowSendButton == true
-                    //     ? Icons.send_outlined
-                    //     : isRecording == false
-                    //         ? Icons.mic
-                    //         : Icons.close,
                     buttonIcon: isShowSendButton == true ||
                             pickedImage != null ||
                             pickedVideo != null ||
