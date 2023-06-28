@@ -75,11 +75,11 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
         _saveDataToConversationCollection(
           receiverId: conversationEntity.senderId,
           receiverName: conversationEntity.senderName,
-          receiverNickname: conversationEntity.receiverNickname,
+          receiverNickname: conversationEntity.senderNickname,
           receiverPhotoUrl: conversationEntity.senderPhotoUrl,
           senderId: conversationEntity.receiverId,
           senderName: conversationEntity.receiverName,
-          senderNickname: conversationEntity.senderNickname,
+          senderNickname: conversationEntity.receiverNickname,
           senderPhotoUrl: conversationEntity.receiverPhotoUrl,
           lastMessage: conversationEntity.lastMessage,
           lastMessageSenderName: conversationEntity.lastMessageSenderName,
@@ -125,8 +125,12 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
   @override
   Stream<List<ConversationEntity>> getAllConversations() {
     final currentUser = FirebaseAuth.instance.currentUser!.uid;
-    return dbUser.doc(currentUser).collection("conversation").snapshots().map(
-        (event) =>
+    return dbUser
+        .doc(currentUser)
+        .collection("conversation")
+        .orderBy("lastMessageTime", descending: true)
+        .snapshots()
+        .map((event) =>
             event.docs.map((e) => ConversationModel.fromSnapshot(e)).toList());
   }
 

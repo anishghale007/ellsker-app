@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:internship_practice/colors_utils.dart';
+import 'package:internship_practice/constants.dart';
 import 'package:internship_practice/features/chat/presentation/bloc/conversation/conversation_bloc.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
 import 'package:internship_practice/features/notification/controller/notification_controller.dart';
@@ -52,7 +53,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     super.initState();
     requestPermission();
     initInfo();
-    // initNotification();
     getToken();
     _bloc = sl<SignOutCubit>();
     WidgetsBinding.instance.addObserver(this);
@@ -180,10 +180,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     FirebaseMessaging.onMessage.listen((RemoteMessage remoteMessage) async {
       if (remoteMessage.notification != null) {
         if (remoteMessage.data['notificationType'] ==
-            "missed call notification") {
+            Constant.missedCallNotification) {
           AwesomeNotifications().dismiss(1);
         } else if (remoteMessage.data['notificationType'] ==
-            "call notification") {
+            Constant.callNotification) {
           AwesomeNotifications().createNotification(
             content: NotificationContent(
               id: 1,
@@ -217,11 +217,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 NotificationController.onActionReceivedMethod(
               receivedAction,
               context: context,
-              userId: remoteMessage.data['conversationId'],
-              photoUrl: remoteMessage.data['photoUrl'],
-              username: remoteMessage.data['username'],
-              token: remoteMessage.data['token'],
-              senderToken: myToken!,
+              receiverUserId: remoteMessage.data['receiverUserId'],
+              receiverPhotoUrl: remoteMessage.data['receiverPhotoUrl'],
+              receiverUsername: remoteMessage.data['receiverUsername'],
+              receiverToken: remoteMessage.data['receiverToken'],
+              senderUserId: remoteMessage.data['senderUserId'],
+              senderPhotoUrl: remoteMessage.data['senderPhotoUrl'],
+              senderUsername: remoteMessage.data['senderUsername'],
+              senderToken: remoteMessage.data['senderToken'],
             ),
           );
         } else {
@@ -254,26 +257,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             notificationDetails,
             payload: remoteMessage.data['body'],
           );
+          // checkRoute(remoteMessage);
         }
       }
-      // checkRoute(remoteMessage);
     });
 
     // If the app is open in background (Not termainated)
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       checkRoute(message);
-      AwesomeNotifications().setListeners(
-        onActionReceivedMethod: (receivedAction) =>
-            NotificationController.onActionReceivedMethod(
-          receivedAction,
-          context: context,
-          userId: message.data['conversationId'],
-          photoUrl: message.data['photoUrl'],
-          username: message.data['username'],
-          token: message.data['token'],
-          senderToken: myToken!,
-        ),
-      );
     });
   }
 
@@ -282,28 +273,23 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
     if (notificationDetails!.didNotificationLaunchApp ||
         notificationDetails.notificationResponse == null) {
-      if (message.data['conversationId'] != null) {
+      if (message.data['senderUserId'] != null) {
         if (mounted) {
+          context.read<ConversationBloc>().add(SeenConversationEvent(
+              conversationId: message.data['senderUserId']));
           context.router.push(
             ChatRoute(
-              username: message.data['username'],
-              userId: message.data['conversationId'], // other user's id
-              photoUrl: message.data['photoUrl'],
-              token: message.data['token'],
+              username: message.data['senderUsername'],
+              userId: message.data[
+                  'senderUserId'], // notification sender user id as we need to uid of other user to display chat messages
+              photoUrl: message.data['senderPhotoUrl'],
+              token: message.data['senderToken'],
             ),
           );
         }
       }
     }
   }
-
-  // initNotification() {
-  //   NotificationConfig.initInfo(
-  //     context,
-  //     checkRoute,
-  //     senderToken: myToken!,
-  //   );
-  // }
 
   @override
   Widget build(BuildContext context) {

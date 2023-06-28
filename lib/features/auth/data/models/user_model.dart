@@ -4,7 +4,7 @@ class UserModel {
   final String email;
   final String photoUrl;
   final String token;
-  final int age;
+  final String age;
   final String instagram;
   final String location;
   final bool isOnline;

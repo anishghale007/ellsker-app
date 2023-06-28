@@ -110,7 +110,9 @@ class CallingScreen extends StatelessWidget implements AutoRouteWrapper {
                             height: 20,
                           ),
                           Text(
-                            AppStrings.calling,
+                            call.didRejectCall != true
+                                ? AppStrings.calling
+                                : AppStrings.didNotPick,
                             style: GoogleFonts.sourceSansPro(
                               fontWeight: FontWeight.w400,
                               fontSize: 20,
@@ -128,147 +130,88 @@ class CallingScreen extends StatelessWidget implements AutoRouteWrapper {
                               color: Colors.white,
                             ),
                           ),
-                          const SizedBox(
-                            height: 200,
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              context.router.pop();
-                              // set the hasDialled to false
-                              context.read<CallBloc>().add(
-                                    EndCallEvent(
-                                      callerId: currentUser.uid,
-                                      callerPhotoUrl: currentUser.photoURL!,
-                                      callerName: currentUser.displayName!,
-                                      receiverId: userId,
-                                      callStartTime: DateTime.now().toString(),
-                                      callEndTime: DateTime.now().toString(),
-                                      didPickup: false,
-                                    ),
-                                  );
-                              // missed call notification
-                              _sendNotification(
-                                context,
-                                currentUser,
-                                messageContent:
-                                    Constant.missedCallMessageContent,
-                                notificationType:
-                                    Constant.missedCallNotification,
-                              );
-                              // missed call message
-                              _sendMessage(
-                                context,
-                                currentUser,
-                                messageContent:
-                                    Constant.missedCallMessageContent,
-                                messageType: MessageType.call,
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              shape: const CircleBorder(),
-                              padding: const EdgeInsets.all(20),
-                              backgroundColor: Colors.red,
-                            ),
-                            child: const Icon(
-                              Icons.call_end,
-                              size: 50,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            );
-          } else if (call.didRejectCall == true) {
-            // IF THE OTHER USER HAS REJECTED THE CALL
-            return Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: NetworkImage(photoUrl),
-                  colorFilter: const ColorFilter.mode(
-                    Colors.black87,
-                    BlendMode.srcOver,
-                  ),
-                  fit: BoxFit.cover,
-                ),
-              ),
-              child: Scaffold(
-                backgroundColor: Colors.transparent,
-                body: SafeArea(
-                  child: SingleChildScrollView(
-                    child: Center(
-                      child: Column(
-                        children: [
                           const SizedBox(
                             height: 150,
                           ),
-                          Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: const Color.fromARGB(255, 110, 110, 117),
-                                width: 13,
-                              ),
-                            ),
-                            child: CircleAvatar(
-                              radius: 80,
-                              backgroundImage: NetworkImage(photoUrl),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          Text(
-                            AppStrings.didNotPick,
-                            style: GoogleFonts.sourceSansPro(
-                              fontWeight: FontWeight.w400,
-                              fontSize: 20,
-                              color: Colors.grey,
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Text(
-                            username,
-                            style: GoogleFonts.sourceSansPro(
-                              fontWeight: FontWeight.w400,
-                              fontSize: 30,
-                              color: Colors.white,
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 200,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 80,
-                            ),
-                            child: SizedBox(
-                              height: 50,
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: ColorUtil.kMessageAlertColor,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(15),
+                          call.didRejectCall != true
+                              ? ElevatedButton(
+                                  onPressed: () {
+                                    context.router.pop();
+                                    // set the hasDialled to false
+                                    context.read<CallBloc>().add(
+                                          EndCallEvent(
+                                            callerId: currentUser.uid,
+                                            callerPhotoUrl:
+                                                currentUser.photoURL!,
+                                            callerName:
+                                                currentUser.displayName!,
+                                            receiverId: userId,
+                                            callStartTime:
+                                                DateTime.now().toString(),
+                                            callEndTime:
+                                                DateTime.now().toString(),
+                                            didPickup: false,
+                                          ),
+                                        );
+                                    // missed call notification
+                                    _sendNotification(
+                                      context,
+                                      currentUser,
+                                      messageContent:
+                                          Constant.missedCallMessageContent,
+                                      notificationType:
+                                          Constant.missedCallNotification,
+                                    );
+                                    // missed call message
+                                    _sendMessage(
+                                      context,
+                                      currentUser,
+                                      messageContent:
+                                          Constant.missedCallMessageContent,
+                                      messageType: MessageType.call,
+                                    );
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    shape: const CircleBorder(),
+                                    padding: const EdgeInsets.all(20),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                  child: const Icon(
+                                    Icons.call_end,
+                                    size: 50,
+                                  ),
+                                )
+                              : Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 80,
+                                  ),
+                                  child: SizedBox(
+                                    height: 50,
+                                    width: double.infinity,
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            ColorUtil.kMessageAlertColor,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(15),
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        context.router.pop();
+                                      },
+                                      child: const Text(
+                                        "Go Back",
+                                        style: TextStyle(
+                                          fontSize: 25,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ),
-                                onPressed: () {
-                                  context.router.pop();
-                                },
-                                child: const Text(
-                                  "Go Back",
-                                  style: TextStyle(
-                                    fontSize: 25,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            ),
+                          const SizedBox(
+                            height: 100,
                           ),
                         ],
                       ),
@@ -297,7 +240,9 @@ class CallingScreen extends StatelessWidget implements AutoRouteWrapper {
             );
           }
         }
-        return const LoadingWidget();
+        return const LoadingWidget(
+          color: Colors.white,
+        );
       },
     );
   }
@@ -310,12 +255,16 @@ class CallingScreen extends StatelessWidget implements AutoRouteWrapper {
   }) {
     context.read<NotificationCubit>().sendNotification(
           notificationEntity: NotificationEntity(
-            conversationId: userId, // other user's id
-            token: token,
+            receiverUserId: userId, // other user's id
+            receiverToken: token,
+            receiverPhotoUrl: photoUrl,
+            receiverUsername: username,
+            senderUserId: currentUser.uid,
+            senderPhotoUrl: currentUser.photoURL!,
+            senderToken: senderToken,
+            senderUsername: currentUser.displayName!,
             title: currentUser.displayName!,
             body: messageContent,
-            photoUrl: photoUrl,
-            username: username,
             notificationType: notificationType,
           ),
         );

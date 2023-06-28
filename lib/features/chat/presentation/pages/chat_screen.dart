@@ -212,12 +212,6 @@ class _ChatScreenState extends State<ChatScreen> {
             actions: [
               IconButton(
                 onPressed: () {
-                  // _sendMessage(
-                  //   context,
-                  //   currentUser,
-                  //   messageContent: Constant.callMessageContent,
-                  //   messageType: MessageType.call,
-                  // );
                   context.router.push(
                     CallCheckRoute(
                       userId: widget.userId,
@@ -227,22 +221,6 @@ class _ChatScreenState extends State<ChatScreen> {
                       senderToken: myToken!,
                     ),
                   );
-                  // _sendNotification(
-                  //   context,
-                  //   currentUser,
-                  //   messageContent: Constant.incomingCallMessageContent,
-                  //   notificationType: Constant.callNotification,
-                  // );
-                  // _sendNotification(
-                  //   context,
-                  //   currentUser,
-                  //   messageContent: Constant.missedCallMessageContent,
-                  //   notificationType: Constant.missedCallNotification,
-                  // );
-                  // context.router.push(CallingRoute(
-                  //     userId: widget.userId,
-                  //     photoUrl: widget.photoUrl,
-                  //     username: widget.username));
                 },
                 icon: const Icon(
                   Icons.video_call,
@@ -384,16 +362,6 @@ class _ChatScreenState extends State<ChatScreen> {
                             }
                             return null;
                           },
-                    // pickedImage != null
-                    //     ? null
-                    //     : latitude != null
-                    //         ? null
-                    //         : (value) {
-                    //             if (value!.isEmpty) {
-                    //               return "";
-                    //             }
-                    //             return null;
-                    //           },
                     keyboardAppearance: Brightness.dark,
                     style: GoogleFonts.sourceSansPro(
                       color: Colors.white,
@@ -602,11 +570,6 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   ],
                   child: MessageSendButtonWidget(
-                    // buttonIcon: isShowSendButton == true
-                    //     ? Icons.send_outlined
-                    //     : isRecording == false
-                    //         ? Icons.mic
-                    //         : Icons.close,
                     buttonIcon: isShowSendButton == true ||
                             pickedImage != null ||
                             pickedVideo != null ||
@@ -683,7 +646,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                   longitude = null;
                                 });
                               } else {
-                                // If the user does not pick an image and sends a text message
+                                // If the user sends a text message
                                 _sendMessage(
                                   context,
                                   currentUser,
@@ -813,13 +776,21 @@ class _ChatScreenState extends State<ChatScreen> {
   }) {
     context.read<NotificationCubit>().sendNotification(
           notificationEntity: NotificationEntity(
-            conversationId: widget.userId, // other user's id
-            token: widget.token,
+            receiverUserId: widget
+                .userId, // other user's id (Message Receiver ID and routing to chat screen from notification)
+            receiverToken: widget
+                .token, // message receiver token (For sending notification and routing to chat screen from notification)
+            receiverPhotoUrl: widget
+                .photoUrl, // message receiver photoURL (Needed for routing to chat screen from notification)
+            receiverUsername: widget
+                .username, // message receiver username (Needed for routing to chat screen)
+            senderUserId: currentUser.uid,
+            senderToken: myToken!,
+            senderPhotoUrl: currentUser.photoURL!,
+            senderUsername: currentUser.displayName!,
+            notificationType: notificationType,
             title: currentUser.displayName!,
             body: messageContent,
-            photoUrl: widget.photoUrl,
-            username: widget.username,
-            notificationType: notificationType,
           ),
         );
   }

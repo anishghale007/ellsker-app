@@ -1,7 +1,9 @@
+import 'dart:developer';
 import 'package:agora_uikit/agora_uikit.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:internship_practice/constants.dart';
 import 'package:internship_practice/core/config/agora_config.dart';
 import 'package:internship_practice/features/call/presentation/bloc/call/call_bloc.dart';
 
@@ -11,7 +13,6 @@ class VideoCallScreen extends StatefulWidget {
   final String callerName;
   final String receiverId;
   final String callStartTime;
-  // final String rtcToken;
 
   const VideoCallScreen({
     required this.callerId,
@@ -19,7 +20,6 @@ class VideoCallScreen extends StatefulWidget {
     required this.callerName,
     required this.receiverId,
     required this.callStartTime,
-    // required this.rtcToken,
     super.key,
   });
 
@@ -38,15 +38,17 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
         // appId: Constant.appId,
         appId: AgoraConfig.appId,
         channelName: 'test',
-        tokenUrl: 'https://ellsker-token-server.onrender.com',
+        tokenUrl: Constant.tokenBaseUrl,
       ),
       enabledPermission: [
         Permission.camera,
         Permission.microphone,
       ],
       agoraEventHandlers: AgoraRtcEventHandlers(
-        onLeaveChannel: (connection, stats) {
-          context.router.pop();
+        onLeaveChannel: (connection, stats) async {
+          context.router.popForced();
+          log("User left the channel");
+          await _agoraClient!.engine.leaveChannel();
         },
       ),
     );
@@ -57,58 +59,89 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
     await _agoraClient!.initialize();
   }
 
+  Future<bool> _showExitPopup() async {
+    return await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Exit from Video Call'),
+        content: const Text('Are you sure you want to leave the channel?'),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(false);
+            },
+            child: const Text('No'),
+          ),
+          TextButton(
+            onPressed: () async {
+              context.router.popForced();
+              await _agoraClient!.engine.leaveChannel();
+            },
+            child: const Text('Yes'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: _agoraClient == null
           ? Container()
-          : SafeArea(
-              child: Stack(
-                children: [
-                  AgoraVideoViewer(
-                    client: _agoraClient!,
-                  ),
-                  AgoraVideoButtons(
-                    client: _agoraClient!,
-                    enabledButtons: const [
-                      BuiltInButtons.callEnd,
-                      BuiltInButtons.toggleMic,
-                      BuiltInButtons.toggleCamera,
-                      BuiltInButtons.switchCamera,
-                    ],
-                    disconnectButtonChild: ElevatedButton(
-                      onPressed: () async {
-                        await _agoraClient!.engine.leaveChannel();
-                        // Go back to the chat screen
-                        context.router.pop();
-                        // End Call Event
-                        if (mounted) {
-                          context.read<CallBloc>().add(
-                                EndCallEvent(
-                                  callerId: widget.callerId, // other user
-                                  callerPhotoUrl: widget.callerPhotoUrl,
-                                  callerName: widget.callerName,
-                                  receiverId: widget.receiverId,
-                                  callStartTime:
-                                      widget.callStartTime, // from other screen
-                                  callEndTime: DateTime.now().toString(),
-                                  didPickup: true,
-                                ),
-                              );
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        shape: const CircleBorder(),
-                        padding: const EdgeInsets.all(15),
-                        backgroundColor: Colors.red,
-                      ),
-                      child: const Icon(
-                        Icons.call_end,
-                        size: 30,
+          : WillPopScope(
+              onWillPop: _showExitPopup,
+              child: SafeArea(
+                child: Stack(
+                  children: [
+                    AgoraVideoViewer(
+                      client: _agoraClient!,
+                    ),
+                    AgoraVideoButtons(
+                      client: _agoraClient!,
+                      enabledButtons: const [
+                        BuiltInButtons.callEnd,
+                        BuiltInButtons.toggleMic,
+                        BuiltInButtons.toggleCamera,
+                        BuiltInButtons.switchCamera,
+                      ],
+                      disconnectButtonChild: ElevatedButton(
+                        onPressed: () async {
+                          await _agoraClient!.engine.leaveChannel();
+                          // Go back to the chat screen
+                          context.router.popForced();
+                          // End Call Event
+                          if (mounted) {
+                            context.read<CallBloc>().add(
+                                  EndCallEvent(
+                                    callerId: widget.callerId,
+                                    callerPhotoUrl: widget.callerPhotoUrl,
+                                    callerName: widget.callerName,
+                                    receiverId: widget.receiverId,
+                                    callStartTime: widget
+                                        .callStartTime, // from other screen
+                                    callEndTime: DateTime.now().toString(),
+                                    didPickup: true,
+                                  ),
+                                );
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          shape: const CircleBorder(),
+                          padding: const EdgeInsets.all(15),
+                          backgroundColor: Colors.red,
+                        ),
+                        child: const Icon(
+                          Icons.call_end,
+                          size: 30,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
     );

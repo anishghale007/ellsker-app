@@ -51,7 +51,9 @@ class ChatMessageWidget extends StatelessWidget {
             },
           );
         } else if (snapshot.connectionState == ConnectionState.waiting) {
-          return const LoadingWidget();
+          return const LoadingWidget(
+            color: Colors.white,
+          );
         } else {
           return Container();
         }

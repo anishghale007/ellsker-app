@@ -50,12 +50,10 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
       });
     });
     // Listen to audio duration
-    startAudio();
     audioPlayer.onDurationChanged.listen((newDuration) {
       setState(() {
         receiverDuration = newDuration;
         senderDuration = newDuration;
-        pauseAudio();
       });
     });
     // Listen to audio position
@@ -82,19 +80,6 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
 
   Future pauseAudio() async {
     await audioPlayer.pause();
-  }
-
-  String formatTime(Duration duration) {
-    String twoDigits(int n) => n.toString().padLeft(2, '0');
-    final hours = twoDigits(duration.inHours);
-    final minutes = twoDigits(duration.inMinutes.remainder(60));
-    final seconds = twoDigits(duration.inSeconds.remainder(60));
-
-    return [
-      if (duration.inHours > 0) hours,
-      minutes,
-      seconds,
-    ].join(':');
   }
 
   @override
@@ -167,13 +152,6 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
                             },
                           ),
                         ),
-                        Text(
-                          formatTime(senderDuration - senderPosition),
-                          style: GoogleFonts.sourceSansPro(
-                            color: Colors.grey,
-                            fontSize: 12,
-                          ),
-                        ),
                       ],
                     ),
                     const SizedBox(
@@ -198,7 +176,7 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
             senderPhotoUrl: widget.senderPhotoUrl,
             message: Container(
               margin: const EdgeInsets.only(
-                right: 20,
+                right: 50,
               ),
               padding: const EdgeInsets.symmetric(
                 horizontal: 15,
@@ -253,13 +231,6 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
                             final position = Duration(seconds: value.toInt());
                             await audioPlayer.seek(position);
                           },
-                        ),
-                      ),
-                      Text(
-                        formatTime(receiverDuration - receiverPosition),
-                        style: GoogleFonts.sourceSansPro(
-                          color: Colors.grey,
-                          fontSize: 12,
                         ),
                       ),
                     ],

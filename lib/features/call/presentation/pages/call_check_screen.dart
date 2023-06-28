@@ -50,7 +50,9 @@ class CallCheckScreen extends StatelessWidget implements AutoRouteWrapper {
           UserModel user =
               UserModel.fromJson(snapshot.data!.data() as Map<String, dynamic>);
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const LoadingWidget();
+            return const LoadingWidget(
+              color: Colors.white,
+            );
           } else {
             if (user.isOnline == false) {
               // IF THE USER IS ONLINE
@@ -102,7 +104,9 @@ class CallCheckScreen extends StatelessWidget implements AutoRouteWrapper {
             }
           }
         }
-        return const LoadingWidget();
+        return const LoadingWidget(
+          color: Colors.white,
+        );
       },
     );
   }
@@ -115,12 +119,16 @@ class CallCheckScreen extends StatelessWidget implements AutoRouteWrapper {
   }) {
     context.read<NotificationCubit>().sendNotification(
           notificationEntity: NotificationEntity(
-            conversationId: userId, // other user's id
-            token: token,
+            receiverUserId: userId, // other user's id
+            receiverToken: token,
+            receiverPhotoUrl: photoUrl,
+            receiverUsername: username,
+            senderUserId: currentUser.uid,
+            senderPhotoUrl: currentUser.photoURL!,
+            senderToken: senderToken,
+            senderUsername: currentUser.displayName!,
             title: currentUser.displayName!,
             body: messageContent,
-            photoUrl: photoUrl,
-            username: username,
             notificationType: notificationType,
           ),
         );

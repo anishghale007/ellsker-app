@@ -12,7 +12,7 @@ class FacebookSignInInitial extends FacebookSignInState {}
 class FacebookSignInLoading extends FacebookSignInState {}
 
 class FacebookSignInSuccess extends FacebookSignInState {
-  final FacebookUserEntity facebookUserEntity;
+  final AuthUserEntity facebookUserEntity;
 
   const FacebookSignInSuccess({required this.facebookUserEntity});
 

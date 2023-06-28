@@ -72,7 +72,9 @@ class ProfileScreen extends StatelessWidget {
                   ],
                 );
               } else if (snapshot.connectionState == ConnectionState.waiting) {
-                return const LoadingWidget();
+                return const LoadingWidget(
+                  color: Colors.white,
+                );
               } else {
                 return Center(
                   child: Text(snapshot.error.toString()),

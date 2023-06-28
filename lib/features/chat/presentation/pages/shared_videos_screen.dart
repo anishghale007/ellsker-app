@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:internship_practice/common/widgets/loading_widget.dart';
 import 'package:internship_practice/features/chat/presentation/cubit/message/message_cubit.dart';
 import 'package:internship_practice/features/chat/presentation/widgets/shared_videos_widget.dart';
 
@@ -44,8 +45,8 @@ class SharedVideosScreen extends StatelessWidget {
                     },
                   );
                 } else if (state is MessageLoading) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
+                  return const LoadingWidget(
+                    color: Colors.blueAccent,
                   );
                 } else if (state is MessageError) {
                   return Center(

@@ -79,7 +79,9 @@ class CallHistoryScreen extends StatelessWidget {
                     ..add(GetAllCallLogsEvent(userId: userId)),
                   builder: (context, state) {
                     if (state is CallLoading) {
-                      return const LoadingWidget();
+                      return const LoadingWidget(
+                        color: Colors.white,
+                      );
                     } else if (state is CallError) {
                       return Center(
                         child: Text(state.errorMessage),
@@ -88,6 +90,8 @@ class CallHistoryScreen extends StatelessWidget {
                       return ListView.builder(
                         itemCount: state.callLogsList.length,
                         shrinkWrap: true,
+                        scrollDirection: Axis.vertical,
+                        physics: const NeverScrollableScrollPhysics(),
                         itemBuilder: (context, index) {
                           final data = state.callLogsList[index];
                           final startTime = DateTime.parse(data.callStartTime);
@@ -104,6 +108,9 @@ class CallHistoryScreen extends StatelessWidget {
                     }
                     return Container();
                   },
+                ),
+                const SizedBox(
+                  height: 30,
                 ),
               ],
             ),

@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:internship_practice/constants.dart';
 import 'package:internship_practice/core/usecases/usecase.dart';
-import 'package:internship_practice/features/auth/domain/entities/google_user_entity.dart';
+import 'package:internship_practice/features/auth/domain/entities/auth_user_entity.dart';
 import 'package:internship_practice/features/auth/domain/usecases/google_login_usecase.dart';
 part 'google_sign_in_event.dart';
 part 'google_sign_in_state.dart';
