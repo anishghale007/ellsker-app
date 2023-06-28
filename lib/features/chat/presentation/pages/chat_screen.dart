@@ -362,16 +362,6 @@ class _ChatScreenState extends State<ChatScreen> {
                             }
                             return null;
                           },
-                    // pickedImage != null
-                    //     ? null
-                    //     : latitude != null
-                    //         ? null
-                    //         : (value) {
-                    //             if (value!.isEmpty) {
-                    //               return "";
-                    //             }
-                    //             return null;
-                    //           },
                     keyboardAppearance: Brightness.dark,
                     style: GoogleFonts.sourceSansPro(
                       color: Colors.white,

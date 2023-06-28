@@ -142,7 +142,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       photoUrl: userInfo.photoURL!,
       userName: userInfo.displayName!,
       token: token,
-      age: 18,
+      age: "18",
       instagram: "@instagram",
       location: "Location",
       isOnline: true,

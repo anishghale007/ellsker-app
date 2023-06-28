@@ -55,14 +55,36 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
     initAgora();
   }
 
-  // @override
-  // void dispose() {
-  //   _agoraClient!.release();
-  //   super.dispose();
-  // }
-
   void initAgora() async {
     await _agoraClient!.initialize();
+  }
+
+  Future<bool> _showExitPopup() async {
+    return await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Exit from Video Call'),
+        content: const Text('Are you sure you want to leave the channel?'),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(false);
+            },
+            child: const Text('No'),
+          ),
+          TextButton(
+            onPressed: () async {
+              context.router.popForced();
+              await _agoraClient!.engine.leaveChannel();
+            },
+            child: const Text('Yes'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -70,53 +92,56 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
     return Scaffold(
       body: _agoraClient == null
           ? Container()
-          : SafeArea(
-              child: Stack(
-                children: [
-                  AgoraVideoViewer(
-                    client: _agoraClient!,
-                  ),
-                  AgoraVideoButtons(
-                    client: _agoraClient!,
-                    enabledButtons: const [
-                      BuiltInButtons.callEnd,
-                      BuiltInButtons.toggleMic,
-                      BuiltInButtons.toggleCamera,
-                      BuiltInButtons.switchCamera,
-                    ],
-                    disconnectButtonChild: ElevatedButton(
-                      onPressed: () async {
-                        await _agoraClient!.engine.leaveChannel();
-                        // Go back to the chat screen
-                        context.router.popForced();
-                        // End Call Event
-                        if (mounted) {
-                          context.read<CallBloc>().add(
-                                EndCallEvent(
-                                  callerId: widget.callerId,
-                                  callerPhotoUrl: widget.callerPhotoUrl,
-                                  callerName: widget.callerName,
-                                  receiverId: widget.receiverId,
-                                  callStartTime:
-                                      widget.callStartTime, // from other screen
-                                  callEndTime: DateTime.now().toString(),
-                                  didPickup: true,
-                                ),
-                              );
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        shape: const CircleBorder(),
-                        padding: const EdgeInsets.all(15),
-                        backgroundColor: Colors.red,
-                      ),
-                      child: const Icon(
-                        Icons.call_end,
-                        size: 30,
+          : WillPopScope(
+              onWillPop: _showExitPopup,
+              child: SafeArea(
+                child: Stack(
+                  children: [
+                    AgoraVideoViewer(
+                      client: _agoraClient!,
+                    ),
+                    AgoraVideoButtons(
+                      client: _agoraClient!,
+                      enabledButtons: const [
+                        BuiltInButtons.callEnd,
+                        BuiltInButtons.toggleMic,
+                        BuiltInButtons.toggleCamera,
+                        BuiltInButtons.switchCamera,
+                      ],
+                      disconnectButtonChild: ElevatedButton(
+                        onPressed: () async {
+                          await _agoraClient!.engine.leaveChannel();
+                          // Go back to the chat screen
+                          context.router.popForced();
+                          // End Call Event
+                          if (mounted) {
+                            context.read<CallBloc>().add(
+                                  EndCallEvent(
+                                    callerId: widget.callerId,
+                                    callerPhotoUrl: widget.callerPhotoUrl,
+                                    callerName: widget.callerName,
+                                    receiverId: widget.receiverId,
+                                    callStartTime: widget
+                                        .callStartTime, // from other screen
+                                    callEndTime: DateTime.now().toString(),
+                                    didPickup: true,
+                                  ),
+                                );
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          shape: const CircleBorder(),
+                          padding: const EdgeInsets.all(15),
+                          backgroundColor: Colors.red,
+                        ),
+                        child: const Icon(
+                          Icons.call_end,
+                          size: 30,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
     );

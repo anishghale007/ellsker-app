@@ -90,6 +90,8 @@ class CallHistoryScreen extends StatelessWidget {
                       return ListView.builder(
                         itemCount: state.callLogsList.length,
                         shrinkWrap: true,
+                        scrollDirection: Axis.vertical,
+                        physics: const NeverScrollableScrollPhysics(),
                         itemBuilder: (context, index) {
                           final data = state.callLogsList[index];
                           final startTime = DateTime.parse(data.callStartTime);
@@ -106,6 +108,9 @@ class CallHistoryScreen extends StatelessWidget {
                     }
                     return Container();
                   },
+                ),
+                const SizedBox(
+                  height: 30,
                 ),
               ],
             ),

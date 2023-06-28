@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:auto_route/auto_route.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:internship_practice/colors_utils.dart';
-import 'package:internship_practice/common/loading_overlay/loading_overlay.dart';
 import 'package:internship_practice/common/widgets/widgets.dart';
 import 'package:internship_practice/core/functions/app_dialogs.dart';
 import 'package:internship_practice/core/utils/strings_manager.dart';
@@ -85,7 +83,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final currentUserEmail = FirebaseAuth.instance.currentUser!.email;
-    final LoadingOverlay loadingOverlay = LoadingOverlay();
 
     return Scaffold(
       backgroundColor: ColorUtil.kPrimaryColor,
@@ -109,12 +106,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     BlocConsumer<ProfileBloc, ProfileState>(
                       listener: (context, state) {
                         if (state is ProfileEditSuccess) {
-                          loadingOverlay.hide();
                           context.router.pop();
-                        } else if (state is ProfileLoading) {
-                          loadingOverlay.show(context);
                         } else if (state is ProfileError) {
-                          loadingOverlay.hide();
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(state.errorMessage.toString()),
@@ -172,18 +165,43 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                     ChangeProfilePictureWidget(
                       onPress: () {
-                        AppDialogs.showImageDialog(
+                        showDialog(
                           context: context,
-                          title: const Text("Choose an action"),
-                          canPickVideo: false,
-                          onGalleryImageAction: () {
-                            Navigator.of(context).pop();
-                            getImage(isFromGallery: true);
-                          },
-                          onGalleryVideoAction: () {},
-                          onCameraAction: () {
-                            Navigator.of(context).pop();
-                            getImage(isFromGallery: false);
+                          builder: (BuildContext context) {
+                            return SimpleDialog(
+                              title: const Text("Choose an action"),
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(10),
+                                ),
+                              ),
+                              children: [
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.of(context).pop();
+                                    getImage(isFromGallery: true);
+                                  },
+                                  child: const Chip(
+                                    label: Text("Image"),
+                                    avatar: Icon(Icons.photo_album),
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 5),
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.of(context).pop();
+                                    getImage(isFromGallery: false);
+                                  },
+                                  child: const Chip(
+                                    label: Text("Camera"),
+                                    avatar: Icon(Icons.camera_alt_outlined),
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 5),
+                                  ),
+                                ),
+                              ],
+                            );
                           },
                         );
                       },
@@ -265,6 +283,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         }
                         return null;
                       },
+                    ),
+                    const SizedBox(
+                      height: 40,
                     ),
                   ],
                 ),

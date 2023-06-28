@@ -87,7 +87,7 @@ class ConversationTile extends StatelessWidget {
             ),
           ),
           title: Text(
-            receiverNickname,
+            receiverNickname != receiverName ? receiverNickname : receiverName,
             style: GoogleFonts.sourceSansPro(
               fontSize: 18,
               fontWeight: isSeen == true ? FontWeight.w400 : FontWeight.w700,
@@ -106,7 +106,9 @@ class ConversationTile extends StatelessWidget {
                   ),
                 )
               : Text(
-                  "$lastMessageSenderName: $lastMessage",
+                  receiverNickname != receiverName
+                      ? "$receiverNickname: $lastMessage"
+                      : "$receiverName: $lastMessage",
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.sourceSansPro(
